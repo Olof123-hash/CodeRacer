@@ -1,1 +1,2 @@
 # CBL
+This is a collaborative project between two authors who study Computer Science and Engineering at TU/e. The goal of this project is to create a TypeRacer clone but for programming language specific words and text snippets. This project is a part of the course introduction to programming, worth 30% of our final grade.
