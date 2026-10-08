@@ -18,6 +18,12 @@ public class GameFrame extends javax.swing.JFrame {
      */
     public GameFrame() {
         initComponents();
+        jLabel1.setVisible(false);
+        jLabel2.setVisible(false);
+        jButton2.setVisible(false);
+        
+        
+        
     }
 
     /**
@@ -29,22 +35,119 @@ public class GameFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jButton1 = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jButton2 = new javax.swing.JButton();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jButton1.setText("Start Coding Race");
+        jButton1.addActionListener(this::jButton1ActionPerformed);
+
+        jLabel1.setText("WPM");
+
+        jLabel2.setText("120");
+
+        jButton2.setText("End Race");
+        jButton2.addActionListener(this::jButton2ActionPerformed);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(204, 204, 204)
+                        .addComponent(jLabel1)
+                        .addGap(35, 35, 35)
+                        .addComponent(jLabel2))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(455, 455, 455)
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(472, 472, 472)
+                        .addComponent(jButton2)))
+                .addContainerGap(622, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(183, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(jLabel2))
+                .addGap(124, 124, 124)
+                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(66, 66, 66)
+                .addComponent(jButton2)
+                .addGap(222, 222, 222))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+    boolean isPressed = false;
+    
+    
+    //Start button is pressed
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        
+        //Check whether the game is on or not
+        isPressed = true;
+        
+        //Set words per minute counters visible
+        jLabel1.setVisible(true);
+        jLabel2.setVisible(true);
+        
+        //Set 'End game' button visible to user and validate it
+        jButton2.setVisible(true);
+        jButton2.validate();
+        
+        //Set the start button invisible and invalid
+        jButton1.setVisible(false);
+        jButton1.invalidate();
+        
+        //Make relevant fields visible to user
+        
+        
+    }//GEN-LAST:event_jButton1ActionPerformed
 
+    
+    //User pressed end gmae.
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        
+        
+        //Make the start game button visible and valid 
+        jButton1.setVisible(true);
+        jButton1.validate();
+        
+        //Make the end game button invisible and invalidate it
+        jButton2.setVisible(false);
+        jButton2.invalidate();
+        
+        //Set words per minute counter invisible
+        jLabel1.setVisible(false);
+        jLabel2.setVisible(false);
+
+    }//GEN-LAST:event_jButton2ActionPerformed
+    
+    public void GameState() {
+    if (isPressed == true) {
+            
+            jButton1.setVisible(false);
+            jButton1.invalidate();
+            
+            
+            
+        }
+        
+        
+        if (isPressed == false) {
+            jButton1.setVisible(true);
+        }
+    }
+   
     /**
      * @param args the command line arguments
      */
@@ -68,8 +171,14 @@ public class GameFrame extends javax.swing.JFrame {
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> new GameFrame().setVisible(true));
+        
+       
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     // End of variables declaration//GEN-END:variables
 }
