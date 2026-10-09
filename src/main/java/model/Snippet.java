@@ -3,17 +3,21 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package model;
-import java.util.ArrayList;
+
+
 /**
  *
  * @author maril
  */
 public class Snippet {
-    private ArrayList<String> body;
-    public Snippet(ArrayList<String> newBody){
-    this.body= newBody; 
-}
-    public ArrayList<String> getBody(){
-    return this.body;
-}
+
+    private final String body;
+
+    public Snippet(String newBody) {
+        this.body = newBody;
+    }
+
+    public String getBody() {
+        return this.body;
+    }
 }
