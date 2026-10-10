@@ -49,11 +49,8 @@ public class TextDao {
             return null;
         }
     }
-
-    public static void main(String[] args) {
-        TextDao dao = new TextDao();
-        for (int i = 0; i < 6; i++) {
-            System.out.println(dao.getRandomSnippet().getBody());
-        }
-    }
+    
+  
 }
+
+
