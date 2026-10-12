@@ -20,10 +20,7 @@ public class GameFrame extends javax.swing.JFrame {
     /**
      * Creates new form GameFrame
      */
-    
-    private Snippet snippet;
-    private Database obj;
-    
+
     
     public GameFrame() {
         
@@ -42,9 +39,7 @@ public class GameFrame extends javax.swing.JFrame {
         jTextField1.setVisible(false);
         
         
-        obj = new Database();
-        
-        snippet = new Snippet(obj.getNewBody());
+       
         
     }
 
@@ -216,7 +211,7 @@ public class GameFrame extends javax.swing.JFrame {
         
         //Make relevant fields visible to user
         jTextField1.setVisible(true);
-        jTextField1.setText(snippet.getBody());
+      
     }//GEN-LAST:event_jButton3ActionPerformed
 
    
