@@ -105,9 +105,7 @@ public class RaceEngine {
         double percentage = 100 - (mistakes / keystrokesd) * 100;
         return percentage;
     }
-    public String getTypedSnip(){
-        return typedsnip;
-    }
+
     public double getWPM() {
         long milliseconds = timer();
         double minutes = milliseconds / 60000.0;
