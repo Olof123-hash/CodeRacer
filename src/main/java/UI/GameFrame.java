@@ -1,5 +1,9 @@
 package UI;
 
+import database.Database;
+import java.util.Set;
+import model.Snippet;
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
@@ -16,13 +20,31 @@ public class GameFrame extends javax.swing.JFrame {
     /**
      * Creates new form GameFrame
      */
+    
+    private Snippet snippet;
+    private Database obj;
+    
+    
     public GameFrame() {
+        
         initComponents();
+        
+        //Centres the panel
+        getContentPane().setLayout(new java.awt.BorderLayout());
+        getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
+
+
         jLabel1.setVisible(false);
         jLabel2.setVisible(false);
         jButton2.setVisible(false);
         
         
+        jTextField1.setVisible(false);
+        
+        
+        obj = new Database();
+        
+        snippet = new Snippet(obj.getNewBody());
         
     }
 
@@ -35,66 +57,150 @@ public class GameFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jButton1 = new javax.swing.JButton();
+        jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jButton2 = new javax.swing.JButton();
+        jTextField1 = new javax.swing.JTextField();
+        jButton3 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setBackground(new java.awt.Color(0, 0, 0));
+        setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        setFocusCycleRoot(false);
 
-        jButton1.setText("Start Coding Race");
-        jButton1.addActionListener(this::jButton1ActionPerformed);
+        jPanel1.setBackground(new java.awt.Color(21, 25, 28));
 
+        jLabel1.setFont(new java.awt.Font("Arial Black", 1, 12)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(0, 0, 51));
         jLabel1.setText("WPM");
+        jLabel1.setAlignmentY(2.0F);
 
+        jLabel2.setFont(new java.awt.Font("Serif", 1, 24)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(204, 204, 0));
         jLabel2.setText("120");
 
+        jButton2.setFont(new java.awt.Font("Segoe UI Black", 1, 12)); // NOI18N
         jButton2.setText("End Race");
+        jButton2.setAlignmentX(0.5F);
+        jButton2.setAutoscrolls(true);
+        jButton2.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jButton2.setFocusPainted(false);
+        jButton2.setFocusable(false);
+        jButton2.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jButton2FocusGained(evt);
+            }
+        });
         jButton2.addActionListener(this::jButton2ActionPerformed);
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(204, 204, 204)
-                        .addComponent(jLabel1)
-                        .addGap(35, 35, 35)
-                        .addComponent(jLabel2))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(455, 455, 455)
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(472, 472, 472)
-                        .addComponent(jButton2)))
-                .addContainerGap(622, Short.MAX_VALUE))
+        jTextField1.setEditable(false);
+        jTextField1.setBackground(new java.awt.Color(153, 153, 255));
+        jTextField1.setForeground(new java.awt.Color(255, 255, 255));
+        jTextField1.setAlignmentX(1.0F);
+        jTextField1.addActionListener(this::jTextField1ActionPerformed);
+
+        jButton3.setFont(new java.awt.Font("Segoe UI Black", 1, 12)); // NOI18N
+        jButton3.setText("Start Coding Race");
+        jButton3.setAlignmentX(0.5F);
+        jButton3.setAutoscrolls(true);
+        jButton3.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jButton3.setFocusPainted(false);
+        jButton3.setFocusable(false);
+        jButton3.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jButton3FocusGained(evt);
+            }
+        });
+        jButton3.addActionListener(this::jButton3ActionPerformed);
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(333, 333, 333)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(29, 29, 29)
+                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(1095, 1095, 1095))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 510, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(450, 450, 450))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addComponent(jButton2)
+                        .addGap(643, 643, 643))))
+            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                    .addContainerGap(775, Short.MAX_VALUE)
+                    .addComponent(jButton3)
+                    .addGap(632, 632, 632)))
         );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(183, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(jLabel2))
-                .addGap(124, 124, 124)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(66, 66, 66)
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(99, 99, 99)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(87, 87, 87)
+                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(161, 161, 161)
                 .addComponent(jButton2)
-                .addGap(222, 222, 222))
+                .addContainerGap(297, Short.MAX_VALUE))
+            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel1Layout.createSequentialGroup()
+                    .addGap(399, 399, 399)
+                    .addComponent(jButton3)
+                    .addContainerGap(409, Short.MAX_VALUE)))
         );
+
+        jButton2.getAccessibleContext().setAccessibleDescription("");
+
+        getContentPane().add(jPanel1, java.awt.BorderLayout.LINE_START);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
     boolean isPressed = false;
     
     
-    //Start button is pressed
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    //User pressed end game
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         
-        //Check whether the game is on or not
-        isPressed = true;
+         //Make the start game button visible and valid 
+        jButton3.setVisible(true);
+        jButton3.validate();
+        
+        //Make the end game button invisible and invalidate it
+        jButton2.setVisible(false);
+        jButton2.invalidate();
+        
+        //Set words per minute counter invisible
+        jLabel1.setVisible(false);
+        jLabel2.setVisible(false);
+        
+        jTextField1.setVisible(false);
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    
+    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+      
+    }//GEN-LAST:event_jTextField1ActionPerformed
+
+    private void jButton2FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jButton2FocusGained
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton2FocusGained
+
+    private void jButton3FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jButton3FocusGained
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton3FocusGained
+ //Start button is pressed
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        // TODO add your handling code here:
+           isPressed = true;
         
         //Set words per minute counters visible
         jLabel1.setVisible(true);
@@ -105,48 +211,14 @@ public class GameFrame extends javax.swing.JFrame {
         jButton2.validate();
         
         //Set the start button invisible and invalid
-        jButton1.setVisible(false);
-        jButton1.invalidate();
+        jButton3.setVisible(false);
+        jButton3.invalidate();
         
         //Make relevant fields visible to user
-        
-        
-    }//GEN-LAST:event_jButton1ActionPerformed
+        jTextField1.setVisible(true);
+        jTextField1.setText(snippet.getBody());
+    }//GEN-LAST:event_jButton3ActionPerformed
 
-    
-    //User pressed end gmae.
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        
-        
-        //Make the start game button visible and valid 
-        jButton1.setVisible(true);
-        jButton1.validate();
-        
-        //Make the end game button invisible and invalidate it
-        jButton2.setVisible(false);
-        jButton2.invalidate();
-        
-        //Set words per minute counter invisible
-        jLabel1.setVisible(false);
-        jLabel2.setVisible(false);
-
-    }//GEN-LAST:event_jButton2ActionPerformed
-    
-    public void GameState() {
-    if (isPressed == true) {
-            
-            jButton1.setVisible(false);
-            jButton1.invalidate();
-            
-            
-            
-        }
-        
-        
-        if (isPressed == false) {
-            jButton1.setVisible(true);
-        }
-    }
    
     /**
      * @param args the command line arguments
@@ -176,9 +248,15 @@ public class GameFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JTextField jTextField1;
     // End of variables declaration//GEN-END:variables
+    
+
+
 }
+
