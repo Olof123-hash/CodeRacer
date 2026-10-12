@@ -1,6 +1,5 @@
 package logic;
-import model.Snippet;
-import database.TextDao;
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
@@ -10,12 +9,6 @@ import database.TextDao;
  * @author maril
  */
 public class RaceEngine {
-<<<<<<< HEAD
-    public static void main(String[]args){
-    TextDao dao = new TextDao();
-    Snippet snip =dao.getRandomSnippet();
-    }
-=======
 
     private String typedsnip = "";
     private final String targetText;
@@ -95,56 +88,38 @@ public class RaceEngine {
     public RaceState getState() {
         return currentState;
     }
-    public int getKeystrokes(){
+
+    public int getKeystrokes() {
         return keystrokes;
     }
-    public int getMistakes(){
+
+    public int getMistakes() {
         return mistakes;
     }
+
     public double getAccuracy() {
         if (keystrokes == 0) {
             return 100;
         }
-        double keystrokesd= keystrokes;
+        double keystrokesd = keystrokes;
         double percentage = 100 - (mistakes / keystrokesd) * 100;
         return percentage;
     }
 
-        public static void main(String[] args) throws InterruptedException {
-    RaceEngine engine = new RaceEngine("Java is great");
-
-    // Fresh engine, nothing typed
-    System.out.println("Fresh accuracy: " + engine.getAccuracy() + " (expect -1)");
-
-    // The counter table
-    String[] inputs = {"J", "Jx", "Jxa", "J", "Ja", "Ja", ""};
-    for (String input : inputs) {
-        boolean accepted = engine.updateTypedSnip(input);
-        System.out.println("\"" + input + "\" -> returns " + accepted
-                + ", keystrokes = " + engine.getKeystrokes()
-                + ", mistakes = " + engine.getMistakes());
+    public double getWPM() {
+        long milliseconds = timer();
+        double minutes = milliseconds / 60000.0;
+        double words;
+        if (milliseconds == 0 || typedsnip.isEmpty()) {
+            return 0;
+        }
+        boolean isCorrect = comparison(typedsnip.length() - 1);
+        if (isCorrect) {
+            words = typedsnip.length() / 5.0;
+        } else {
+            words = (typedsnip.length() - 1) / 5.0;
+        }
+        return words / minutes;
     }
-    System.out.println("Accuracy: " + engine.getAccuracy() + " (expect about 66.7)");
 
-    // Full correct run on a fresh engine
-    RaceEngine run = new RaceEngine("Java is great");
-    String target = "Java is great";
-    for (int i = 1; i <= target.length(); i++) {
-        run.updateTypedSnip(target.substring(0, i));
-        Thread.sleep(100);
-    }
-    System.out.println("Full run: " + run.getState() + " (expect FINISHED)"
-            + ", accuracy = " + run.getAccuracy() + " (expect 100.0)"
-            + ", time = " + run.timer() + " (expect about 1300)");
-
-    // One-character target finishes on the first call
-    RaceEngine tiny = new RaceEngine("x");
-    tiny.updateTypedSnip("x");
-    System.out.println("One-char target: " + tiny.getState() + " (expect FINISHED)");
-
-    // Input after finish is rejected
-    System.out.println("After finish: " + run.updateTypedSnip("Java is great!") + " (expect false)");
-}
-    
->>>>>>> origin/main
 }
