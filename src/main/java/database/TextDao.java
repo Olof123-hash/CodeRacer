@@ -6,7 +6,7 @@ package database;
 
 import java.util.List;
 import com.google.gson.Gson;
-import model.Snippet;
+import  model.Snippet;
 import java.lang.reflect.Type;
 import com.google.gson.reflect.TypeToken;
 import java.io.InputStream;

@@ -1,5 +1,14 @@
 package UI;
-
+import database.TextDao;
+import logic.RaceEngine;
+import model.Snippet;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.*;
+import javax.swing.text.BadLocationException;
+import java.awt.BorderLayout;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
@@ -14,10 +23,67 @@ public class RacePanel extends javax.swing.JPanel {
     /**
      * Creates new form RacePanel
      */
+    private TextDao txtdao;
+    private RaceEngine currentRace;
     public RacePanel() {
         initComponents();
-    }
+    txtdao = new TextDao();
+    Snippet snip= txtdao.getRandomSnippet();
+    String snippet= snip.getBody();
+    currentRace=new RaceEngine(snippet);
+    snippetPane.setText(snippet);
+    typingField.setTransferHandler(null);
+    typingField.getDocument().addDocumentListener(new MyDocumentListener());
+            }
+    
+    /* We need to use the class below because a document listener is the only way for the program to understand the changes in the text the user types
+    
+    */
+    class MyDocumentListener implements DocumentListener {
 
+        private void update(DocumentEvent e) {
+            try {
+                boolean isAccepted;
+                String typedsnip;
+                typedsnip = typingField.getText(0, e.getDocument().getLength());
+                isAccepted = currentRace.updateTypedSnip(typedsnip);
+                if (!isAccepted) {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            typingField.setText(currentRace.getLastAcceptedText());
+                            typingField.setCaretPosition(typingField.getText().length());
+                        }
+                    });
+                }
+            } catch (BadLocationException ex) {
+                Logger.getLogger(MyDocumentListener.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    @Override
+    public void insertUpdate(DocumentEvent e) {
+        update(e);
+    }
+    @Override
+    public void removeUpdate(DocumentEvent e) {
+        update(e);
+    }
+    @Override
+    public void changedUpdate(DocumentEvent e) {
+        update(e);
+    }
+    
+    }
+     public static void main(String[] args){
+          javax.swing.SwingUtilities.invokeLater(() -> {
+        javax.swing.JFrame frame = new javax.swing.JFrame("RacePanel test");
+        frame.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
+        frame.add(new RacePanel());
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+    });
+}
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -27,19 +93,85 @@ public class RacePanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        wpmLabel = new javax.swing.JLabel();
+        timeLabel = new javax.swing.JLabel();
+        accuracyLabel = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        snippetPane = new javax.swing.JTextPane();
+        typingField = new javax.swing.JTextField();
+        newRaceButton = new javax.swing.JButton();
+
+        wpmLabel.setText("WPM");
+        wpmLabel.setBorder(javax.swing.BorderFactory.createTitledBorder("WPM"));
+
+        timeLabel.setText("TIME");
+        timeLabel.setBorder(javax.swing.BorderFactory.createTitledBorder("Time"));
+
+        accuracyLabel.setText("ACCURACY%");
+        accuracyLabel.setBorder(javax.swing.BorderFactory.createTitledBorder("Accuracy"));
+
+        snippetPane.setEditable(false);
+        snippetPane.setFont(new java.awt.Font("Courier New", 0, 18)); // NOI18N
+        jScrollPane1.setViewportView(snippetPane);
+
+        typingField.setFont(new java.awt.Font("Courier New", 0, 14)); // NOI18N
+        typingField.addActionListener(this::typingFieldActionPerformed);
+
+        newRaceButton.setText("Start New Race");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(37, 37, 37)
+                        .addComponent(wpmLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(68, 68, 68)
+                        .addComponent(timeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(62, 62, 62)
+                        .addComponent(accuracyLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(23, 23, 23)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(typingField, javax.swing.GroupLayout.DEFAULT_SIZE, 467, Short.MAX_VALUE)
+                            .addComponent(jScrollPane1)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(186, 186, 186)
+                        .addComponent(newRaceButton, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(22, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(26, 26, 26)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(wpmLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(timeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(accuracyLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(35, 35, 35)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(45, 45, 45)
+                .addComponent(typingField, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(50, 50, 50)
+                .addComponent(newRaceButton, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(81, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
-
+    private void typingFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_typingFieldActionPerformed
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_typingFieldActionPerformed
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel accuracyLabel;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JButton newRaceButton;
+    private javax.swing.JTextPane snippetPane;
+    private javax.swing.JLabel timeLabel;
+    private javax.swing.JTextField typingField;
+    private javax.swing.JLabel wpmLabel;
     // End of variables declaration//GEN-END:variables
 }
