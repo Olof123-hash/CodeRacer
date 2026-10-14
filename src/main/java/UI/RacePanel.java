@@ -9,6 +9,9 @@ import javax.swing.text.BadLocationException;
 import java.awt.BorderLayout;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.awt.Color;
+import javax.swing.text.StyledDocument;
+import javax.swing.text.DefaultStyledDocument;
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
@@ -23,10 +26,11 @@ public class RacePanel extends javax.swing.JPanel {
     /**
      * Creates new form RacePanel
      */
-    private TextDao txtdao;
-    private RaceEngine currentRace;
+    private final TextDao txtdao;
+    private final RaceEngine currentRace;
     public RacePanel() {
         initComponents();
+    typingField.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "none");
     txtdao = new TextDao();
     Snippet snip= txtdao.getRandomSnippet();
     String snippet= snip.getBody();
@@ -53,6 +57,7 @@ public class RacePanel extends javax.swing.JPanel {
                         public void run() {
                             typingField.setText(currentRace.getLastAcceptedText());
                             typingField.setCaretPosition(typingField.getText().length());
+                            colorTypingField();
                         }
                     });
                 }
@@ -70,9 +75,20 @@ public class RacePanel extends javax.swing.JPanel {
     }
     @Override
     public void changedUpdate(DocumentEvent e) {
-        update(e);
     }
-    
+    }
+    public void colorTypingField(){
+        StyledDocument doc = typingField.getStyledDocument();
+        boolean isCorrect= currentRace.comparison(typingField.getText().length());
+        if (isCorrect){
+            javax.swing.text.Style style = typingField.addStyle("Green", null);
+        typingField.setForeground(Color.GREEN);
+            doc.setCharacterAttributes(typingField.getText().length()-1, typingField.getText().length(), typingField.getStyle("Green"), true); 
+        }else{
+            javax.swing.text.Style style = typingField.addStyle("Red", null);
+        typingField.setForeground(Color.RED);
+         doc.setCharacterAttributes(typingField.getText().length()-1, typingField.getText().length(), typingField.getStyle("Red"), true); 
+        }
     }
      public static void main(String[] args){
           javax.swing.SwingUtilities.invokeLater(() -> {
@@ -98,8 +114,11 @@ public class RacePanel extends javax.swing.JPanel {
         accuracyLabel = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         snippetPane = new javax.swing.JTextPane();
-        typingField = new javax.swing.JTextField();
         newRaceButton = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        typingField = new javax.swing.JTextPane();
+
+        setFont(new java.awt.Font("Courier New", 0, 14)); // NOI18N
 
         wpmLabel.setText("WPM");
         wpmLabel.setBorder(javax.swing.BorderFactory.createTitledBorder("WPM"));
@@ -114,10 +133,9 @@ public class RacePanel extends javax.swing.JPanel {
         snippetPane.setFont(new java.awt.Font("Courier New", 0, 18)); // NOI18N
         jScrollPane1.setViewportView(snippetPane);
 
-        typingField.setFont(new java.awt.Font("Courier New", 0, 14)); // NOI18N
-        typingField.addActionListener(this::typingFieldActionPerformed);
-
         newRaceButton.setText("Start New Race");
+
+        jScrollPane2.setViewportView(typingField);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -133,14 +151,14 @@ public class RacePanel extends javax.swing.JPanel {
                         .addGap(62, 62, 62)
                         .addComponent(accuracyLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
+                        .addGap(186, 186, 186)
+                        .addComponent(newRaceButton, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
                         .addGap(23, 23, 23)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(typingField, javax.swing.GroupLayout.DEFAULT_SIZE, 467, Short.MAX_VALUE)
-                            .addComponent(jScrollPane1)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(186, 186, 186)
-                        .addComponent(newRaceButton, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(22, Short.MAX_VALUE))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 467, Short.MAX_VALUE)
+                            .addComponent(jScrollPane2))))
+                .addContainerGap(55, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -152,26 +170,22 @@ public class RacePanel extends javax.swing.JPanel {
                     .addComponent(accuracyLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(35, 35, 35)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(45, 45, 45)
-                .addComponent(typingField, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(50, 50, 50)
+                .addGap(49, 49, 49)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(73, 73, 73)
                 .addComponent(newRaceButton, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(81, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
-
-    private void typingFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_typingFieldActionPerformed
-        // TODO add your handling code here:
-        
-    }//GEN-LAST:event_typingFieldActionPerformed
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel accuracyLabel;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JButton newRaceButton;
     private javax.swing.JTextPane snippetPane;
     private javax.swing.JLabel timeLabel;
-    private javax.swing.JTextField typingField;
+    private javax.swing.JTextPane typingField;
     private javax.swing.JLabel wpmLabel;
     // End of variables declaration//GEN-END:variables
 }
