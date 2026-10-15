@@ -162,7 +162,7 @@ public class RacePanel extends javax.swing.JPanel {
     }
     public void colorTypingField(){
         StyledDocument doc = typingField.getStyledDocument();
-        if (currentRace.comparison(typingField.getText().length())){
+        if (!currentRace.comparison(typingField.getText().length())){
             javax.swing.text.Style style = typingField.addStyle("Green", null);
         typingField.setForeground(Color.GREEN);
             doc.setCharacterAttributes(typingField.getText().length()-1, typingField.getText().length(), typingField.getStyle("Green"), true); 
