@@ -155,7 +155,7 @@ public class GameFrame extends javax.swing.JFrame {
 
         jButton2.getAccessibleContext().setAccessibleDescription("");
 
-        getContentPane().add(jPanel1, java.awt.BorderLayout.LINE_START);
+        getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents

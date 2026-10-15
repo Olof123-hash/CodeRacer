@@ -1,12 +1,17 @@
-[{           
-        "body": "Java is the best programming language"
-    },
-    {
-        "body": "Coding text goes here"
-    },
-    {
-        "body": "Our code snippets will go here when we find them"
-    }
-
+[
+    { "body": "public static void main(String[] args) { System.out.println(\"Hello, world!\"); }" },
+    { "body": "for (int i = 0; i < 10; i++) { System.out.println(i); }" },
+    { "body": "List<String> names = new ArrayList<>(); names.add(\"Olof\");" },
+    { "body": "if (score > highScore) { highScore = score; }" },
+    { "body": "String upper = text.toUpperCase().trim();" },
+    { "body": "Map<String, Integer> counts = new HashMap<>(); counts.put(\"a\", 1);" },
+    { "body": "int sum = numbers.stream().mapToInt(Integer::intValue).sum();" },
+    { "body": "try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }" },
+    { "body": "public int add(int a, int b) { return a + b; }" },
+    { "body": "while (running) { update(); render(); }" }
 ]
-        
+
+
+
+
+

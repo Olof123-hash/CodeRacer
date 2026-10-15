@@ -92,7 +92,7 @@ public class RaceEngine {
     */
     public boolean comparison(int charposition) {
         boolean isCorrect = false;
-        if (!typedsnip.isEmpty() && typedsnip.length() <= targetText.length()) {
+        if (typedsnip.length() <= targetText.length()) {
             if (charposition < typedsnip.length()) {
                 char[] targetTextArr = this.targetText.toCharArray();
                 char currentchar = typedsnip.charAt(charposition);
