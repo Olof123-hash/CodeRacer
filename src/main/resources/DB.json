@@ -1,17 +1,14 @@
+
 [
-    { "body": "public static void main(String[] args) { System.out.println(\"Hello, world!\"); }" },
-    { "body": "for (int i = 0; i < 10; i++) { System.out.println(i); }" },
-    { "body": "List<String> names = new ArrayList<>(); names.add(\"Olof\");" },
-    { "body": "if (score > highScore) { highScore = score; }" },
-    { "body": "String upper = text.toUpperCase().trim();" },
-    { "body": "Map<String, Integer> counts = new HashMap<>(); counts.put(\"a\", 1);" },
-    { "body": "int sum = numbers.stream().mapToInt(Integer::intValue).sum();" },
-    { "body": "try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }" },
-    { "body": "public int add(int a, int b) { return a + b; }" },
-    { "body": "while (running) { update(); render(); }" }
+    { "body": "the cat sat on the mat and ate a big red apple" },
+    { "body": "i like to run and jump in the sun with my dog" },
+    { "body": "a small bird can sing a long song at the top of a tree" },
+    { "body": "we go to the park and play a game with a ball" },
+    { "body": "the sun is hot and the sky is blue today" },
+    { "body": "she has a red hat and he has a big green bag" },
+    { "body": "it is fun to read a good book on a rainy day" },
+    { "body": "my dad can make a hot cup of tea for me" },
+    { "body": "the fish swim in the lake and the ducks swim too" },
+    { "body": "we all sit in the van and go for a long drive" }
 ]
-
-
-
-
 

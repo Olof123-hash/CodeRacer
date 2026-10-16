@@ -1,5 +1,5 @@
 package UI;
-import database.TextDao;
+import database.Database;
 import logic.RaceEngine;
 import model.Snippet;
 import javax.swing.event.DocumentEvent;
@@ -24,123 +24,123 @@ import javax.swing.text.DefaultStyledDocument;
 public class RacePanel extends javax.swing.JPanel {
     
     boolean isOn = false;
+    
 
     /**
      * Creates new form RacePanel
      */
     
     //Initialize classes
-    private TextDao txtdao;
+    private Database db;
     private RaceEngine currentRace;
     
     public RacePanel() {
-        
-    //call the constructor for textDao class
-    txtdao = new TextDao();
-    
     //Built in java code
     initComponents();
+    //Calls racemode
+    setRaceMode(isOn);
+     }
     
-    
-    
-    
-     setRaceMode(isOn);
-     
-            }
-    
-    
+    //Creates all classes when this is ran
     private void newGame () {
-        //Creates all classes when this is ran
-        Snippet snip= txtdao.getRandomSnippet();
-        String snippet= snip.getBody();
-        currentRace = new RaceEngine(snippet);
-        snippetPane.setText(snippet);
+       
+        //Creates Database object
+        db = new Database();
+        // Calls the Snippet class and initializes it with a random snippet from the Database class. 
+        Snippet snip= db.getRandomSnippet();
+        //Creates a RaceEngine object by calling the RaceEngine constructor with the snippet from the previous lines.
+        currentRace = new RaceEngine(snip.getBody());
+        
+        
+        //Sets the text of the snippetPane with that of the current snippet
+        snippetPane.setText(snip.getBody());
         
         //Important code!! also reason for many many bugs 
         typingField.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "none");
         typingField.setTransferHandler(null);
         typingField.getDocument().addDocumentListener(new MyDocumentListener());
+        
+        
     }
+    
+    //Method that handles what is visible on the UI
     
     private void setRaceMode (boolean isPlaying) {
         
-        if (!isPlaying) {
-            
-        // Set the snippet visible and set the start game button visible
-        newRaceButton.setVisible(true);
-        
-        //Set invisible and invalidate the typing field and the end game button
-        typingField.setVisible(false);
-        typingField.invalidate();
-        
-        jButton1.setVisible(false);
-        jButton1.invalidate();
-        
-        //Make irrelevant fields invisible to user
-        
-        // --> All counters
-        jLabel1.setVisible(false);
-        jLabel2.setVisible(false);
-        jLabel3.setVisible(false);
-        
-        //The snippet
-        snippetPane.setVisible(false);
-        
-        } 
-        else 
-        {
-            
-            
-        //Calls the method that creates all needed classes 
-        newGame();
-        
-        //Set 'End game' button visible to user and validate it
-        jButton1.setVisible(true);
-        jButton1.validate();
-        
-        //Set the start button invisible and invalid
-        newRaceButton.setVisible(false);
-        newRaceButton.invalidate();
-        
-        //Make relevant fields visible to user
-        
-        // --> All counters
-        jLabel1.setVisible(true);
-        jLabel2.setVisible(true);
-        jLabel3.setVisible(true);
-        
-        
-        // The typingfield and snippet
-        snippetPane.setVisible(true);
-        typingField.setVisible(true);
-        typingField.validate();
-        
-        
-        
-   
-        }
-  
+   //Creates all classes when this is ran
+    if (isPlaying) {
+        newGame();   
     }
     
+    //Kind of obvious code, makes buttons and fields visible or invisible whether or not the user has pressed the play button.
+    snippetPane.setVisible(isPlaying);
+    typingField.setVisible(isPlaying);
+    jScrollPane1.setVisible(isPlaying);
+    jScrollPane2.setVisible(isPlaying);
+    jButton1.setVisible(isPlaying);
+    jLabel1.setVisible(isPlaying);
+    jLabel2.setVisible(isPlaying);
+    jLabel3.setVisible(isPlaying);
+    newRaceButton.setVisible(!isPlaying);
+    
+    //This is always going to be false no matter if the user has pressed the play button or not, this is only visible when the user has ended a game so before pressing the play button again
+    GameOverField.setVisible(false);
+    
+   
+    
+   
+    }
+    
+    
+    private void gameOver () {
+        
+       isOn = false;
+       setRaceMode(isOn);
+       
+      
+       GameOverField.setVisible(true);
+      
+    
+    }
     /* We need to use the class below because a document listener is the only way for the program to understand the changes in the text the user types
     
     */
     class MyDocumentListener implements DocumentListener {
+        
+        
 
         private void update(DocumentEvent e) {
             
+
+           if (isOn) {
             try {
                 
+                    if (currentRace.getState() == RaceEngine.RaceState.FINISHED) {
+                    gameOver();
+                    
+                    //Updates the (currently invisible) text area thats shown after the game with the statistics
+                    updateText(currentRace.getWPM(), currentRace.getKeystrokes(), currentRace.getMistakes(), currentRace.getAccuracy());
+                  
+                  
+                }
+               
+                
                 boolean isAccepted;
-                String typedsnip;
-                typedsnip = typingField.getText(0, e.getDocument().getLength());
+                String typedsnip = typingField.getText(0, e.getDocument().getLength());
+                // calls a method in RaceEngine that returns true or false
                 isAccepted = currentRace.updateTypedSnip(typedsnip);
                 
                SwingUtilities.invokeLater(() -> {
+                   
+                
                 if (!isAccepted) {
+                // Calls a method in RaceEnginge that returns the typedsnip, so the text of the typingfield is now the typedSnip
                 typingField.setText(currentRace.getLastAcceptedText());
+                
+                // From Claude --> This is Java Swing code that moves the text cursor (caret) to the very end of a text field.
                 typingField.setCaretPosition(typingField.getText().length());
                 }
+                // calls the method that colours the text
                 colorTypingField();
             });
                
@@ -148,6 +148,8 @@ public class RacePanel extends javax.swing.JPanel {
                 Logger.getLogger(MyDocumentListener.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        }
+        
     @Override
     public void insertUpdate(DocumentEvent e) {
         update(e);
@@ -160,15 +162,15 @@ public class RacePanel extends javax.swing.JPanel {
     public void changedUpdate(DocumentEvent e) {
     }
     }
+    
+    //Method that colours the text 
     public void colorTypingField(){
         StyledDocument doc = typingField.getStyledDocument();
-        if (!currentRace.comparison(typingField.getText().length())){
-            javax.swing.text.Style style = typingField.addStyle("Green", null);
-        typingField.setForeground(Color.GREEN);
-            doc.setCharacterAttributes(typingField.getText().length()-1, typingField.getText().length(), typingField.getStyle("Green"), true); 
+        if (currentRace.comparison(typingField.getText().length())){
+        javax.swing.text.Style style = typingField.addStyle("Green", null);
+        doc.setCharacterAttributes(typingField.getText().length()-1, typingField.getText().length(), typingField.getStyle("Green"), true); 
         }else{
-            javax.swing.text.Style style = typingField.addStyle("Red", null);
-        typingField.setForeground(Color.RED);
+         javax.swing.text.Style style = typingField.addStyle("Red", null);
          doc.setCharacterAttributes(typingField.getText().length()-1, typingField.getText().length(), typingField.getStyle("Red"), true); 
         }
     }
@@ -180,6 +182,7 @@ public class RacePanel extends javax.swing.JPanel {
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
+      
     });
 }
     /**
@@ -200,6 +203,7 @@ public class RacePanel extends javax.swing.JPanel {
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
+        GameOverField = new javax.swing.JLabel();
 
         setFont(new java.awt.Font("Courier New", 0, 14)); // NOI18N
 
@@ -232,9 +236,12 @@ public class RacePanel extends javax.swing.JPanel {
                         .addComponent(newRaceButton, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(23, 23, 23)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 467, Short.MAX_VALUE)
-                            .addComponent(jScrollPane2)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 974, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(194, 194, 194)
+                                .addComponent(jButton1))
+                            .addComponent(GameOverField, javax.swing.GroupLayout.PREFERRED_SIZE, 806, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(102, 102, 102)
                         .addComponent(jLabel1)
@@ -243,9 +250,9 @@ public class RacePanel extends javax.swing.JPanel {
                         .addGap(62, 62, 62)
                         .addComponent(jLabel3))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(217, 217, 217)
-                        .addComponent(jButton1)))
-                .addContainerGap(55, Short.MAX_VALUE))
+                        .addGap(160, 160, 160)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 226, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(429, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -255,15 +262,17 @@ public class RacePanel extends javax.swing.JPanel {
                     .addComponent(jLabel1)
                     .addComponent(jLabel2)
                     .addComponent(jLabel3))
-                .addGap(32, 32, 32)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(9, 9, 9)
+                .addGap(18, 18, 18)
+                .addComponent(GameOverField, javax.swing.GroupLayout.PREFERRED_SIZE, 456, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(34, 34, 34)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(239, 239, 239)
                 .addComponent(jButton1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(20, 20, 20)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(73, 73, 73)
                 .addComponent(newRaceButton, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(81, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -273,12 +282,29 @@ public class RacePanel extends javax.swing.JPanel {
         setRaceMode(isOn);
     }//GEN-LAST:event_newRaceButtonActionPerformed
 
+    
+    // End Game button is pressed
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
        isOn = false;
        setRaceMode(isOn);
     }//GEN-LAST:event_jButton1ActionPerformed
+    //Adds the statistics to the text area shown after the user types the last character
+    void updateText(String wpm,String ks, String m, String a) {
+       
+    StringBuilder finalString = new StringBuilder();
     
+    
+    finalString.append("WPM: ").append(wpm).append(" ");
+    finalString.append("Keystrokes: ").append(ks).append(" ");
+    finalString.append("Accuracy: ").append(a).append(" ");
+    finalString.append("Mistakes: ").append(m);
+            
+    GameOverField.setText(finalString.toString());
+    
+
+}
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel GameOverField;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

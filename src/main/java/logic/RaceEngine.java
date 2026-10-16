@@ -9,6 +9,8 @@ package logic;
  * @author maril
  */
 public class RaceEngine {
+    
+   
     //All the fields I use in the methods
     private String typedsnip = "";
     private final String targetText;
@@ -32,6 +34,7 @@ public class RaceEngine {
        It returns false if the last character is not the same as the one in the target text or if the typed snip is longer in characters than the target snip
        We will use this to determine the colors of the typed letters (green or red) and it also stops the user of continuing to write if he has typed something wrong
     */
+    //new TypedSnip is got from the isAccepted = currentRace.updateTypedSnip(typedsnip);
     public boolean updateTypedSnip(String newTypedSnip) {
         if (currentState == RaceState.FINISHED) {
             return false;
@@ -108,29 +111,29 @@ public class RaceEngine {
         return currentState;
     }
 //just a getter for the number keystrokes (used for the accuracy percentage)
-    public int getKeystrokes() {
-        return keystrokes;
+    public String getKeystrokes() {
+        return String.valueOf(keystrokes);
     }
 //just a getter for the number of mistakes (used for the accuracy percentage)
-    public int getMistakes() {
-        return mistakes;
+    public String getMistakes() {
+        return String.valueOf(mistakes);
     }
 // this is ta getter for the accuracy perfentage which is one of the stats we will display at the end of the game(it uses the number of keystrokes and mistakes)
-    public double getAccuracy() {
+    public String getAccuracy() {
         if (keystrokes == 0) {
-            return 100;
+            return ("100");
         }
         double keystrokesd = keystrokes;
         double percentage = 100 - (mistakes / keystrokesd) * 100;
-        return percentage;
+        return String.valueOf(percentage);
     }
 //Another gatter for the wpm. It uses the timer method to get the time. Nothing special i think you can understand this 
-    public double getWPM() {
+    public String getWPM() {
         long milliseconds = timer();
         double minutes = milliseconds / 60000.0;
         double words;
         if (milliseconds == 0 || typedsnip.isEmpty()) {
-            return 0;
+            return "Zero words per minute, exceptionally bad!";
         }
         boolean isCorrect = comparison(typedsnip.length() - 1);
         if (isCorrect) {
@@ -138,7 +141,12 @@ public class RaceEngine {
         } else {
             words = (typedsnip.length() - 1) / 5.0;
         }
-        return words / minutes;
+        
+       
+
+        String wpm = String.valueOf(words/minutes);
+        
+        return wpm;
     }
 
 }
