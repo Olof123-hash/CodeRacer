@@ -21,118 +21,131 @@ import javax.swing.text.DefaultStyledDocument;
  *
  * @author maril
  */
+
+//TODO CHANGE THE NAMES OF ALL BUTTONS AND CONTAINERS ETC ETC 
 public class RacePanel extends javax.swing.JPanel {
     
-    boolean isOn = false;
     
-
+    
+     public enum PanelState {
+        NOT_STARTED, RUNNING, FINISHED;
+    }
+    private PanelState currentPanel = PanelState.NOT_STARTED;
     /**
      * Creates new form RacePanel
      */
     
     //Initialize classes
-    private Database db;
+    
+    Database db = new Database();
     private RaceEngine currentRace;
+    
     
     public RacePanel() {
     //Built in java code
     initComponents();
-    //Calls racemode
-    setRaceMode(isOn);
-     }
     
-    //Creates all classes when this is ran
+    
+    typingField.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "none");
+    typingField.setTransferHandler(null);
+    typingField.getDocument().addDocumentListener(new MyDocumentListener());
+    //Calls racemode
+    
+    setRaceMode();
+}
+  
+    
+    //Method that handles what is visible on the UI
+    
+    private void setRaceMode () {
+      
+        
+   //Creates all classes when this is ran
+    
+    //Kind of obvious code, makes buttons and fields visible or invisible whether or not the user has pressed the play button.
+    snippetPane.setVisible(currentPanel == PanelState.RUNNING);
+    typingField.setVisible(currentPanel == PanelState.RUNNING );
+    jScrollPane1.setVisible(currentPanel == PanelState.RUNNING);
+    jScrollPane2.setVisible(currentPanel == PanelState.RUNNING);
+    jButton1.setVisible(currentPanel == PanelState.RUNNING );
+    jLabel1.setVisible(currentPanel == PanelState.RUNNING);
+    jLabel2.setVisible(currentPanel == PanelState.RUNNING);
+    jLabel3.setVisible(currentPanel == PanelState.RUNNING);
+    newRaceButton.setVisible(currentPanel == PanelState.FINISHED || currentPanel == PanelState.NOT_STARTED);
+  
+     
+   
+    //This is always going to be false no matter if the user has pressed the play button or not, this is only visible when the user has ended a game so before pressing the play button again
+    //GameOverField.setVisible(currentRace.currentState == RaceEngine.RaceState.FINNISHED);
+    }
+    
+    
+    
+       //Creates all classes when this is ran
     private void newGame () {
-       
-        //Creates Database object
-        db = new Database();
+        
+        
         // Calls the Snippet class and initializes it with a random snippet from the Database class. 
         Snippet snip= db.getRandomSnippet();
         //Creates a RaceEngine object by calling the RaceEngine constructor with the snippet from the previous lines.
         currentRace = new RaceEngine(snip.getBody());
-        
-        
         //Sets the text of the snippetPane with that of the current snippet
         snippetPane.setText(snip.getBody());
         
-        //Important code!! also reason for many many bugs 
-        typingField.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "none");
-        typingField.setTransferHandler(null);
-        typingField.getDocument().addDocumentListener(new MyDocumentListener());
-        
-        
+        //Sets the state to be running
+        currentPanel = PanelState.RUNNING;
+        setRaceMode();
     }
-    
-    //Method that handles what is visible on the UI
-    
-    private void setRaceMode (boolean isPlaying) {
-        
-   //Creates all classes when this is ran
-    if (isPlaying) {
-        newGame();   
-    }
-    
-    //Kind of obvious code, makes buttons and fields visible or invisible whether or not the user has pressed the play button.
-    snippetPane.setVisible(isPlaying);
-    typingField.setVisible(isPlaying);
-    jScrollPane1.setVisible(isPlaying);
-    jScrollPane2.setVisible(isPlaying);
-    jButton1.setVisible(isPlaying);
-    jLabel1.setVisible(isPlaying);
-    jLabel2.setVisible(isPlaying);
-    jLabel3.setVisible(isPlaying);
-    newRaceButton.setVisible(!isPlaying);
-    
-    //This is always going to be false no matter if the user has pressed the play button or not, this is only visible when the user has ended a game so before pressing the play button again
-    //GameOverField.setVisible(false);
-    
-   
-    
-   
-    }
-    
     
     private void gameOver () {
-        
-       isOn = false;
-       setRaceMode(isOn);
-       
-      
-       //GameOverField.setVisible(true);
-      
-    
+       currentPanel = PanelState.FINISHED;
+       typingField.setText("");
+       setRaceMode();
+       //GameOverField.setVisible(true)
     }
     /* We need to use the class below because a document listener is the only way for the program to understand the changes in the text the user types
     
     */
+    
+    
+    
+    
+    
+    
+    enum gameState {
+        NOT_STARTED, PLAYING, FINNISHED
+    }
     class MyDocumentListener implements DocumentListener {
         
-        
+        private boolean isAccepted;
 
         private void update(DocumentEvent e) {
             
+      
 
-           if (isOn) {
+           if (currentPanel == PanelState.RUNNING) {
+               
+    
             try {
                 
-                    if (currentRace.getState() == RaceEngine.RaceState.FINISHED) {
-                    gameOver();
-                    
-                    //Updates the (currently invisible) text area thats shown after the game with the statistics
-                    updateText(currentRace.getWPM(), currentRace.getKeystrokes(), currentRace.getMistakes(), currentRace.getAccuracy());
-                  
-                  
-                }
-               
-                
-                boolean isAccepted;
                 String typedsnip = typingField.getText(0, e.getDocument().getLength());
                 // calls a method in RaceEngine that returns true or false
                 isAccepted = currentRace.updateTypedSnip(typedsnip);
                 
+                
+               //research what this does!
                SwingUtilities.invokeLater(() -> {
                    
-                
+                       jLabel1.setText("WPM" + " " +  currentRace.getWPM());
+                       jLabel2.setText("Accuracy" + " " + currentRace.getAccuracy());
+                       jLabel3.setText("Mistakes" + " " + currentRace.getMistakes());
+                   
+                   if (currentRace.getState() == RaceEngine.RaceState.FINISHED) {
+                    gameOver();
+                    //Updates the (currently invisible) text area thats shown after the game with the statistics
+                    updateText(currentRace.getWPM(), currentRace.getKeystrokes(), currentRace.getMistakes(), currentRace.getAccuracy());
+                }
+                   
                 if (!isAccepted) {
                 // Calls a method in RaceEnginge that returns the typedsnip, so the text of the typingfield is now the typedSnip
                 typingField.setText(currentRace.getLastAcceptedText());
@@ -204,6 +217,7 @@ public class RacePanel extends javax.swing.JPanel {
         jLabel3 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
 
+        setForeground(new java.awt.Color(0, 0, 0));
         setFont(new java.awt.Font("Courier New", 0, 14)); // NOI18N
 
         snippetPane.setEditable(false);
@@ -276,15 +290,13 @@ public class RacePanel extends javax.swing.JPanel {
 
     //Start button is pressed
     private void newRaceButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newRaceButtonActionPerformed
-        isOn = true;
-        setRaceMode(isOn);
+        newGame();  
     }//GEN-LAST:event_newRaceButtonActionPerformed
 
     
     // End Game button is pressed
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-       isOn = false;
-       setRaceMode(isOn);
+       gameOver();
     }//GEN-LAST:event_jButton1ActionPerformed
     //Adds the statistics to the text area shown after the user types the last character
     void updateText(String wpm,String ks, String m, String a) {

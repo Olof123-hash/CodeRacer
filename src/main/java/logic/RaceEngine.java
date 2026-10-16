@@ -123,23 +123,23 @@ public class RaceEngine {
         if (keystrokes == 0) {
             return ("100");
         }
-        double keystrokesd = keystrokes;
-        double percentage = 100 - (mistakes / keystrokesd) * 100;
+        int keystrokesd = keystrokes;
+        int percentage = 100 - (mistakes / keystrokesd) * 100;
         return String.valueOf(percentage);
     }
 //Another gatter for the wpm. It uses the timer method to get the time. Nothing special i think you can understand this 
     public String getWPM() {
         long milliseconds = timer();
         double minutes = milliseconds / 60000.0;
-        double words;
+        int words;
         if (milliseconds == 0 || typedsnip.isEmpty()) {
-            return "Zero words per minute, exceptionally bad!";
+            return "0";
         }
         boolean isCorrect = comparison(typedsnip.length() - 1);
         if (isCorrect) {
-            words = typedsnip.length() / 5.0;
+            words = typedsnip.length() / 5;
         } else {
-            words = (typedsnip.length() - 1) / 5.0;
+            words = (typedsnip.length() - 1) / 5;
         }
         
        
