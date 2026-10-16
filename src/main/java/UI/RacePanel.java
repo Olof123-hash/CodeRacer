@@ -84,7 +84,7 @@ public class RacePanel extends javax.swing.JPanel {
     newRaceButton.setVisible(!isPlaying);
     
     //This is always going to be false no matter if the user has pressed the play button or not, this is only visible when the user has ended a game so before pressing the play button again
-    GameOverField.setVisible(false);
+    //GameOverField.setVisible(false);
     
    
     
@@ -98,7 +98,7 @@ public class RacePanel extends javax.swing.JPanel {
        setRaceMode(isOn);
        
       
-       GameOverField.setVisible(true);
+       //GameOverField.setVisible(true);
       
     
     }
@@ -203,7 +203,6 @@ public class RacePanel extends javax.swing.JPanel {
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
-        GameOverField = new javax.swing.JLabel();
 
         setFont(new java.awt.Font("Courier New", 0, 14)); // NOI18N
 
@@ -240,8 +239,7 @@ public class RacePanel extends javax.swing.JPanel {
                             .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 974, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(194, 194, 194)
-                                .addComponent(jButton1))
-                            .addComponent(GameOverField, javax.swing.GroupLayout.PREFERRED_SIZE, 806, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(jButton1))))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(102, 102, 102)
                         .addComponent(jLabel1)
@@ -262,9 +260,7 @@ public class RacePanel extends javax.swing.JPanel {
                     .addComponent(jLabel1)
                     .addComponent(jLabel2)
                     .addComponent(jLabel3))
-                .addGap(18, 18, 18)
-                .addComponent(GameOverField, javax.swing.GroupLayout.PREFERRED_SIZE, 456, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(34, 34, 34)
+                .addGap(508, 508, 508)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(239, 239, 239)
                 .addComponent(jButton1)
@@ -299,12 +295,11 @@ public class RacePanel extends javax.swing.JPanel {
     finalString.append("Accuracy: ").append(a).append(" ");
     finalString.append("Mistakes: ").append(m);
             
-    GameOverField.setText(finalString.toString());
+    //GameOverField.setText(finalString.toString());
     
 
 }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel GameOverField;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
