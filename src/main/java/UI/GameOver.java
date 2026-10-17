@@ -1,4 +1,18 @@
 package UI;
+import UI.RacePanel;
+import database.Database;
+import logic.RaceEngine;
+import model.Snippet;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.*;
+import javax.swing.text.BadLocationException;
+import java.awt.BorderLayout;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.awt.Color;
+import javax.swing.text.StyledDocument;
+import javax.swing.text.DefaultStyledDocument;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -12,12 +26,17 @@ package UI;
 public class GameOver extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(GameOver.class.getName());
+    public final RaceEngine currentRace;
 
     /**
      * Creates new form GameOver
      */
-    public GameOver() {
-        initComponents();
+    
+    //Constructor that takes the instance variable currentRace, then sets the text with the help of the get methods from RaceEnginge
+    public GameOver(RaceEngine currentRace) {
+         this.currentRace = currentRace;
+         initComponents();
+         GameOverField.setText("Accuracy " + " " + currentRace.getAccuracy() + " " + "Mistakes " + " " + currentRace.getMistakes() + " " + "WPM " + currentRace.getWPM());
     }
 
     /**
@@ -61,7 +80,7 @@ public class GameOver extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void GameOverFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GameOverFieldActionPerformed
-        // TODO add your handling code here:
+           // TODO add your handling code here:
     }//GEN-LAST:event_GameOverFieldActionPerformed
 
     /**
@@ -86,7 +105,7 @@ public class GameOver extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new GameOver().setVisible(true));
+        java.awt.EventQueue.invokeLater(() -> new GameOver(null).setVisible(true));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

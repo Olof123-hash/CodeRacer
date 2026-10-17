@@ -80,14 +80,22 @@ public class RaceEngine {
     public long timer() {
         if (currentState == RaceState.RUNNING) {
             long estimatedTime = System.currentTimeMillis() - startTime;
+            
             return estimatedTime;
-        } else if (currentState == RaceState.FINISHED) {
-            long estimatedTime = endTime - startTime;
-            return estimatedTime;
-        } else {
-            return 0;
         }
+        
+        if (currentState == RaceState.FINISHED) {
+            long estimatedTime = endTime - startTime;
+       
+            return estimatedTime;
+        } 
+        
+        
+        return 0;
+        
     }
+    
+    
 /* The comparison method is used to check whether or  not the character the user typed matches the equivalent character of the target snippet
     if it does match it, it is an accepted typed snip and the mthod returns true
     if it doesnt, it is a rejected typed snip nd it returns false
@@ -107,6 +115,11 @@ public class RaceEngine {
         return isCorrect;
     }
 //just a getter for the state 
+    
+    //Will return the integer version
+    public long getTime() {
+       return ((int) timer()/1000);
+    }
     public RaceState getState() {
         return currentState;
     }
@@ -119,34 +132,33 @@ public class RaceEngine {
         return String.valueOf(mistakes);
     }
 // this is ta getter for the accuracy perfentage which is one of the stats we will display at the end of the game(it uses the number of keystrokes and mistakes)
+    //This is currently bugged needs fixing
     public String getAccuracy() {
         if (keystrokes == 0) {
-            return ("100");
-        }
-        double keystrokesd = keystrokes;
-        double percentage = 100 - (mistakes / keystrokesd) * 100;
+            return ("0");
+        } else {
+        int keystrokesd = keystrokes;
+        int percentage = 100 - (mistakes / keystrokesd) * 100;
         return String.valueOf(percentage);
     }
+    }
 //Another gatter for the wpm. It uses the timer method to get the time. Nothing special i think you can understand this 
-    public String getWPM() {
+    //I changed some type conversion etc but this could be more readable / better so yeah
+    public long getWPM() {
         long milliseconds = timer();
-        double minutes = milliseconds / 60000.0;
-        double words;
+        
+        long words;
         if (milliseconds == 0 || typedsnip.isEmpty()) {
-            return "Zero words per minute, exceptionally bad!";
+            return 0;
         }
         boolean isCorrect = comparison(typedsnip.length() - 1);
         if (isCorrect) {
-            words = typedsnip.length() / 5.0;
+             words = (long) ((typedsnip.length() / 5) / (milliseconds / 60000.0));
         } else {
-            words = (typedsnip.length() - 1) / 5.0;
+            words = (long) ((long)((typedsnip.length() - 1) / 5) / (milliseconds / 60000.0));
         }
         
-       
-
-        String wpm = String.valueOf(words/minutes);
-        
-        return wpm;
+       return words;
     }
 
 }
