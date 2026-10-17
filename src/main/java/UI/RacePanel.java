@@ -11,6 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.awt.Color;
 import javax.swing.text.StyledDocument;
+
 import javax.swing.text.DefaultStyledDocument;
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -24,32 +25,40 @@ import javax.swing.text.DefaultStyledDocument;
 
 //TODO CHANGE THE NAMES OF ALL BUTTONS AND CONTAINERS ETC ETC 
 public class RacePanel extends javax.swing.JPanel {
+    
+    
+    
    
-     public enum PanelState {
+//Enumerator to handle the 3 different states that the player can be in
+    public enum PanelState {
         NOT_STARTED, RUNNING, FINISHED;
     }
+    //Sets the current panel state at the very start of the application being launched to not_started
     private PanelState currentPanel = PanelState.NOT_STARTED;
-    /**
-     * Creates new form RacePanel
-     */
-    
+    //Initializes the game over screen
+    private GameOver overWindow;
+    //Initializes the two methods responsible for the refreshing of the values when we dynamically display the statistics 
+    private javax.swing.Timer uiTimer;
+    private javax.swing.Timer uiTimer2;
     //Initialize classes
-    
     Database db = new Database();
-    private RaceEngine currentRace;
+    public RaceEngine currentRace;
     
+  
+    //Constructor
     public RacePanel() {
     //Built in java code
     initComponents();
     
+    //DocumentListener shit !Very important code
     typingField.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "none");
     typingField.setTransferHandler(null);
     typingField.getDocument().addDocumentListener(new MyDocumentListener());
-    //Calls racemode
     
+    //Calls racemode which is responsible for whats visible on the ui
     setRaceMode();
 }
-    //Method that handles what is visible on the UI
+    //The dictator of the ui
     private void setRaceMode () {
     //Kind of obvious code, makes buttons and fields visible or invisible whether or not the user has pressed the play button.
     snippetPane.setVisible(currentPanel == PanelState.RUNNING);
@@ -59,41 +68,87 @@ public class RacePanel extends javax.swing.JPanel {
     endRaceButton.setVisible(currentPanel == PanelState.RUNNING );
     wpmLabel.setVisible(currentPanel == PanelState.RUNNING);
     accuracyLabel.setVisible(currentPanel == PanelState.RUNNING);
-    mistakesLabel.setVisible(currentPanel == PanelState.RUNNING);
+    mistakesLabel.setVisible(currentPanel == PanelState.RUNNING);     
+    jLabel1.setVisible(currentPanel == PanelState.RUNNING);
     newRaceButton.setVisible(currentPanel == PanelState.FINISHED || currentPanel == PanelState.NOT_STARTED);
+    
     //This is always going to be false no matter if the user has pressed the play button or not, this is only visible when the user has ended a game so before pressing the play button again
     //GameOverField.setVisible(currentRace.currentState == RaceEngine.RaceState.FINNISHED);
     }
-       //Creates all classes when this is ran
-        private void newGame () {
+    
+    //This function is responsible for showing the statistics on screen, or more precisely this function is responsible for the refreshing of the functions that show the statistics on the screen
+    private void startUiTimer() {
+        uiTimer = new javax.swing.Timer(100, e -> updateLabels());
+        uiTimer2 = new javax.swing.Timer(500, e -> updateWPM());
+
+        uiTimer2.start();// every second
+        uiTimer.start(); // every 5 seconds but currently has some bugs or idk it feels like it refreshes faster thane very 5s
+    }
+    
+    
+       //is ran when the user presses the start button
+    private void newGame () {
         // Calls the Snippet class and initializes it with a random snippet from the Database class. 
         Snippet snip= db.getRandomSnippet();
         //Creates a RaceEngine object by calling the RaceEngine constructor with the snippet from the previous lines.
         currentRace = new RaceEngine(snip.getBody());
         //Sets the text of the snippetPane with that of the current snippet
         snippetPane.setText(snip.getBody());
+        //This calls the function that is responsible for showing statistics on the screen
+        startUiTimer();
         
         //Sets the state to be running
         currentPanel = PanelState.RUNNING;
         setRaceMode();
+        
+       // Closes the game over window if it exists
+       if (overWindow != null) {
+           overWindow.dispose();
+       }
     }
-    
+        
+    // is ran when the user presses the end race button
     private void gameOver () {
+       //changes the state of the race and calls the ui dictator
        currentPanel = PanelState.FINISHED;
+       //removes the typed text from the field
        typingField.setText("");
        setRaceMode();
+       
+       //makes the game over window visible with statistics
+       overWindow = new GameOver(currentRace);
+       overWindow.setVisible(true);
+       
+       
+       uiTimer.stop();
+       uiTimer2.stop();
        //GameOverField.setVisible(true)
     }
-    /* We need to use the class below because a document listener is the only way for the program to understand the changes in the text the user types
     
-    */
- 
-    enum gameState {
-        NOT_STARTED, PLAYING, FINNISHED
+    //Simple function that just uses the getter in RaceEnginge
+    private void updateWPM() {
+        if (currentPanel == PanelState.RUNNING) {
+        wpmLabel.setText("WPM" + " " +  currentRace.getWPM());
+        }
     }
+    
+    //Same here
+    private void updateLabels() {
+        if (currentPanel == PanelState.RUNNING) {
+        jLabel1.setText("Time" + " " + currentRace.getTime());
+        accuracyLabel.setText("Accuracy" + " " + currentRace.getAccuracy());
+        mistakesLabel.setText("Mistakes" + " " + currentRace.getMistakes());
+        }
+    }
+    /* We need to use the class below because a document listener is the only way for the program to understand the changes in the text the user types
+    */
+    //Heart of the code but this is familiar to you already
     class MyDocumentListener implements DocumentListener {
         
         private boolean isAccepted;
+        
+        
+         
 
         private void update(DocumentEvent e) {
           
@@ -108,15 +163,11 @@ public class RacePanel extends javax.swing.JPanel {
                 
                //research what this does!
                SwingUtilities.invokeLater(() -> {
-                   
-                       wpmLabel.setText("WPM" + " " +  currentRace.getWPM());
-                       accuracyLabel.setText("Accuracy" + " " + currentRace.getAccuracy());
-                       mistakesLabel.setText("Mistakes" + " " + currentRace.getMistakes());
-                   
+                      
                    if (currentRace.getState() == RaceEngine.RaceState.FINISHED) {
                     gameOver();
-                    //Updates the (currently invisible) text area thats shown after the game with the statistics
-                    updateText(currentRace.getWPM(), currentRace.getKeystrokes(), currentRace.getMistakes(), currentRace.getAccuracy());
+                 
+                    //updateText(currentRace.getWPM(), currentRace.getKeystrokes(), currentRace.getMistakes(), currentRace.getAccuracy());
                 }
                    
                 if (!isAccepted) {
@@ -189,6 +240,7 @@ public class RacePanel extends javax.swing.JPanel {
         accuracyLabel = new javax.swing.JLabel();
         mistakesLabel = new javax.swing.JLabel();
         endRaceButton = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
 
         setForeground(new java.awt.Color(0, 0, 0));
         setFont(new java.awt.Font("Courier New", 0, 14)); // NOI18N
@@ -211,6 +263,8 @@ public class RacePanel extends javax.swing.JPanel {
         endRaceButton.setText("End Race");
         endRaceButton.addActionListener(this::endRaceButtonActionPerformed);
 
+        jLabel1.setText("Time");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -221,24 +275,27 @@ public class RacePanel extends javax.swing.JPanel {
                         .addGap(186, 186, 186)
                         .addComponent(newRaceButton, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(217, 217, 217)
-                        .addComponent(endRaceButton))
-                    .addGroup(layout.createSequentialGroup()
                         .addGap(102, 102, 102)
                         .addComponent(wpmLabel)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(58, 58, 58)
-                                .addComponent(accuracyLabel)
-                                .addGap(62, 62, 62)
-                                .addComponent(mistakesLabel))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(3, 3, 3)
-                                .addComponent(snippetPan, javax.swing.GroupLayout.PREFERRED_SIZE, 786, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(22, 22, 22)
-                        .addComponent(typingPane, javax.swing.GroupLayout.PREFERRED_SIZE, 974, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(689, Short.MAX_VALUE))
+                        .addGap(58, 58, 58)
+                        .addComponent(accuracyLabel)
+                        .addGap(62, 62, 62)
+                        .addComponent(mistakesLabel)
+                        .addGap(42, 42, 42)
+                        .addComponent(jLabel1)))
+                .addContainerGap(1286, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(endRaceButton)
+                        .addGap(800, 800, 800))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(typingPane, javax.swing.GroupLayout.PREFERRED_SIZE, 974, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(315, 315, 315))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(snippetPan, javax.swing.GroupLayout.PREFERRED_SIZE, 786, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(420, 420, 420))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -247,14 +304,15 @@ public class RacePanel extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(wpmLabel)
                     .addComponent(accuracyLabel)
-                    .addComponent(mistakesLabel))
-                .addGap(160, 160, 160)
+                    .addComponent(mistakesLabel)
+                    .addComponent(jLabel1))
+                .addGap(260, 260, 260)
                 .addComponent(snippetPan, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(457, 457, 457)
+                .addGap(376, 376, 376)
                 .addComponent(endRaceButton)
-                .addGap(18, 18, 18)
+                .addGap(27, 27, 27)
                 .addComponent(typingPane, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(75, 75, 75)
+                .addGap(86, 86, 86)
                 .addComponent(newRaceButton, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -270,7 +328,9 @@ public class RacePanel extends javax.swing.JPanel {
     private void endRaceButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_endRaceButtonActionPerformed
        gameOver();
     }//GEN-LAST:event_endRaceButtonActionPerformed
-    //Adds the statistics to the text area shown after the user types the last character
+   
+    
+    //Right now does nothing since we dont have this textarea anymore, i kept it here because its easy to copy this method it acts as a good building block
     void updateText(String wpm,String ks, String m, String a) {
        
     StringBuilder finalString = new StringBuilder();
@@ -282,12 +342,16 @@ public class RacePanel extends javax.swing.JPanel {
     finalString.append("Mistakes: ").append(m);
             
     //GameOverField.setText(finalString.toString());
+}
+    
     
 
-}
+    
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel accuracyLabel;
     private javax.swing.JButton endRaceButton;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel mistakesLabel;
     private javax.swing.JButton newRaceButton;
     private javax.swing.JScrollPane snippetPan;
