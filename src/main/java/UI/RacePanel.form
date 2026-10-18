@@ -24,11 +24,6 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" alignment="1" attributes="0">
-              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
-              <Component id="endRaceButton" min="-2" max="-2" attributes="0"/>
-              <EmptySpace min="-2" pref="800" max="-2" attributes="0"/>
-          </Group>
           <Group type="102" attributes="0">
               <EmptySpace min="-2" pref="102" max="-2" attributes="0"/>
               <Component id="wpmLabel" min="-2" max="-2" attributes="0"/>
@@ -41,19 +36,20 @@
               <EmptySpace max="32767" attributes="0"/>
           </Group>
           <Group type="102" alignment="1" attributes="0">
-              <EmptySpace pref="900" max="32767" attributes="0"/>
+              <EmptySpace pref="503" max="32767" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="1" attributes="0">
-                      <Component id="snippetPan" min="-2" pref="786" max="-2" attributes="0"/>
+                      <Component id="newRaceButton" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="244" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="1" attributes="0">
+                          <Component id="typingPane" alignment="1" min="-2" pref="884" max="-2" attributes="0"/>
+                          <Component id="snippetPan" alignment="0" min="-2" pref="884" max="-2" attributes="0"/>
+                      </Group>
                       <EmptySpace min="-2" pref="420" max="-2" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="1" attributes="0">
-                      <Component id="typingPane" min="-2" pref="974" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="330" max="-2" attributes="0"/>
-                  </Group>
-                  <Group type="102" alignment="1" attributes="0">
-                      <Component id="newRaceButton" min="-2" pref="129" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="888" max="-2" attributes="0"/>
+                      <Component id="endRaceButton" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="830" max="-2" attributes="0"/>
                   </Group>
               </Group>
           </Group>
@@ -69,15 +65,21 @@
                   <Component id="mistakesLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace min="-2" pref="260" max="-2" attributes="0"/>
-              <Component id="snippetPan" min="-2" pref="181" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" attributes="0">
+                      <EmptySpace min="-2" pref="150" max="-2" attributes="0"/>
+                      <Component id="snippetPan" min="-2" pref="291" max="-2" attributes="0"/>
+                  </Group>
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace min="-2" pref="284" max="-2" attributes="0"/>
+                      <Component id="newRaceButton" min="-2" pref="51" max="-2" attributes="0"/>
+                  </Group>
+              </Group>
               <EmptySpace min="-2" pref="37" max="-2" attributes="0"/>
               <Component id="typingPane" min="-2" pref="48" max="-2" attributes="0"/>
-              <EmptySpace min="-2" pref="66" max="-2" attributes="0"/>
-              <Component id="newRaceButton" min="-2" pref="51" max="-2" attributes="0"/>
-              <EmptySpace min="-2" pref="174" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="166" max="-2" attributes="0"/>
               <Component id="endRaceButton" min="-2" max="-2" attributes="0"/>
-              <EmptySpace pref="203" max="32767" attributes="0"/>
+              <EmptySpace pref="321" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -102,6 +104,9 @@
     </Container>
     <Component class="javax.swing.JButton" name="newRaceButton">
       <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Algerian" size="14" style="1"/>
+        </Property>
         <Property name="text" type="java.lang.String" value="Start New Race"/>
       </Properties>
       <Events>
@@ -121,6 +126,9 @@
     </Container>
     <Component class="javax.swing.JLabel" name="wpmLabel">
       <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Perpetua Titling MT" size="18" style="1"/>
+        </Property>
         <Property name="text" type="java.lang.String" value="WPM"/>
       </Properties>
     </Component>
