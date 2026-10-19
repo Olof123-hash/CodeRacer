@@ -124,26 +124,29 @@ public class RaceEngine {
         return currentState;
     }
 //just a getter for the number keystrokes (used for the accuracy percentage)
-    public String getKeystrokes() {
-        return String.valueOf(keystrokes);
+    public int getKeystrokes() {
+        return (keystrokes);
     }
-//just a getter for the number of mistakes (used for the accuracy percentage)
-    public String getMistakes() {
-        return String.valueOf(mistakes);
+//just a getter for the number of mistakes (used for the mistakes counter)
+    public int getMistakes() {
+        return (mistakes);
     }
-// this is ta getter for the accuracy perfentage which is one of the stats we will display at the end of the game(it uses the number of keystrokes and mistakes)
-    //This is currently bugged needs fixing
-    public String getAccuracy() {
-        if (keystrokes == 0) {
-            return ("0");
-        } else {
-        int keystrokesd = keystrokes;
-        int percentage = 100 - (mistakes / keystrokesd) * 100;
-        return String.valueOf(percentage);
+
+    public double getAccuracy() {
+        
+        double keystrokesM = getKeystrokes();
+        double mistakes = getMistakes();
+        
+        if (keystrokesM == 0) {
+            return 0;
+        }
+    
+        return Math.round((100 - (mistakes/keystrokesM) * 100));
+        
+        
     }
-    }
+    
 //Another gatter for the wpm. It uses the timer method to get the time. Nothing special i think you can understand this 
-    //I changed some type conversion etc but this could be more readable / better so yeah
     public long getWPM() {
         long milliseconds = timer();
         

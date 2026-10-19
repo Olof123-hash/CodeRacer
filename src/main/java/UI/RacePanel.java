@@ -177,8 +177,8 @@ private final double height2 = 	0.071429;
     private void updateLabels() {
         if (currentPanel == PanelState.RUNNING) {
             jLabel1.setText("Time" + " " + currentRace.getTime());
-            accuracyLabel.setText("Accuracy" + " " + currentRace.getAccuracy());
             mistakesLabel.setText("Mistakes" + " " + currentRace.getMistakes());
+            accuracyLabel.setText("Accuracy" + " " + currentRace.getAccuracy() + "%");
         }
     }
 
