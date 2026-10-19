@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 import java.awt.Color;
 import javax.swing.text.StyledDocument;
 import javax.swing.text.DefaultStyledDocument;
+import javax.swing.BorderFactory;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -34,9 +35,49 @@ public class GameOver extends javax.swing.JFrame {
     
     //Constructor that takes the instance variable currentRace, then sets the text with the help of the get methods from RaceEnginge
     public GameOver(RaceEngine currentRace) {
+        //Look and feel of the stats pane 
+        setUndecorated(true);
+        getContentPane().setBackground(new Color(10, 5, 15));
+        getRootPane().setBorder(BorderFactory.createLineBorder(new Color(255, 20, 147), 2));
+        
          this.currentRace = currentRace;
          initComponents();
-         GameOverField.setText("Accuracy " + " " + currentRace.getAccuracy() + " " + "Mistakes " + " " + currentRace.getMistakes() + " " + "WPM " + currentRace.getWPM());
+         GameOverFieldWPM.setText("" + currentRace.getWPM());
+         GameOverFieldAccuracy.setText(currentRace.getAccuracy() + "");
+        GameOverFieldMistakes.setText("" + currentRace.getMistakes());
+        
+        //Dislay of WPM stats
+        GameOverFieldWPM.setForeground(Color.getHSBColor(0.90f, 1.0f, 1.0f));
+        GameOverFieldWPM.setOpaque(false);
+        GameOverFieldWPM.setBorder(null);
+        GameOverFieldWPM.setBackground(Color.black);
+        WPM.setForeground(Color.CYAN);
+        WPM.setOpaque(false);
+        WPM.setBorder(null);
+        
+        //Display of Accuracy stats
+         GameOverFieldAccuracy.setForeground(Color.getHSBColor(0.90f, 1.0f, 1.0f));
+        GameOverFieldAccuracy.setOpaque(false);
+        GameOverFieldAccuracy.setBorder(null);
+        GameOverFieldAccuracy.setBackground(Color.black);
+        Accuracy.setForeground(Color.CYAN);
+        Accuracy.setOpaque(false);
+        Accuracy.setBorder(null);
+        
+         //Display of Mistakes stats
+         GameOverFieldMistakes.setForeground(Color.getHSBColor(0.90f, 1.0f, 1.0f));
+        GameOverFieldMistakes.setOpaque(false);
+        GameOverFieldMistakes.setBorder(null);
+        GameOverFieldMistakes.setBackground(Color.black);
+        Mistakes.setForeground(Color.CYAN);
+        Mistakes.setOpaque(false);
+        Mistakes.setBorder(null);
+        
+        //display of title
+        Title.setOpaque(false);
+        Title.setBorder(null);
+        Title.setBackground(Color.black);
+        Title.setForeground(Color.CYAN);
     }
 
     /**
@@ -48,40 +89,88 @@ public class GameOver extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        GameOverField = new javax.swing.JTextField();
+        GameOverFieldWPM = new javax.swing.JTextField();
+        GameOverFieldAccuracy = new javax.swing.JTextField();
+        GameOverFieldMistakes = new javax.swing.JTextField();
+        WPM = new javax.swing.JLabel();
+        Accuracy = new javax.swing.JLabel();
+        Mistakes = new javax.swing.JLabel();
+        Title = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        GameOverField.setText("This is the second frame");
-        GameOverField.addActionListener(this::GameOverFieldActionPerformed);
+        GameOverFieldWPM.setText("This is the second frame");
+        GameOverFieldWPM.addActionListener(this::GameOverFieldWPMActionPerformed);
+
+        GameOverFieldAccuracy.setText("jTextField1");
+
+        GameOverFieldMistakes.setText("jTextField2");
+
+        WPM.setFont(new java.awt.Font("Consolas", 1, 14)); // NOI18N
+        WPM.setText("WPM");
+
+        Accuracy.setFont(new java.awt.Font("Consolas", 1, 14)); // NOI18N
+        Accuracy.setText("ACCURACY%");
+
+        Mistakes.setFont(new java.awt.Font("Consolas", 1, 14)); // NOI18N
+        Mistakes.setText("MISTAKES");
+
+        Title.setFont(new java.awt.Font("Consolas", 1, 24)); // NOI18N
+        Title.setText("Race Stats");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addGap(0, 0, Short.MAX_VALUE)
-                    .addComponent(GameOverField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGap(0, 0, Short.MAX_VALUE)))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(118, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(Title, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(Mistakes)
+                                .addGap(26, 26, 26))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(Accuracy)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(WPM)
+                                        .addGap(22, 22, 22)))
+                                .addGap(18, 18, 18)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(GameOverFieldMistakes, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(GameOverFieldAccuracy, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 1, Short.MAX_VALUE)
+                                .addComponent(GameOverFieldWPM, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                .addGap(134, 134, 134))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addGap(0, 0, Short.MAX_VALUE)
-                    .addComponent(GameOverField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGap(0, 0, Short.MAX_VALUE)))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(23, 23, 23)
+                .addComponent(Title, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(GameOverFieldWPM, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(WPM, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(28, 28, 28)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(GameOverFieldAccuracy, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(Accuracy, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(26, 26, 26)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(GameOverFieldMistakes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(Mistakes, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(88, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void GameOverFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GameOverFieldActionPerformed
+    private void GameOverFieldWPMActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GameOverFieldWPMActionPerformed
            // TODO add your handling code here:
-    }//GEN-LAST:event_GameOverFieldActionPerformed
+    }//GEN-LAST:event_GameOverFieldWPMActionPerformed
 
     /**
      * @param args the command line arguments
@@ -109,6 +198,12 @@ public class GameOver extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextField GameOverField;
+    private javax.swing.JLabel Accuracy;
+    private javax.swing.JTextField GameOverFieldAccuracy;
+    private javax.swing.JTextField GameOverFieldMistakes;
+    private javax.swing.JTextField GameOverFieldWPM;
+    private javax.swing.JLabel Mistakes;
+    private javax.swing.JLabel Title;
+    private javax.swing.JLabel WPM;
     // End of variables declaration//GEN-END:variables
 }

@@ -28,7 +28,12 @@ import javax.swing.text.StyleConstants;
  */
 //TODO CHANGE THE NAMES OF ALL BUTTONS AND CONTAINERS ETC ETC 
 public class RacePanel extends BackgroundPanel {
-
+private final double positionx = 0.10;
+private final double positiony = 0.271429;
+private final double width = 	0.666667;
+private final double height = 	0.142857;
+private final double positiony1 = 0.457143;
+private final double height2 = 	0.071429;
 //Enumerator to handle the 3 different states that the player can be in
     public enum PanelState {
         NOT_STARTED, RUNNING, FINISHED;
@@ -48,6 +53,18 @@ public class RacePanel extends BackgroundPanel {
     public RacePanel() {
         //Built in java code
         initComponents();
+        //display of end race button
+        endRaceButton.setOpaque(false);
+        endRaceButton.setBorder(null);
+        endRaceButton.setBorderPainted(false);
+        endRaceButton.setContentAreaFilled(true);
+        endRaceButton.setBackground(Color.BLACK);
+        endRaceButton.setForeground(Color.RED);
+        //display of stats labels
+        wpmLabel.setForeground(Color.WHITE);
+        accuracyLabel.setForeground(Color.WHITE);
+        mistakesLabel.setForeground(Color.WHITE);
+        jLabel1.setForeground(Color.WHITE);
         //dispay of snippetPane
         snippetPane.setOpaque(false);
         snippetPane.setBorder(null);
@@ -64,11 +81,11 @@ public class RacePanel extends BackgroundPanel {
         typingField.setCaretColor(Color.PINK);
         //display of startbutton
         newRaceButton.setFocusPainted(false);
-        newRaceButton.setOpaque(true);
+        newRaceButton.setOpaque(false);
         newRaceButton.setBorderPainted(false);
         newRaceButton.setContentAreaFilled(true);
         newRaceButton.setBackground(Color.BLACK);
-        newRaceButton.setForeground(Color.MAGENTA);
+        newRaceButton.setForeground(Color.getHSBColor(0.90f, 1.0f, 1.0f));
         //DocumentListener shit !Very important code
         typingField.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "none");
         typingField.setTransferHandler(null);
@@ -95,6 +112,7 @@ public class RacePanel extends BackgroundPanel {
         if(name){
             setImage();
         }
+        revalidate();
         //This is always going to be false no matter if the user has pressed the play button or not, this is only visible when the user has ended a game so before pressing the play button again
         //GameOverField.setVisible(currentRace.currentState == RaceEngine.RaceState.FINNISHED);
     }
@@ -220,7 +238,29 @@ public class RacePanel extends BackgroundPanel {
         public void changedUpdate(DocumentEvent e) {
         }
     }
-
+    
+@Override
+public void doLayout() {
+    super.doLayout(); // let the designer layout do its normal work first
+    if (currentPanel!= PanelState.NOT_STARTED &&currentPanel!= PanelState.FINISHED){
+        int x = (int) (getWidth()*positionx);
+        int y =(int)(getHeight()*positiony);
+        int width1= (int) (width*getWidth());
+        int height1= (int) (height*getHeight());
+        snippetPan.setBounds(x, y,width1,height1);
+        
+        x = (int) (getWidth()*positionx);
+        y =(int)(getHeight()*positiony1);
+        width1= (int) (width*getWidth());
+        height1= (int) (height2*getHeight());
+        typingPane.setBounds(x, y,width1,height1);
+                }
+    if (currentPanel != PanelState.RUNNING) {
+        int x = (getWidth() - newRaceButton.getWidth()) / 2;
+        int y = (getHeight() - newRaceButton.getHeight()) / 2;
+        newRaceButton.setLocation(x, y);
+    }
+}
     //Method that colours the text 
     private void colorTypingField() {
         String acceptedText = currentRace.getLastAcceptedText();
@@ -276,79 +316,45 @@ public class RacePanel extends BackgroundPanel {
 
         setForeground(new java.awt.Color(0, 0, 0));
         setFont(new java.awt.Font("Courier New", 0, 14)); // NOI18N
+        setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         snippetPane.setEditable(false);
-        snippetPane.setFont(new java.awt.Font("Courier New", 0, 18)); // NOI18N
+        snippetPane.setFont(new java.awt.Font("Consolas", 0, 28)); // NOI18N
         snippetPan.setViewportView(snippetPane);
 
-        newRaceButton.setFont(new java.awt.Font("Algerian", 1, 14)); // NOI18N
-        newRaceButton.setText("Start New Race");
-        newRaceButton.addActionListener(this::newRaceButtonActionPerformed);
+        add(snippetPan, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 190, 800, 100));
 
+        newRaceButton.setFont(new java.awt.Font("Consolas", 0, 18)); // NOI18N
+        newRaceButton.setText("Start New Race");
+        newRaceButton.setAlignmentX(0.5F);
+        newRaceButton.addActionListener(this::newRaceButtonActionPerformed);
+        add(newRaceButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 270, -1, 51));
+
+        typingField.setFont(new java.awt.Font("Consolas", 0, 24)); // NOI18N
         typingPane.setViewportView(typingField);
+
+        add(typingPane, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 320, 800, 50));
 
         wpmLabel.setFont(new java.awt.Font("Perpetua Titling MT", 1, 18)); // NOI18N
         wpmLabel.setText("WPM");
+        add(wpmLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(102, 62, -1, -1));
 
+        accuracyLabel.setFont(new java.awt.Font("Perpetua Titling MT", 1, 18)); // NOI18N
         accuracyLabel.setText("Time");
+        add(accuracyLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 60, -1, -1));
 
+        mistakesLabel.setFont(new java.awt.Font("Perpetua Titling MT", 1, 18)); // NOI18N
         mistakesLabel.setText("Accuracy");
+        add(mistakesLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 60, -1, -1));
 
+        endRaceButton.setFont(new java.awt.Font("Consolas", 1, 18)); // NOI18N
         endRaceButton.setText("End Race");
         endRaceButton.addActionListener(this::endRaceButtonActionPerformed);
+        add(endRaceButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 460, -1, -1));
 
+        jLabel1.setFont(new java.awt.Font("Perpetua Titling MT", 1, 18)); // NOI18N
         jLabel1.setText("Time");
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(102, 102, 102)
-                .addComponent(wpmLabel)
-                .addGap(58, 58, 58)
-                .addComponent(accuracyLabel)
-                .addGap(62, 62, 62)
-                .addComponent(mistakesLabel)
-                .addGap(42, 42, 42)
-                .addComponent(jLabel1)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(503, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(newRaceButton)
-                        .addGap(244, 244, 244)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(typingPane, javax.swing.GroupLayout.PREFERRED_SIZE, 884, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(snippetPan, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 884, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(420, 420, 420))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(endRaceButton)
-                        .addGap(830, 830, 830))))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(62, 62, 62)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(wpmLabel)
-                    .addComponent(accuracyLabel)
-                    .addComponent(mistakesLabel)
-                    .addComponent(jLabel1))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(150, 150, 150)
-                        .addComponent(snippetPan, javax.swing.GroupLayout.PREFERRED_SIZE, 291, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(284, 284, 284)
-                        .addComponent(newRaceButton, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(37, 37, 37)
-                .addComponent(typingPane, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(166, 166, 166)
-                .addComponent(endRaceButton)
-                .addContainerGap(321, Short.MAX_VALUE))
-        );
+        add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(680, 60, -1, -1));
     }// </editor-fold>//GEN-END:initComponents
 
     //Start button is pressed
