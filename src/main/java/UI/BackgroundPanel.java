@@ -18,7 +18,8 @@ import java.awt.GridBagLayout;
  * @author maril
  */
 public class BackgroundPanel extends JPanel {
-     boolean showImage=true;
+
+    boolean showImage = true;
     BufferedImage image;
 
     public BackgroundPanel() {
@@ -30,15 +31,16 @@ public class BackgroundPanel extends JPanel {
             image = null;
         }
     }
-    public void setImage(){
-        showImage=true;
+
+    public void setImage() {
+        showImage = true;
         repaint();
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        if (image != null && showImage!=false) {
+        if (image != null && showImage != false) {
             g.drawImage(image, 0, 0, getWidth(), getHeight(), this);
         } else {
             g.setColor(new Color(10, 5, 15));

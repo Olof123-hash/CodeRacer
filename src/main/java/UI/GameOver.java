@@ -1,51 +1,38 @@
 package UI;
-import UI.RacePanel;
-import database.Database;
+
 import logic.RaceEngine;
-import model.Snippet;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.*;
-import javax.swing.text.BadLocationException;
-import java.awt.BorderLayout;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.awt.Color;
-import javax.swing.text.StyledDocument;
-import javax.swing.text.DefaultStyledDocument;
 import javax.swing.BorderFactory;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-
 /**
  *
  * @author olof
  */
 public class GameOver extends javax.swing.JFrame {
-    
+
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(GameOver.class.getName());
     public final RaceEngine currentRace;
 
     /**
      * Creates new form GameOver
      */
-    
     //Constructor that takes the instance variable currentRace, then sets the text with the help of the get methods from RaceEnginge
     public GameOver(RaceEngine currentRace) {
         //Look and feel of the stats pane 
         setUndecorated(true);
         getContentPane().setBackground(new Color(10, 5, 15));
         getRootPane().setBorder(BorderFactory.createLineBorder(new Color(255, 20, 147), 2));
-        
-         this.currentRace = currentRace;
-         initComponents();
-         GameOverFieldWPM.setText("" + currentRace.getWPM());
-         GameOverFieldAccuracy.setText(currentRace.getAccuracy() + "");
+
+        this.currentRace = currentRace;
+        initComponents();
+        GameOverFieldWPM.setText("" + currentRace.getWPM());
+        GameOverFieldAccuracy.setText(currentRace.getAccuracy() + "");
         GameOverFieldMistakes.setText("" + currentRace.getMistakes());
-        
+
         //Dislay of WPM stats
         GameOverFieldWPM.setForeground(Color.getHSBColor(0.90f, 1.0f, 1.0f));
         GameOverFieldWPM.setOpaque(false);
@@ -54,25 +41,25 @@ public class GameOver extends javax.swing.JFrame {
         WPM.setForeground(Color.CYAN);
         WPM.setOpaque(false);
         WPM.setBorder(null);
-        
+
         //Display of Accuracy stats
-         GameOverFieldAccuracy.setForeground(Color.getHSBColor(0.90f, 1.0f, 1.0f));
+        GameOverFieldAccuracy.setForeground(Color.getHSBColor(0.90f, 1.0f, 1.0f));
         GameOverFieldAccuracy.setOpaque(false);
         GameOverFieldAccuracy.setBorder(null);
         GameOverFieldAccuracy.setBackground(Color.black);
         Accuracy.setForeground(Color.CYAN);
         Accuracy.setOpaque(false);
         Accuracy.setBorder(null);
-        
-         //Display of Mistakes stats
-         GameOverFieldMistakes.setForeground(Color.getHSBColor(0.90f, 1.0f, 1.0f));
+
+        //Display of Mistakes stats
+        GameOverFieldMistakes.setForeground(Color.getHSBColor(0.90f, 1.0f, 1.0f));
         GameOverFieldMistakes.setOpaque(false);
         GameOverFieldMistakes.setBorder(null);
         GameOverFieldMistakes.setBackground(Color.black);
         Mistakes.setForeground(Color.CYAN);
         Mistakes.setOpaque(false);
         Mistakes.setBorder(null);
-        
+
         //display of title
         Title.setOpaque(false);
         Title.setBorder(null);
@@ -172,7 +159,7 @@ public class GameOver extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void GameOverFieldWPMActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GameOverFieldWPMActionPerformed
-           // TODO add your handling code here:
+        // TODO add your handling code here:
     }//GEN-LAST:event_GameOverFieldWPMActionPerformed
 
     /**

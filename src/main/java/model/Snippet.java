@@ -4,7 +4,6 @@
  */
 package model;
 
-
 /**
  *
  * @author maril

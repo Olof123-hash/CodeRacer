@@ -1,5 +1,4 @@
 package UI;
-
 import database.Database;
 import logic.RaceEngine;
 import model.Snippet;
@@ -7,13 +6,11 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
-import java.awt.BorderLayout;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.awt.Color;
 import javax.swing.text.StyledDocument;
 import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.DefaultStyledDocument;
 import logic.RaceEngine.RaceState;
 import javax.swing.text.StyleConstants;
 
@@ -21,20 +18,21 @@ import javax.swing.text.StyleConstants;
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
  */
-
 /**
  *
  * @author maril
  */
 //TODO CHANGE THE NAMES OF ALL BUTTONS AND CONTAINERS ETC ETC 
 public class RacePanel extends BackgroundPanel {
-private final double positionx = 0.10;
-private final double positiony = 0.271429;
-private final double width = 	0.666667;
-private final double height = 	0.142857;
-private final double positiony1 = 0.457143;
-private final double height2 = 	0.071429;
+
+    private final double positionx = 0.10;
+    private final double positiony = 0.271429;
+    private final double width = 0.666667;
+    private final double height = 0.142857;
+    private final double positiony1 = 0.457143;
+    private final double height2 = 0.071429;
 //Enumerator to handle the 3 different states that the player can be in
+
     public enum PanelState {
         NOT_STARTED, RUNNING, FINISHED;
     }
@@ -109,7 +107,7 @@ private final double height2 = 	0.071429;
         jLabel1.setVisible(currentPanel == PanelState.RUNNING);
         newRaceButton.setVisible(currentPanel == PanelState.FINISHED || currentPanel == PanelState.NOT_STARTED);
         boolean name = currentPanel == PanelState.NOT_STARTED;
-        if(name){
+        if (name) {
             setImage();
         }
         revalidate();
@@ -140,10 +138,10 @@ private final double height2 = 	0.071429;
         //Sets the state to be running
         currentPanel = PanelState.RUNNING;
         setRaceMode();
-        
+
         //this line makes the player able to type immediately without having to click in the typing area
         typingField.requestFocusInWindow();
-        
+
         // Closes the game over window if it exists
         if (overWindow != null) {
             overWindow.dispose();
@@ -238,29 +236,30 @@ private final double height2 = 	0.071429;
         public void changedUpdate(DocumentEvent e) {
         }
     }
-    
-@Override
-public void doLayout() {
-    super.doLayout(); // let the designer layout do its normal work first
-    if (currentPanel!= PanelState.NOT_STARTED &&currentPanel!= PanelState.FINISHED){
-        int x = (int) (getWidth()*positionx);
-        int y =(int)(getHeight()*positiony);
-        int width1= (int) (width*getWidth());
-        int height1= (int) (height*getHeight());
-        snippetPan.setBounds(x, y,width1,height1);
-        
-        x = (int) (getWidth()*positionx);
-        y =(int)(getHeight()*positiony1);
-        width1= (int) (width*getWidth());
-        height1= (int) (height2*getHeight());
-        typingPane.setBounds(x, y,width1,height1);
-                }
-    if (currentPanel != PanelState.RUNNING) {
-        int x = (getWidth() - newRaceButton.getWidth()) / 2;
-        int y = (getHeight() - newRaceButton.getHeight()) / 2;
-        newRaceButton.setLocation(x, y);
+
+    @Override
+    public void doLayout() {
+        super.doLayout(); // let the designer layout do its normal work first
+        if (currentPanel != PanelState.NOT_STARTED && currentPanel != PanelState.FINISHED) {
+            int x = (int) (getWidth() * positionx);
+            int y = (int) (getHeight() * positiony);
+            int width1 = (int) (width * getWidth());
+            int height1 = (int) (height * getHeight());
+            snippetPan.setBounds(x, y, width1, height1);
+
+            x = (int) (getWidth() * positionx);
+            y = (int) (getHeight() * positiony1);
+            width1 = (int) (width * getWidth());
+            height1 = (int) (height2 * getHeight());
+            typingPane.setBounds(x, y, width1, height1);
+        }
+        if (currentPanel != PanelState.RUNNING) {
+            int x = (getWidth() - newRaceButton.getWidth()) / 2;
+            int y = (getHeight() - newRaceButton.getHeight()) / 2;
+            newRaceButton.setLocation(x, y);
+        }
     }
-}
+
     //Method that colours the text 
     private void colorTypingField() {
         String acceptedText = currentRace.getLastAcceptedText();
