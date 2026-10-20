@@ -99,11 +99,14 @@ public class GameOver extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
+        GameOverFieldWPM.setEditable(false);
         GameOverFieldWPM.setText("This is the second frame");
         GameOverFieldWPM.addActionListener(this::GameOverFieldWPMActionPerformed);
 
+        GameOverFieldAccuracy.setEditable(false);
         GameOverFieldAccuracy.setText("jTextField1");
 
+        GameOverFieldMistakes.setEditable(false);
         GameOverFieldMistakes.setText("jTextField2");
 
         WPM.setFont(new java.awt.Font("Consolas", 1, 14)); // NOI18N
