@@ -85,7 +85,7 @@ public class RacePanel extends BackgroundPanel {
         newRaceButton.setBackground(Color.BLACK);
         newRaceButton.setForeground(Color.getHSBColor(0.90f, 1.0f, 1.0f));
         //DocumentListener shit !Very important code
-        typingField.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "none");
+        
         typingField.setTransferHandler(null);
         typingField.getDocument().addDocumentListener(new MyDocumentListener());
 
