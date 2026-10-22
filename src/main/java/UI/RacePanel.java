@@ -5,10 +5,21 @@ import model.Snippet;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultEditorKit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Insets;
+import java.awt.Rectangle;
 import javax.swing.text.StyledDocument;
 import javax.swing.text.SimpleAttributeSet;
 import logic.RaceEngine.RaceState;
@@ -25,12 +36,14 @@ import javax.swing.text.StyleConstants;
 //TODO CHANGE THE NAMES OF ALL BUTTONS AND CONTAINERS ETC ETC 
 public class RacePanel extends BackgroundPanel {
 
-    private final double positionx = 0.10;
-    private final double positiony = 0.271429;
-    private final double width = 0.666667;
-    private final double height = 0.142857;
-    private final double positiony1 = 0.457143;
-    private final double height2 = 0.071429;
+    //The font that is used for the snippet and for the typing field
+    private static final String CODE_FONT = "Consolas";
+    //The biggest font size the snippet is allowed to have
+    private static final int MAX_SNIPPET_FONT = 28;
+    //The smallest font size the snippet is allowed to have, below this the text is unreadable
+    private static final int MIN_SNIPPET_FONT = 8;
+    //The space that is kept below the end race button
+    private static final int BOTTOM_MARGIN = 15;
 //Enumerator to handle the 3 different states that the player can be in
 
     public enum PanelState {
@@ -46,6 +59,8 @@ public class RacePanel extends BackgroundPanel {
     //Initialize classes
     Database db = new Database();
     public RaceEngine currentRace;
+    //The size of the layout as it is defined in the designer, the layout is scaled with this size
+    private Dimension baseSize;
 
     //Constructor
     public RacePanel() {
@@ -88,9 +103,21 @@ public class RacePanel extends BackgroundPanel {
         
         typingField.setTransferHandler(null);
         typingField.getDocument().addDocumentListener(new MyDocumentListener());
+        //Enter jumps to the first word of the next line instead of leaving the caret on its indentation
+        installEnterKeyBinding();
+        //The snippet is always scaled to fit its pane, so the font has to be recalculated when the window is resized
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                SwingUtilities.invokeLater(RacePanel.this::fitSnippetFont);
+            }
+        });
 
         //Calls racemode which is responsible for whats visible on the ui
         setRaceMode();
+        //The size of the layout of the designer, it is used to scale the layout when the window is resized.
+        //It is taken after the components are styled, because that can change their size.
+        baseSize = getPreferredSize();
     }
 
     //The dictator of the ui
@@ -111,6 +138,8 @@ public class RacePanel extends BackgroundPanel {
             setImage();
         }
         revalidate();
+        //The components that were hidden or shown have to be painted again
+        repaint();
         //This is always going to be false no matter if the user has pressed the play button or not, this is only visible when the user has ended a game so before pressing the play button again
         //GameOverField.setVisible(currentRace.currentState == RaceEngine.RaceState.FINNISHED);
     }
@@ -132,6 +161,10 @@ public class RacePanel extends BackgroundPanel {
         currentRace = new RaceEngine(snip.getBody());
         //Sets the text of the snippetPane with that of the current snippet
         snippetPane.setText(snip.getBody());
+        //Removes the text of the previous race from the typing field
+        typingField.setText("");
+        //Scales the font of the snippet so that the whole snippet fits in the snippet pane without scrolling
+        SwingUtilities.invokeLater(this::fitSnippetFont);
         //This calls the function that is responsible for showing statistics on the screen
         startUiTimer();
 
@@ -139,13 +172,14 @@ public class RacePanel extends BackgroundPanel {
         currentPanel = PanelState.RUNNING;
         setRaceMode();
 
-        //this line makes the player able to type immediately without having to click in the typing area
-        typingField.requestFocusInWindow();
-
-        // Closes the game over window if it exists
+        // Closes the game over window if it exists, this has to happen before the focus is requested
+        //because the focus can only be given to a window that is the active one
         if (overWindow != null) {
             overWindow.dispose();
         }
+
+        //this line makes the player able to type immediately without having to click in the typing area
+        SwingUtilities.invokeLater(() -> typingField.requestFocusInWindow());
     }
 
     private void gameOver() {
@@ -162,6 +196,56 @@ public class RacePanel extends BackgroundPanel {
         uiTimer.stop();
         uiTimer2.stop();
         //GameOverField.setVisible(true)
+    }
+
+    /* Replaces the normal behaviour of the Enter key. Normally Enter only inserts a newline, which would leave the
+       caret at the start of the next line, in front of its indentation. The user would then have to type all the
+       spaces/tabs of that indentation before reaching the first word. This binding inserts the newline and that
+       indentation in one go, so the caret jumps straight to the first character of the next line, like in a code editor.
+     */
+    private void installEnterKeyBinding() {
+        InputMap inputMap = typingField.getInputMap(JComponent.WHEN_FOCUSED);
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "enterToNextLine");
+        typingField.getActionMap().put("enterToNextLine", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+                if (!insertEnterToNextLine()) {
+                    //Not at the end of a line, so Enter keeps its normal behaviour
+                    Action defaultAction = typingField.getActionMap().get(DefaultEditorKit.insertBreakAction);
+                    if (defaultAction != null) {
+                        defaultAction.actionPerformed(evt);
+                    }
+                }
+            }
+        });
+    }
+
+    /**
+     * Inserts the newline and the indentation of the next snippet line as one block. Returns false when the
+     * caret is not at the end of a snippet line, in that case the caller inserts a normal newline.
+     */
+    private boolean insertEnterToNextLine() {
+        if (currentPanel != PanelState.RUNNING || currentRace == null) {
+            return false;
+        }
+        //The game always appends text at the end, so only auto indent when the caret is there too
+        if (typingField.getSelectionStart() != typingField.getSelectionEnd()
+                || typingField.getCaretPosition() != typingField.getDocument().getLength()) {
+            return false;
+        }
+        String insertion = currentRace.getEnterInsertion();
+        if (insertion == null) {
+            return false;
+        }
+        try {
+            typingField.getDocument().insertString(typingField.getCaretPosition(), insertion, null);
+        } catch (BadLocationException ex) {
+            Logger.getLogger(RacePanel.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+        //Places the caret after the indentation, so it is on the first word of the next line
+        typingField.setCaretPosition(typingField.getDocument().getLength());
+        return true;
     }
 
     //Simple function that just uses the getter in RaceEnginge
@@ -240,24 +324,158 @@ public class RacePanel extends BackgroundPanel {
     @Override
     public void doLayout() {
         super.doLayout(); // let the designer layout do its normal work first
-        if (currentPanel != PanelState.NOT_STARTED && currentPanel != PanelState.FINISHED) {
-            int x = (int) (getWidth() * positionx);
-            int y = (int) (getHeight() * positiony);
-            int width1 = (int) (width * getWidth());
-            int height1 = (int) (height * getHeight());
-            snippetPan.setBounds(x, y, width1, height1);
-
-            x = (int) (getWidth() * positionx);
-            y = (int) (getHeight() * positiony1);
-            width1 = (int) (width * getWidth());
-            height1 = (int) (height2 * getHeight());
-            typingPane.setBounds(x, y, width1, height1);
-        }
+        //The bounds of the snippet and the typing pane come from the designer (.form file), they are
+        //only scaled here so that the layout keeps working when the window is resized.
+        scaleLayout();
+        //The button that is in use is centered in the panel, the other one is hidden
         if (currentPanel != PanelState.RUNNING) {
             int x = (getWidth() - newRaceButton.getWidth()) / 2;
             int y = (getHeight() - newRaceButton.getHeight()) / 2;
             newRaceButton.setLocation(x, y);
+        } else {
+            int x = (getWidth() - endRaceButton.getWidth()) / 2;
+            int y = getHeight() - endRaceButton.getHeight() - BOTTOM_MARGIN;
+            endRaceButton.setLocation(x, y);
         }
+    }
+
+    /**
+     * Scales the layout of the designer (.form file) with the size of the panel, so the whole
+     * layout grows and shrinks with the window instead of only the background.
+     */
+    private void scaleLayout() {
+        if (baseSize == null || baseSize.width <= 0 || baseSize.height <= 0) {
+            return;
+        }
+        double scaleX = (double) getWidth() / baseSize.width;
+        double scaleY = (double) getHeight() / baseSize.height;
+        if (scaleX == 1.0 && scaleY == 1.0) {
+            return;
+        }
+        for (Component component : getComponents()) {
+            Rectangle bounds = component.getBounds();
+            component.setBounds(
+                    (int) Math.round(bounds.x * scaleX),
+                    (int) Math.round(bounds.y * scaleY),
+                    Math.max(1, (int) Math.round(bounds.width * scaleX)),
+                    Math.max(1, (int) Math.round(bounds.height * scaleY)));
+        }
+    }
+
+    /**
+     * Scales the font of the snippet pane so that the whole snippet is always visible without scrolling.
+     * The font starts at the biggest size and is made smaller until the text fits in the pane.
+     * The text is centered in the pane and the typing field uses the same font and the same border,
+     * so that the text the user types lines up with the snippet.
+     */
+    private void fitSnippetFont() {
+        String text = snippetPane.getText();
+        if (text == null || text.isEmpty()) {
+            return;
+        }
+        //Splits the snippet into its lines
+        String[] lines = text.split("\n", -1);
+        //The border is used to center the text, it is empty while the font is fitted
+        snippetPane.setBorder(BorderFactory.createEmptyBorder());
+        typingField.setBorder(BorderFactory.createEmptyBorder());
+        //The snippet pane does not scroll, the font is scaled instead
+        snippetPan.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
+        snippetPan.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        //Makes the visible area of the pane match the new scrollbar policy
+        snippetPan.doLayout();
+        //Tries the biggest font first and makes it smaller until the snippet fits in the pane
+        int size = MAX_SNIPPET_FONT;
+        boolean fits = false;
+        FontMetrics metrics = null;
+        int textWidth = 0;
+        while (size >= MIN_SNIPPET_FONT) {
+            metrics = snippetPane.getFontMetrics(new Font(CODE_FONT, Font.PLAIN, size));
+            textWidth = widestLine(metrics, lines);
+            if (fitsInPane(metrics, textWidth, lines.length)) {
+                fits = true;
+                break;
+            }
+            size--;
+        }
+        if (!fits) {
+            //The snippet is too big even for the smallest font, so the pane is allowed to scroll after all
+            size = MIN_SNIPPET_FONT;
+            metrics = snippetPane.getFontMetrics(new Font(CODE_FONT, Font.PLAIN, size));
+            textWidth = widestLine(metrics, lines);
+            snippetPan.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+            snippetPan.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        }
+        //Applies the font to the snippet, the font is only set when it really changed to avoid a loop of repaints
+        Font snippetFont = new Font(CODE_FONT, Font.PLAIN, size);
+        if (!snippetFont.equals(snippetPane.getFont())) {
+            snippetPane.setFont(snippetFont);
+        }
+        //The typing field uses the same font size, so the text lines up with the snippet
+        Font typingFont = new Font(CODE_FONT, Font.PLAIN, size);
+        if (!typingFont.equals(typingField.getFont())) {
+            typingField.setFont(typingFont);
+        }
+        //Centers the text of the snippet and of the typing field in their panes
+        centerText(metrics, textWidth, lines.length);
+    }
+
+    /**
+     * Returns the width of the widest line of the snippet.
+     */
+    private int widestLine(FontMetrics metrics, String[] lines) {
+        int width = 0;
+        for (String line : lines) {
+            width = Math.max(width, metrics.stringWidth(line));
+        }
+        return width;
+    }
+
+    /**
+     * Centers the text in the snippet pane and in the typing field. This is done with an empty border
+     * around the text, the text itself stays left aligned, so that the text the user types lines up
+     * with the lines of the snippet.
+     */
+    private void centerText(FontMetrics metrics, int textWidth, int lineCount) {
+        int textHeight = lineCount * metrics.getHeight();
+        //Both panes have the same width, so the text starts at the same place in both of them
+        Dimension snippetVisible = visibleSize(snippetPan);
+        int left = Math.max(0, (snippetVisible.width - textWidth) / 2);
+        //Every pane centers the text in its own height
+        int snippetTop = Math.max(0, (snippetVisible.height - textHeight) / 2);
+        snippetPane.setBorder(BorderFactory.createEmptyBorder(snippetTop, left, 0, 0));
+        Dimension typingVisible = visibleSize(typingPane);
+        int typingTop = Math.max(0, (typingVisible.height - textHeight) / 2);
+        typingField.setBorder(BorderFactory.createEmptyBorder(typingTop, left, 0, 0));
+    }
+
+    /**
+     * Checks if the snippet fits in the visible area of the snippet pane with the given font.
+     */
+    private boolean fitsInPane(FontMetrics metrics, int textWidth, int lineCount) {
+        //The size of the text that is visible inside the pane
+        Dimension visible = visibleSize(snippetPan);
+        //The border of the text pane is the space around the text itself
+        Insets insets = snippetPane.getInsets();
+        int availableWidth = visible.width - insets.left - insets.right;
+        int availableHeight = visible.height - insets.top - insets.bottom;
+        if (availableWidth <= 0 || availableHeight <= 0) {
+            return false;
+        }
+        return textWidth <= availableWidth && lineCount * metrics.getHeight() <= availableHeight;
+    }
+
+    /**
+     * Returns the size of the area that is visible inside a scroll pane.
+     */
+    private Dimension visibleSize(JScrollPane scrollPane) {
+        Dimension visible = scrollPane.getViewport().getExtentSize();
+        if (visible.width <= 0 || visible.height <= 0) {
+            //The pane has not been laid out yet, the size of the pane itself is used instead
+            Insets insets = scrollPane.getInsets();
+            visible = new Dimension(scrollPane.getWidth() - insets.left - insets.right,
+                    scrollPane.getHeight() - insets.top - insets.bottom);
+        }
+        return visible;
     }
 
     //Method that colours the text 
@@ -287,6 +505,8 @@ public class RacePanel extends BackgroundPanel {
             frame.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
             frame.add(new RacePanel());
             frame.pack();
+            //The window can not be made smaller than the layout of the designer
+            frame.setMinimumSize(frame.getPreferredSize());
             frame.setLocationRelativeTo(null);
             frame.setVisible(true);
 
@@ -321,39 +541,39 @@ public class RacePanel extends BackgroundPanel {
         snippetPane.setFont(new java.awt.Font("Consolas", 0, 28)); // NOI18N
         snippetPan.setViewportView(snippetPane);
 
-        add(snippetPan, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 190, 800, 100));
+        add(snippetPan, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 40, 1200, 330));
 
         newRaceButton.setFont(new java.awt.Font("Consolas", 0, 18)); // NOI18N
         newRaceButton.setText("Start New Race");
         newRaceButton.setAlignmentX(0.5F);
         newRaceButton.addActionListener(this::newRaceButtonActionPerformed);
-        add(newRaceButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 270, -1, 51));
+        add(newRaceButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(518, 300, -1, 51));
 
         typingField.setFont(new java.awt.Font("Consolas", 0, 24)); // NOI18N
         typingPane.setViewportView(typingField);
 
-        add(typingPane, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 320, 800, 50));
+        add(typingPane, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 385, 1200, 220));
 
         wpmLabel.setFont(new java.awt.Font("Perpetua Titling MT", 1, 18)); // NOI18N
         wpmLabel.setText("WPM");
-        add(wpmLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(102, 62, -1, -1));
+        add(wpmLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 10, -1, -1));
 
         accuracyLabel.setFont(new java.awt.Font("Perpetua Titling MT", 1, 18)); // NOI18N
         accuracyLabel.setText("Time");
-        add(accuracyLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 60, -1, -1));
+        add(accuracyLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 10, -1, -1));
 
         mistakesLabel.setFont(new java.awt.Font("Perpetua Titling MT", 1, 18)); // NOI18N
         mistakesLabel.setText("Accuracy");
-        add(mistakesLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 60, -1, -1));
+        add(mistakesLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 10, -1, -1));
 
         endRaceButton.setFont(new java.awt.Font("Consolas", 1, 18)); // NOI18N
         endRaceButton.setText("End Race");
         endRaceButton.addActionListener(this::endRaceButtonActionPerformed);
-        add(endRaceButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 460, -1, -1));
+        add(endRaceButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 620, -1, -1));
 
         jLabel1.setFont(new java.awt.Font("Perpetua Titling MT", 1, 18)); // NOI18N
         jLabel1.setText("Time");
-        add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(680, 60, -1, -1));
+        add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(900, 10, -1, -1));
     }// </editor-fold>//GEN-END:initComponents
 
     //Start button is pressed

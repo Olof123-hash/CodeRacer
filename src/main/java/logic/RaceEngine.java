@@ -51,11 +51,17 @@ public class RaceEngine {
         if (!(newTypedSnip.substring(0, newTypedSnip.length() - 1).equals(this.targetText.substring(0, newTypedSnip.length() - 1)))) {
             return false;
         }
-        if (newTypedSnip.length() == typedsnip.length() + 1) {
+        //The user added text. Normally this is exactly one typed character, but Enter can add the newline and
+        //the indentation of the next line together. That whole block still counts as one keystroke.
+        int addedChars = newTypedSnip.length() - typedsnip.length();
+        if (addedChars == 1) {
             keystrokes = keystrokes + 1;
             if (newTypedSnip.charAt(newTypedSnip.length() - 1) != this.targetText.charAt(newTypedSnip.length() - 1)) {
                 mistakes = mistakes + 1;
             }
+        } else if (addedChars > 1 && isAutoIndentBlock(newTypedSnip, typedsnip.length())) {
+            //The newline and the indentation are copied from the target text, so they can not contain a mistake
+            keystrokes = keystrokes + 1;
         }
         typedsnip = newTypedSnip;
         if (currentState == RaceState.NOT_STARTED) {
@@ -72,6 +78,49 @@ public class RaceEngine {
 
     public String getLastAcceptedText() {
         return typedsnip;
+    }
+
+    /* When the user presses Enter at the end of a line, the newline alone is not enough: the next line of a snippet
+       usually starts with indentation (spaces or tabs) that the user would then have to type as well. In a code editor
+       that indentation is added automatically, so this method returns the newline together with the leading whitespace
+       of the next line. That way the caret ends up on the first character of the next line instead of on its indentation.
+       It returns null when Enter should just insert a normal newline, for example when the user is not at the end of a line.
+     */
+    public String getEnterInsertion() {
+        if (currentState == RaceState.FINISHED) {
+            return null;
+        }
+        //Only auto indent when everything typed so far is correct and there is still text left
+        if (typedsnip.length() >= targetText.length() || !targetText.startsWith(typedsnip)) {
+            return null;
+        }
+        //The next character has to be a newline, otherwise the user is not at the end of the line
+        if (targetText.charAt(typedsnip.length()) != '\n') {
+            return null;
+        }
+        //Take the newline and all the spaces/tabs that start the next line
+        int end = typedsnip.length() + 1;
+        while (end < targetText.length()
+                && (targetText.charAt(end) == ' ' || targetText.charAt(end) == '\t')) {
+            end++;
+        }
+        return targetText.substring(typedsnip.length(), end);
+    }
+
+    /* Checks whether the text that was added at startPosition is the block that getEnterInsertion returns:
+       a newline followed only by spaces and tabs. Such a block is inserted as one piece but typed with one key press.
+     */
+    private boolean isAutoIndentBlock(String text, int startPosition) {
+        if (startPosition >= text.length() || text.charAt(startPosition) != '\n') {
+            return false;
+        }
+        for (int i = startPosition + 1; i < text.length(); i++) {
+            char c = text.charAt(i);
+            if (c != ' ' && c != '\t') {
+                return false;
+            }
+        }
+        return true;
     }
 
     /*   The timer method will e used to count the typing time of the user
