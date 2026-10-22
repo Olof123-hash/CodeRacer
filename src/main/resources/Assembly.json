@@ -1,0 +1,38 @@
+[
+    {
+        "body": "section .text\nglobal _start\n_start:\n    mov rax, 60\n    xor rdi, rdi\n    syscall"
+    },
+    {
+        "body": "section .data\n    msg db \"Hello, world\", 10\n    len equ $ - msg\nsection .text\nglobal _start\n_start:\n    mov rax, 1\n    mov rdi, 1\n    mov rsi, msg\n    mov rdx, len\n    syscall\n    mov rax, 60\n    xor rdi, rdi\n    syscall"
+    },
+    {
+        "body": "add_two:\n    mov rax, rdi\n    add rax, rsi\n    ret"
+    },
+    {
+        "body": "strlen_custom:\n    xor rax, rax\n.loop:\n    cmp byte [rdi + rax], 0\n    je .done\n    inc rax\n    jmp .loop\n.done:\n    ret"
+    },
+    {
+        "body": "swap:\n    mov eax, [rdi]\n    mov ecx, [rsi]\n    mov [rdi], ecx\n    mov [rsi], eax\n    ret"
+    },
+    {
+        "body": "factorial:\n    mov rax, 1\n.loop:\n    cmp rdi, 1\n    jle .done\n    imul rax, rdi\n    dec rdi\n    jmp .loop\n.done:\n    ret"
+    },
+    {
+        "body": "fib:\n    xor rax, rax\n    mov rcx, 1\n.loop:\n    test rdi, rdi\n    jz .done\n    mov rdx, rax\n    add rdx, rcx\n    mov rax, rcx\n    mov rcx, rdx\n    dec rdi\n    jmp .loop\n.done:\n    ret"
+    },
+    {
+        "body": "gcd:\n.loop:\n    test rsi, rsi\n    jz .done\n    xor rdx, rdx\n    mov rax, rdi\n    div rsi\n    mov rdi, rsi\n    mov rsi, rdx\n    jmp .loop\n.done:\n    mov rax, rdi\n    ret"
+    },
+    {
+        "body": "my_memcpy:\n    mov rcx, rdx\n    rep movsb\n    ret"
+    },
+    {
+        "body": "sum_array:\n    xor eax, eax\n    xor ecx, ecx\n.loop:\n    cmp rcx, rsi\n    jge .done\n    add eax, [rdi + rcx * 4]\n    inc rcx\n    jmp .loop\n.done:\n    ret"
+    },
+    {
+        "body": "max2:\n    mov rax, rdi\n    cmp rdi, rsi\n    cmovl rax, rsi\n    ret"
+    },
+    {
+        "body": "is_even:\n    mov rax, rdi\n    and rax, 1\n    xor rax, 1\n    ret"
+    }
+]

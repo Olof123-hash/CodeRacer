@@ -36,6 +36,8 @@ import javax.swing.text.StyleConstants;
 //TODO CHANGE THE NAMES OF ALL BUTTONS AND CONTAINERS ETC ETC 
 public class RacePanel extends BackgroundPanel {
 
+    
+    public String language = "Random";
     //The font that is used for the snippet and for the typing field
     private static final String CODE_FONT = "Consolas";
     //The biggest font size the snippet is allowed to have
@@ -57,7 +59,7 @@ public class RacePanel extends BackgroundPanel {
     private javax.swing.Timer uiTimer;
     private javax.swing.Timer uiTimer2;
     //Initialize classes
-    Database db = new Database();
+    private Database db;
     public RaceEngine currentRace;
     //The size of the layout as it is defined in the designer, the layout is scaled with this size
     private Dimension baseSize;
@@ -155,6 +157,9 @@ public class RacePanel extends BackgroundPanel {
 
     //is ran when the user presses the start button
     private void newGame() {
+       
+        language = jComboBox1.getSelectedItem().toString();
+        db = new Database(language);
         // Calls the Snippet class and initializes it with a random snippet from the Database class. 
         Snippet snip = db.getRandomSnippet();
         //Creates a RaceEngine object by calling the RaceEngine constructor with the snippet from the previous lines.
@@ -180,6 +185,10 @@ public class RacePanel extends BackgroundPanel {
 
         //this line makes the player able to type immediately without having to click in the typing area
         SwingUtilities.invokeLater(() -> typingField.requestFocusInWindow());
+    }
+    
+    public String getLanguage() {
+        return language;
     }
 
     private void gameOver() {
@@ -532,6 +541,8 @@ public class RacePanel extends BackgroundPanel {
         mistakesLabel = new javax.swing.JLabel();
         endRaceButton = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
+        jComboBox1 = new javax.swing.JComboBox<>();
+        jLabel2 = new javax.swing.JLabel();
 
         setForeground(new java.awt.Color(0, 0, 0));
         setFont(new java.awt.Font("Courier New", 0, 14)); // NOI18N
@@ -574,6 +585,13 @@ public class RacePanel extends BackgroundPanel {
         jLabel1.setFont(new java.awt.Font("Perpetua Titling MT", 1, 18)); // NOI18N
         jLabel1.setText("Time");
         add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(900, 10, -1, -1));
+
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Random", "Python", "Java", "C++", "Rust", "Go", "Assembly" }));
+        jComboBox1.addActionListener(this::jComboBox1ActionPerformed);
+        add(jComboBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(1110, 10, -1, -1));
+
+        jLabel2.setText("Select langauge");
+        add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(990, 10, -1, 30));
     }// </editor-fold>//GEN-END:initComponents
 
     //Start button is pressed
@@ -586,23 +604,19 @@ public class RacePanel extends BackgroundPanel {
         gameOver();
     }//GEN-LAST:event_endRaceButtonActionPerformed
 
-    //Right now does nothing since we dont have this textarea anymore, i kept it here because its easy to copy this method it acts as a good building block
-    void updateText(String wpm, String ks, String m, String a) {
+    private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
+        if (currentPanel == PanelState.RUNNING) {
+             newGame();
+        }
+    }//GEN-LAST:event_jComboBox1ActionPerformed
 
-        StringBuilder finalString = new StringBuilder();
-
-        finalString.append("WPM: ").append(wpm).append(" ");
-        finalString.append("Keystrokes: ").append(ks).append(" ");
-        finalString.append("Accuracy: ").append(a).append(" ");
-        finalString.append("Mistakes: ").append(m);
-
-        //GameOverField.setText(finalString.toString());
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel accuracyLabel;
     private javax.swing.JButton endRaceButton;
+    private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel mistakesLabel;
     private javax.swing.JButton newRaceButton;
     private javax.swing.JScrollPane snippetPan;

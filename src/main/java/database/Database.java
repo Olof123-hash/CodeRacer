@@ -12,6 +12,7 @@ import com.google.gson.reflect.TypeToken;
 import java.io.InputStream;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.HashMap;
 import java.util.stream.Collectors;
 import java.util.Random;
 
@@ -21,9 +22,32 @@ import java.util.Random;
  */
 public class Database {
 
+    public String language;
+    
+    public List<Snippet> gsonlist;
+    public HashMap<String, String> languages = new HashMap<>();
+    
+    
     Random position = new Random();
     Gson gson = new Gson();
-
+   
+    
+   
+    public Database (String language){
+        
+        if (languages.isEmpty()) {
+        languages.put("Random", "/Random.json");
+        languages.put("Java", "/DB.json");
+        languages.put("Python", "/DB.json");
+        languages.put("C++", "/DB.json");
+        languages.put("Rust", "/DB.json");
+        languages.put("Go", "/DB.json");
+        languages.put("Assembly", "/Assembly.json");
+        }
+       
+        this.gsonlist = gson.fromJson(readFileFromResource(languages.get(language)), listType);
+    }
+    
     static String readFileFromResource(String filePath) {
         InputStream inputStream = Snippet.class.getResourceAsStream(filePath);
         String result = null;
@@ -37,12 +61,13 @@ public class Database {
 
     Type listType = new TypeToken<List<Snippet>>() {
     }.getType();
-    List<Snippet> gsonlist = gson.fromJson(readFileFromResource("/DB.json"), listType);
+   
 
     public Snippet getRandomSnippet() {
-        if (gsonlist != null) {
-            int r1 = position.nextInt(gsonlist.size());
-            Snippet snip = gsonlist.get(r1);
+      
+        if (this.gsonlist != null) {
+            int r1 = position.nextInt(this.gsonlist.size());
+            Snippet snip = this.gsonlist.get(r1);
             return snip;
         } else {
             System.out.println("Snippet list is empty");
