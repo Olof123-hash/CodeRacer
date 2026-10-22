@@ -157,14 +157,15 @@
     <Component class="javax.swing.JComboBox" name="jComboBox1">
       <Properties>
         <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-          <StringArray count="7">
+          <StringArray count="8">
             <StringItem index="0" value="Random"/>
             <StringItem index="1" value="Python"/>
             <StringItem index="2" value="Java"/>
-            <StringItem index="3" value="C++"/>
-            <StringItem index="4" value="Rust"/>
-            <StringItem index="5" value="Go"/>
-            <StringItem index="6" value="Assembly"/>
+            <StringItem index="3" value="JavaScript"/>
+            <StringItem index="4" value="C++"/>
+            <StringItem index="5" value="Rust"/>
+            <StringItem index="6" value="Go"/>
+            <StringItem index="7" value="Assembly"/>
           </StringArray>
         </Property>
       </Properties>
@@ -182,7 +183,7 @@
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel2">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Select langauge"/>
+        <Property name="text" type="java.lang.String" value="Select Langauge"/>
       </Properties>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">

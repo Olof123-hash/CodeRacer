@@ -37,11 +37,11 @@ public class Database {
         
         if (languages.isEmpty()) {
         languages.put("Random", "/Random.json");
-        languages.put("Java", "/DB.json");
-        languages.put("Python", "/DB.json");
-        languages.put("C++", "/DB.json");
-        languages.put("Rust", "/DB.json");
-        languages.put("Go", "/DB.json");
+        languages.put("Java", "/Java.json");
+        languages.put("Python", "/Python.json");
+        languages.put("C++", "/C++.json");
+        languages.put("Rust", "/Rust.json");
+        languages.put("Go", "/Go.json");
         languages.put("Assembly", "/Assembly.json");
         }
        
