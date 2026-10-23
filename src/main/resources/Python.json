@@ -1,0 +1,152 @@
+[
+    {
+        "body": "def two_sum(nums, target):\n    seen = {}\n    for i, n in enumerate(nums):\n        if target - n in seen:\n            return [seen[target - n], i]\n        seen[n] = i\n    return []"
+    },
+    {
+        "body": "def is_valid_parens(s):\n    stack = []\n    pairs = {')': '(', ']': '[', '}': '{'}\n    for c in s:\n        if c in '([{':\n            stack.append(c)\n        elif not stack or stack[-1] != pairs[c]:\n            return False\n        else:\n            stack.pop()\n    return not stack"
+    },
+    {
+        "body": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\ndef reverse_list(head):\n    prev = None\n    while head:\n        nxt = head.next\n        head.next = prev\n        prev = head\n        head = nxt\n    return prev"
+    },
+    {
+        "body": "def max_subarray(nums):\n    best = cur = nums[0]\n    for n in nums[1:]:\n        cur = max(n, cur + n)\n        best = max(best, cur)\n    return best"
+    },
+    {
+        "body": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\ndef merge_two_lists(a, b):\n    dummy = tail = ListNode()\n    while a and b:\n        if a.val <= b.val:\n            tail.next, a = a, a.next\n        else:\n            tail.next, b = b, b.next\n        tail = tail.next\n    tail.next = a or b\n    return dummy.next"
+    },
+    {
+        "body": "def max_profit(prices):\n    best = 0\n    low = prices[0]\n    for price in prices[1:]:\n        best = max(best, price - low)\n        low = min(low, price)\n    return best"
+    },
+    {
+        "body": "def is_palindrome(s):\n    cleaned = [c.lower() for c in s if c.isalnum()]\n    return cleaned == cleaned[::-1]"
+    },
+    {
+        "body": "def climb_stairs(n):\n    a, b = 1, 1\n    for _ in range(n - 1):\n        a, b = b, a + b\n    return b"
+    },
+    {
+        "body": "def binary_search(arr, target):\n    lo, hi = 0, len(arr) - 1\n    while lo <= hi:\n        mid = (lo + hi) // 2\n        if arr[mid] == target:\n            return mid\n        if arr[mid] < target:\n            lo = mid + 1\n        else:\n            hi = mid - 1\n    return -1"
+    },
+    {
+        "body": "def single_number(nums):\n    result = 0\n    for n in nums:\n        result ^= n\n    return result"
+    },
+    {
+        "body": "def contains_duplicate(nums):\n    seen = set()\n    for n in nums:\n        if n in seen:\n            return True\n        seen.add(n)\n    return False"
+    },
+    {
+        "body": "def majority_element(nums):\n    count = 0\n    candidate = None\n    for n in nums:\n        if count == 0:\n            candidate = n\n        count += 1 if n == candidate else -1\n    return candidate"
+    },
+    {
+        "body": "def move_zeroes(nums):\n    write = 0\n    for n in nums:\n        if n != 0:\n            nums[write] = n\n            write += 1\n    for i in range(write, len(nums)):\n        nums[i] = 0\n    return nums"
+    },
+    {
+        "body": "def product_except_self(nums):\n    n = len(nums)\n    res = [1] * n\n    left = 1\n    for i in range(n):\n        res[i] = left\n        left *= nums[i]\n    right = 1\n    for i in range(n - 1, -1, -1):\n        res[i] *= right\n        right *= nums[i]\n    return res"
+    },
+    {
+        "body": "def merge_intervals(intervals):\n    intervals.sort(key=lambda x: x[0])\n    merged = []\n    for start, end in intervals:\n        if merged and start <= merged[-1][1]:\n            merged[-1][1] = max(merged[-1][1], end)\n        else:\n            merged.append([start, end])\n    return merged"
+    },
+    {
+        "body": "def group_anagrams(strs):\n    groups = {}\n    for s in strs:\n        key = ''.join(sorted(s))\n        groups.setdefault(key, []).append(s)\n    return list(groups.values())"
+    },
+    {
+        "body": "def longest_common_prefix(strs):\n    if not strs:\n        return ''\n    prefix = strs[0]\n    for s in strs[1:]:\n        while not s.startswith(prefix):\n            prefix = prefix[:-1]\n            if not prefix:\n                return ''\n    return prefix"
+    },
+    {
+        "body": "def roman_to_int(s):\n    values = {'I': 1, 'V': 5, 'X': 10, 'L': 50, 'C': 100, 'D': 500, 'M': 1000}\n    total = 0\n    for i, c in enumerate(s):\n        if i + 1 < len(s) and values[c] < values[s[i + 1]]:\n            total -= values[c]\n        else:\n            total += values[c]\n    return total"
+    },
+    {
+        "body": "def is_palindrome_number(x):\n    if x < 0 or (x % 10 == 0 and x != 0):\n        return False\n    reversed_half = 0\n    while x > reversed_half:\n        reversed_half = reversed_half * 10 + x % 10\n        x //= 10\n    return x == reversed_half or x == reversed_half // 10"
+    },
+    {
+        "body": "def plus_one(digits):\n    for i in range(len(digits) - 1, -1, -1):\n        if digits[i] < 9:\n            digits[i] += 1\n            return digits\n        digits[i] = 0\n    return [1] + digits"
+    },
+    {
+        "body": "def remove_duplicates(nums):\n    if not nums:\n        return 0\n    write = 1\n    for i in range(1, len(nums)):\n        if nums[i] != nums[write - 1]:\n            nums[write] = nums[i]\n            write += 1\n    return write"
+    },
+    {
+        "body": "def rotate_array(nums, k):\n    n = len(nums)\n    k %= n\n    nums[:] = nums[-k:] + nums[:-k] if k else nums\n    return nums"
+    },
+    {
+        "body": "def missing_number(nums):\n    n = len(nums)\n    return n * (n + 1) // 2 - sum(nums)"
+    },
+    {
+        "body": "def fizz_buzz(n):\n    result = []\n    for i in range(1, n + 1):\n        if i % 15 == 0:\n            result.append('FizzBuzz')\n        elif i % 3 == 0:\n            result.append('Fizz')\n        elif i % 5 == 0:\n            result.append('Buzz')\n        else:\n            result.append(str(i))\n    return result"
+    },
+    {
+        "body": "def is_power_of_two(n):\n    return n > 0 and (n & (n - 1)) == 0"
+    },
+    {
+        "body": "def hamming_weight(n):\n    count = 0\n    while n:\n        count += n & 1\n        n >>= 1\n    return count"
+    },
+    {
+        "body": "def reverse_string(s):\n    return s[::-1]"
+    },
+    {
+        "body": "def reverse_integer(x):\n    sign = -1 if x < 0 else 1\n    result = 0\n    x = abs(x)\n    while x:\n        result = result * 10 + x % 10\n        x //= 10\n    result *= sign\n    if result < -2**31 or result > 2**31 - 1:\n        return 0\n    return result"
+    },
+    {
+        "body": "def length_of_last_word(s):\n    return len(s.split()[-1]) if s.split() else 0"
+    },
+    {
+        "body": "def str_str(haystack, needle):\n    if not needle:\n        return 0\n    for i in range(len(haystack) - len(needle) + 1):\n        if haystack[i:i + len(needle)] == needle:\n            return i\n    return -1"
+    },
+    {
+        "body": "def add_binary(a, b):\n    result = []\n    carry = 0\n    i, j = len(a) - 1, len(b) - 1\n    while i >= 0 or j >= 0 or carry:\n        total = carry\n        if i >= 0:\n            total += int(a[i])\n            i -= 1\n        if j >= 0:\n            total += int(b[j])\n            j -= 1\n        result.append(str(total % 2))\n        carry = total // 2\n    return ''.join(reversed(result))"
+    },
+    {
+        "body": "def my_sqrt(x):\n    if x < 2:\n        return x\n    lo, hi = 1, x // 2\n    answer = 0\n    while lo <= hi:\n        mid = (lo + hi) // 2\n        if mid * mid <= x:\n            answer = mid\n            lo = mid + 1\n        else:\n            hi = mid - 1\n    return answer"
+    },
+    {
+        "body": "def title_to_number(column_title):\n    result = 0\n    for c in column_title:\n        result = result * 26 + (ord(c) - ord('A') + 1)\n    return result"
+    },
+    {
+        "body": "def is_happy(n):\n    seen = set()\n    while n != 1 and n not in seen:\n        seen.add(n)\n        n = sum(int(d) ** 2 for d in str(n))\n    return n == 1"
+    },
+    {
+        "body": "def is_isomorphic(s, t):\n    if len(s) != len(t):\n        return False\n    forward, backward = {}, {}\n    for a, b in zip(s, t):\n        if forward.setdefault(a, b) != b or backward.setdefault(b, a) != a:\n            return False\n    return True"
+    },
+    {
+        "body": "def word_pattern(pattern, s):\n    words = s.split()\n    if len(pattern) != len(words):\n        return False\n    forward, backward = {}, {}\n    for a, b in zip(pattern, words):\n        if forward.setdefault(a, b) != b or backward.setdefault(b, a) != a:\n            return False\n    return True"
+    },
+    {
+        "body": "def intersection(nums1, nums2):\n    return list(set(nums1) & set(nums2))"
+    },
+    {
+        "body": "def sorted_squares(nums):\n    return sorted(n * n for n in nums)"
+    },
+    {
+        "body": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\ndef max_depth(root):\n    if not root:\n        return 0\n    return 1 + max(max_depth(root.left), max_depth(root.right))"
+    },
+    {
+        "body": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\ndef is_same_tree(p, q):\n    if not p and not q:\n        return True\n    if not p or not q or p.val != q.val:\n        return False\n    return is_same_tree(p.left, q.left) and is_same_tree(p.right, q.right)"
+    },
+    {
+        "body": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\ndef invert_tree(root):\n    if root:\n        root.left, root.right = invert_tree(root.right), invert_tree(root.left)\n    return root"
+    },
+    {
+        "body": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\ndef is_symmetric(root):\n    def mirror(a, b):\n        if not a and not b:\n            return True\n        if not a or not b or a.val != b.val:\n            return False\n        return mirror(a.left, b.right) and mirror(a.right, b.left)\n    return mirror(root, root) if root else True"
+    },
+    {
+        "body": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\ndef diameter_of_binary_tree(root):\n    best = 0\n    def depth(node):\n        nonlocal best\n        if not node:\n            return 0\n        left = depth(node.left)\n        right = depth(node.right)\n        best = max(best, left + right)\n        return 1 + max(left, right)\n    depth(root)\n    return best"
+    },
+    {
+        "body": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\ndef is_balanced(root):\n    def height(node):\n        if not node:\n            return 0\n        left = height(node.left)\n        right = height(node.right)\n        if left < 0 or right < 0 or abs(left - right) > 1:\n            return -1\n        return 1 + max(left, right)\n    return height(root) >= 0"
+    },
+    {
+        "body": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\ndef has_path_sum(root, target):\n    if not root:\n        return False\n    if not root.left and not root.right:\n        return root.val == target\n    return has_path_sum(root.left, target - root.val) or has_path_sum(root.right, target - root.val)"
+    },
+    {
+        "body": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\ndef lowest_common_ancestor(root, p, q):\n    while root:\n        if p.val < root.val and q.val < root.val:\n            root = root.left\n        elif p.val > root.val and q.val > root.val:\n            root = root.right\n        else:\n            return root\n    return None"
+    },
+    {
+        "body": "def search_insert(nums, target):\n    lo, hi = 0, len(nums)\n    while lo < hi:\n        mid = (lo + hi) // 2\n        if nums[mid] < target:\n            lo = mid + 1\n        else:\n            hi = mid\n    return lo"
+    },
+    {
+        "body": "def two_sum_sorted(numbers, target):\n    left, right = 0, len(numbers) - 1\n    while left < right:\n        total = numbers[left] + numbers[right]\n        if total == target:\n            return [left + 1, right + 1]\n        if total < target:\n            left += 1\n        else:\n            right -= 1\n    return []"
+    },
+    {
+        "body": "def length_of_longest_substring(s):\n    last = {}\n    start = 0\n    best = 0\n    for i, c in enumerate(s):\n        if c in last and last[c] >= start:\n            start = last[c] + 1\n        last[c] = i\n        best = max(best, i - start + 1)\n    return best"
+    },
+    {
+        "body": "def max_area(height):\n    left, right = 0, len(height) - 1\n    best = 0\n    while left < right:\n        best = max(best, min(height[left], height[right]) * (right - left))\n        if height[left] < height[right]:\n            left += 1\n        else:\n            right -= 1\n    return best"
+    }
+]

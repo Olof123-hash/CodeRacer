@@ -1,0 +1,152 @@
+[
+    {
+        "body": "fn two_sum(nums: &[i32], target: i32) -> Vec<usize> {\n    use std::collections::HashMap;\n    let mut seen = HashMap::new();\n    for (i, &n) in nums.iter().enumerate() {\n        if let Some(&j) = seen.get(&(target - n)) {\n            return vec![j, i];\n        }\n        seen.insert(n, i);\n    }\n    vec![]\n}"
+    },
+    {
+        "body": "fn is_valid_parens(s: &str) -> bool {\n    let mut stack = Vec::new();\n    for c in s.chars() {\n        match c {\n            '(' | '[' | '{' => stack.push(c),\n            ')' => if stack.pop() != Some('(') { return false },\n            ']' => if stack.pop() != Some('[') { return false },\n            '}' => if stack.pop() != Some('{') { return false },\n            _ => {}\n        }\n    }\n    stack.is_empty()\n}"
+    },
+    {
+        "body": "#[derive(PartialEq, Eq, Clone, Debug)]\npub struct ListNode {\n    pub val: i32,\n    pub next: Option<Box<ListNode>>,\n}\n\npub fn reverse_list(head: Option<Box<ListNode>>) -> Option<Box<ListNode>> {\n    let mut prev = None;\n    let mut cur = head;\n    while let Some(mut node) = cur {\n        cur = node.next.take();\n        node.next = prev;\n        prev = Some(node);\n    }\n    prev\n}"
+    },
+    {
+        "body": "fn max_subarray(nums: &[i32]) -> i32 {\n    let mut best = nums[0];\n    let mut cur = nums[0];\n    for &n in &nums[1..] {\n        cur = n.max(cur + n);\n        best = best.max(cur);\n    }\n    best\n}"
+    },
+    {
+        "body": "#[derive(PartialEq, Eq, Clone, Debug)]\npub struct ListNode {\n    pub val: i32,\n    pub next: Option<Box<ListNode>>,\n}\n\npub fn merge_two_lists(\n    a: Option<Box<ListNode>>,\n    b: Option<Box<ListNode>>,\n) -> Option<Box<ListNode>> {\n    match (a, b) {\n        (None, None) => None,\n        (Some(node), None) | (None, Some(node)) => Some(node),\n        (Some(mut x), Some(mut y)) => {\n            if x.val <= y.val {\n                x.next = merge_two_lists(x.next.take(), Some(y));\n                Some(x)\n            } else {\n                y.next = merge_two_lists(Some(x), y.next.take());\n                Some(y)\n            }\n        }\n    }\n}"
+    },
+    {
+        "body": "fn max_profit(prices: &[i32]) -> i32 {\n    let mut best = 0;\n    let mut low = prices[0];\n    for &price in prices {\n        best = best.max(price - low);\n        low = low.min(price);\n    }\n    best\n}"
+    },
+    {
+        "body": "fn is_palindrome(s: &str) -> bool {\n    let chars: Vec<char> = s.chars()\n        .filter(|c| c.is_alphanumeric())\n        .map(|c| c.to_ascii_lowercase())\n        .collect();\n    chars == chars.iter().rev().copied().collect::<Vec<char>>()\n}"
+    },
+    {
+        "body": "fn climb_stairs(n: i32) -> i32 {\n    let mut a = 1;\n    let mut b = 1;\n    for _ in 0..n - 1 {\n        let next = a + b;\n        a = b;\n        b = next;\n    }\n    b\n}"
+    },
+    {
+        "body": "fn binary_search(arr: &[i32], target: i32) -> Option<usize> {\n    let mut lo = 0;\n    let mut hi = arr.len();\n    while lo < hi {\n        let mid = lo + (hi - lo) / 2;\n        if arr[mid] == target {\n            return Some(mid);\n        } else if arr[mid] < target {\n            lo = mid + 1;\n        } else {\n            hi = mid;\n        }\n    }\n    None\n}"
+    },
+    {
+        "body": "fn single_number(nums: &[i32]) -> i32 {\n    nums.iter().fold(0, |acc, &n| acc ^ n)\n}"
+    },
+    {
+        "body": "fn contains_duplicate(nums: &[i32]) -> bool {\n    use std::collections::HashSet;\n    let mut seen = HashSet::new();\n    for &n in nums {\n        if !seen.insert(n) {\n            return true;\n        }\n    }\n    false\n}"
+    },
+    {
+        "body": "fn majority_element(nums: &[i32]) -> i32 {\n    let mut count = 0;\n    let mut candidate = 0;\n    for &n in nums {\n        if count == 0 {\n            candidate = n;\n        }\n        count += if n == candidate { 1 } else { -1 };\n    }\n    candidate\n}"
+    },
+    {
+        "body": "fn move_zeroes(nums: &mut Vec<i32>) {\n    let mut write = 0;\n    for read in 0..nums.len() {\n        if nums[read] != 0 {\n            nums[write] = nums[read];\n            write += 1;\n        }\n    }\n    for i in write..nums.len() {\n        nums[i] = 0;\n    }\n}"
+    },
+    {
+        "body": "fn product_except_self(nums: &[i32]) -> Vec<i32> {\n    let n = nums.len();\n    let mut res = vec![1; n];\n    for i in 1..n {\n        res[i] = res[i - 1] * nums[i - 1];\n    }\n    let mut right = 1;\n    for i in (0..n).rev() {\n        res[i] *= right;\n        right *= nums[i];\n    }\n    res\n}"
+    },
+    {
+        "body": "fn merge_intervals(intervals: &mut Vec<Vec<i32>>) -> Vec<Vec<i32>> {\n    intervals.sort_by_key(|interval| interval[0]);\n    let mut merged: Vec<Vec<i32>> = Vec::new();\n    for interval in intervals.iter() {\n        match merged.last_mut() {\n            Some(last) if interval[0] <= last[1] => {\n                last[1] = last[1].max(interval[1]);\n            }\n            _ => merged.push(interval.clone()),\n        }\n    }\n    merged\n}"
+    },
+    {
+        "body": "fn group_anagrams(strs: &[String]) -> Vec<Vec<String>> {\n    use std::collections::HashMap;\n    let mut groups: HashMap<String, Vec<String>> = HashMap::new();\n    for s in strs {\n        let mut chars: Vec<char> = s.chars().collect();\n        chars.sort();\n        let key: String = chars.into_iter().collect();\n        groups.entry(key).or_default().push(s.clone());\n    }\n    groups.into_values().collect()\n}"
+    },
+    {
+        "body": "fn longest_common_prefix(strs: &[String]) -> String {\n    if strs.is_empty() {\n        return String::new();\n    }\n    let mut prefix = strs[0].clone();\n    for s in &strs[1..] {\n        while !s.starts_with(&prefix) {\n            prefix.pop();\n            if prefix.is_empty() {\n                return prefix;\n            }\n        }\n    }\n    prefix\n}"
+    },
+    {
+        "body": "fn roman_to_int(s: &str) -> i32 {\n    fn value(c: char) -> i32 {\n        match c {\n            'I' => 1, 'V' => 5, 'X' => 10, 'L' => 50,\n            'C' => 100, 'D' => 500, 'M' => 1000,\n            _ => 0,\n        }\n    }\n    let chars: Vec<char> = s.chars().collect();\n    let mut total = 0;\n    for i in 0..chars.len() {\n        let current = value(chars[i]);\n        if i + 1 < chars.len() && current < value(chars[i + 1]) {\n            total -= current;\n        } else {\n            total += current;\n        }\n    }\n    total\n}"
+    },
+    {
+        "body": "fn is_palindrome_number(x: i32) -> bool {\n    if x < 0 {\n        return false;\n    }\n    let (mut original, mut reversed) = (x, 0);\n    while original > 0 {\n        reversed = reversed * 10 + original % 10;\n        original /= 10;\n    }\n    reversed == x\n}"
+    },
+    {
+        "body": "fn plus_one(digits: &mut Vec<i32>) -> Vec<i32> {\n    for i in (0..digits.len()).rev() {\n        if digits[i] < 9 {\n            digits[i] += 1;\n            return digits.clone();\n        }\n        digits[i] = 0;\n    }\n    let mut result = vec![1];\n    result.extend(digits.iter());\n    result\n}"
+    },
+    {
+        "body": "fn remove_duplicates(nums: &mut Vec<i32>) -> usize {\n    let mut write = 0;\n    for read in 0..nums.len() {\n        if write == 0 || nums[read] != nums[write - 1] {\n            nums[write] = nums[read];\n            write += 1;\n        }\n    }\n    write\n}"
+    },
+    {
+        "body": "fn rotate_array(nums: &mut Vec<i32>, k: usize) {\n    let n = nums.len();\n    if n == 0 {\n        return;\n    }\n    let k = k % n;\n    nums.rotate_right(k);\n}"
+    },
+    {
+        "body": "fn missing_number(nums: &[i32]) -> i32 {\n    let n = nums.len() as i32;\n    let expected = n * (n + 1) / 2;\n    expected - nums.iter().sum::<i32>()\n}"
+    },
+    {
+        "body": "fn fizz_buzz(n: i32) -> Vec<String> {\n    (1..=n)\n        .map(|i| match (i % 3, i % 5) {\n            (0, 0) => \"FizzBuzz\".to_string(),\n            (0, _) => \"Fizz\".to_string(),\n            (_, 0) => \"Buzz\".to_string(),\n            _ => i.to_string(),\n        })\n        .collect()\n}"
+    },
+    {
+        "body": "fn is_power_of_two(n: i32) -> bool {\n    n > 0 && (n & (n - 1)) == 0\n}"
+    },
+    {
+        "body": "fn hamming_weight(mut n: u32) -> u32 {\n    let mut count = 0;\n    while n != 0 {\n        count += n & 1;\n        n >>= 1;\n    }\n    count\n}"
+    },
+    {
+        "body": "fn reverse_string(s: &str) -> String {\n    s.chars().rev().collect()\n}"
+    },
+    {
+        "body": "fn reverse_integer(x: i32) -> i32 {\n    let mut result: i64 = 0;\n    let mut n = x as i64;\n    while n != 0 {\n        result = result * 10 + n % 10;\n        n /= 10;\n    }\n    if result < i32::MIN as i64 || result > i32::MAX as i64 {\n        return 0;\n    }\n    result as i32\n}"
+    },
+    {
+        "body": "fn length_of_last_word(s: &str) -> usize {\n    s.split_whitespace().last().map_or(0, |word| word.len())\n}"
+    },
+    {
+        "body": "fn str_str(haystack: &str, needle: &str) -> i32 {\n    if needle.is_empty() {\n        return 0;\n    }\n    match haystack.find(needle) {\n        Some(index) => index as i32,\n        None => -1,\n    }\n}"
+    },
+    {
+        "body": "fn add_binary(a: &str, b: &str) -> String {\n    let (mut i, mut j) = (a.len() as i32 - 1, b.len() as i32 - 1);\n    let (a, b) = (a.as_bytes(), b.as_bytes());\n    let mut carry = 0;\n    let mut result = Vec::new();\n    while i >= 0 || j >= 0 || carry > 0 {\n        let mut total = carry;\n        if i >= 0 {\n            total += (a[i as usize] - b'0') as i32;\n            i -= 1;\n        }\n        if j >= 0 {\n            total += (b[j as usize] - b'0') as i32;\n            j -= 1;\n        }\n        result.push((b'0' + (total % 2) as u8) as char);\n        carry = total / 2;\n    }\n    result.iter().rev().collect()\n}"
+    },
+    {
+        "body": "fn my_sqrt(x: i32) -> i32 {\n    if x < 2 {\n        return x;\n    }\n    let (mut lo, mut hi, mut answer) = (1, x / 2, 0);\n    while lo <= hi {\n        let mid = lo + (hi - lo) / 2;\n        if mid as i64 * mid as i64 <= x as i64 {\n            answer = mid;\n            lo = mid + 1;\n        } else {\n            hi = mid - 1;\n        }\n    }\n    answer\n}"
+    },
+    {
+        "body": "fn title_to_number(column_title: &str) -> i32 {\n    let mut result = 0;\n    for c in column_title.chars() {\n        result = result * 26 + (c as i32 - 'A' as i32 + 1);\n    }\n    result\n}"
+    },
+    {
+        "body": "fn is_happy(mut n: i32) -> bool {\n    use std::collections::HashSet;\n    let mut seen = HashSet::new();\n    while n != 1 && seen.insert(n) {\n        let mut total = 0;\n        while n > 0 {\n            let digit = n % 10;\n            total += digit * digit;\n            n /= 10;\n        }\n        n = total;\n    }\n    n == 1\n}"
+    },
+    {
+        "body": "fn is_isomorphic(s: &str, t: &str) -> bool {\n    use std::collections::HashMap;\n    let mut forward = HashMap::new();\n    let mut backward = HashMap::new();\n    for (a, b) in s.chars().zip(t.chars()) {\n        if forward.get(&a).map_or(false, |&v| v != b) {\n            return false;\n        }\n        if backward.get(&b).map_or(false, |&v| v != a) {\n            return false;\n        }\n        forward.insert(a, b);\n        backward.insert(b, a);\n    }\n    true\n}"
+    },
+    {
+        "body": "fn word_pattern(pattern: &str, s: &str) -> bool {\n    use std::collections::HashMap;\n    let words: Vec<&str> = s.split_whitespace().collect();\n    let letters: Vec<char> = pattern.chars().collect();\n    if letters.len() != words.len() {\n        return false;\n    }\n    let mut forward = HashMap::new();\n    let mut backward = HashMap::new();\n    for (&c, word) in letters.iter().zip(words.iter()) {\n        if forward.get(&c).map_or(false, |&v| v != *word) {\n            return false;\n        }\n        if backward.get(*word).map_or(false, |&v| v != c) {\n            return false;\n        }\n        forward.insert(c, *word);\n        backward.insert(*word, c);\n    }\n    true\n}"
+    },
+    {
+        "body": "fn intersection(nums1: &[i32], nums2: &[i32]) -> Vec<i32> {\n    use std::collections::HashSet;\n    let set: HashSet<i32> = nums1.iter().copied().collect();\n    let mut result = HashSet::new();\n    for &n in nums2 {\n        if set.contains(&n) {\n            result.insert(n);\n        }\n    }\n    result.into_iter().collect()\n}"
+    },
+    {
+        "body": "fn sorted_squares(nums: &[i32]) -> Vec<i32> {\n    let mut result: Vec<i32> = nums.iter().map(|n| n * n).collect();\n    result.sort();\n    result\n}"
+    },
+    {
+        "body": "pub struct TreeNode {\n    pub val: i32,\n    pub left: Option<Box<TreeNode>>,\n    pub right: Option<Box<TreeNode>>,\n}\n\nfn max_depth(root: &Option<Box<TreeNode>>) -> i32 {\n    match root {\n        None => 0,\n        Some(node) => 1 + max_depth(&node.left).max(max_depth(&node.right)),\n    }\n}"
+    },
+    {
+        "body": "pub struct TreeNode {\n    pub val: i32,\n    pub left: Option<Box<TreeNode>>,\n    pub right: Option<Box<TreeNode>>,\n}\n\nfn is_same_tree(p: &Option<Box<TreeNode>>, q: &Option<Box<TreeNode>>) -> bool {\n    match (p, q) {\n        (None, None) => true,\n        (Some(a), Some(b)) => {\n            a.val == b.val\n                && is_same_tree(&a.left, &b.left)\n                && is_same_tree(&a.right, &b.right)\n        }\n        _ => false,\n    }\n}"
+    },
+    {
+        "body": "pub struct TreeNode {\n    pub val: i32,\n    pub left: Option<Box<TreeNode>>,\n    pub right: Option<Box<TreeNode>>,\n}\n\nfn invert_tree(root: &mut Option<Box<TreeNode>>) {\n    if let Some(node) = root {\n        std::mem::swap(&mut node.left, &mut node.right);\n        invert_tree(&mut node.left);\n        invert_tree(&mut node.right);\n    }\n}"
+    },
+    {
+        "body": "pub struct TreeNode {\n    pub val: i32,\n    pub left: Option<Box<TreeNode>>,\n    pub right: Option<Box<TreeNode>>,\n}\n\nfn mirror(a: &Option<Box<TreeNode>>, b: &Option<Box<TreeNode>>) -> bool {\n    match (a, b) {\n        (None, None) => true,\n        (Some(x), Some(y)) => {\n            x.val == y.val\n                && mirror(&x.left, &y.right)\n                && mirror(&x.right, &y.left)\n        }\n        _ => false,\n    }\n}\n\nfn is_symmetric(root: &Option<Box<TreeNode>>) -> bool {\n    match root {\n        None => true,\n        Some(node) => mirror(&node.left, &node.right),\n    }\n}"
+    },
+    {
+        "body": "pub struct TreeNode {\n    pub val: i32,\n    pub left: Option<Box<TreeNode>>,\n    pub right: Option<Box<TreeNode>>,\n}\n\nfn depth(node: &Option<Box<TreeNode>>, best: &mut i32) -> i32 {\n    match node {\n        None => 0,\n        Some(n) => {\n            let left = depth(&n.left, best);\n            let right = depth(&n.right, best);\n            *best = (*best).max(left + right);\n            1 + left.max(right)\n        }\n    }\n}\n\nfn diameter_of_binary_tree(root: &Option<Box<TreeNode>>) -> i32 {\n    let mut best = 0;\n    depth(root, &mut best);\n    best\n}"
+    },
+    {
+        "body": "pub struct TreeNode {\n    pub val: i32,\n    pub left: Option<Box<TreeNode>>,\n    pub right: Option<Box<TreeNode>>,\n}\n\nfn height(node: &Option<Box<TreeNode>>) -> i32 {\n    match node {\n        None => 0,\n        Some(n) => {\n            let left = height(&n.left);\n            let right = height(&n.right);\n            if left < 0 || right < 0 || (left - right).abs() > 1 {\n                -1\n            } else {\n                1 + left.max(right)\n            }\n        }\n    }\n}\n\nfn is_balanced(root: &Option<Box<TreeNode>>) -> bool {\n    height(root) >= 0\n}"
+    },
+    {
+        "body": "pub struct TreeNode {\n    pub val: i32,\n    pub left: Option<Box<TreeNode>>,\n    pub right: Option<Box<TreeNode>>,\n}\n\nfn has_path_sum(root: &Option<Box<TreeNode>>, target: i32) -> bool {\n    match root {\n        None => false,\n        Some(node) => {\n            if node.left.is_none() && node.right.is_none() {\n                return node.val == target;\n            }\n            has_path_sum(&node.left, target - node.val)\n                || has_path_sum(&node.right, target - node.val)\n        }\n    }\n}"
+    },
+    {
+        "body": "pub struct TreeNode {\n    pub val: i32,\n    pub left: Option<Box<TreeNode>>,\n    pub right: Option<Box<TreeNode>>,\n}\n\nfn lowest_common_ancestor<'a>(\n    root: &'a Option<Box<TreeNode>>,\n    p: i32,\n    q: i32,\n) -> Option<&'a TreeNode> {\n    let mut current = root.as_deref();\n    while let Some(node) = current {\n        if p < node.val && q < node.val {\n            current = node.left.as_deref();\n        } else if p > node.val && q > node.val {\n            current = node.right.as_deref();\n        } else {\n            return Some(node);\n        }\n    }\n    None\n}"
+    },
+    {
+        "body": "fn search_insert(nums: &[i32], target: i32) -> usize {\n    let mut lo = 0;\n    let mut hi = nums.len();\n    while lo < hi {\n        let mid = lo + (hi - lo) / 2;\n        if nums[mid] < target {\n            lo = mid + 1;\n        } else {\n            hi = mid;\n        }\n    }\n    lo\n}"
+    },
+    {
+        "body": "fn two_sum_sorted(numbers: &[i32], target: i32) -> Vec<usize> {\n    let mut left = 0;\n    let mut right = numbers.len() - 1;\n    while left < right {\n        let total = numbers[left] + numbers[right];\n        if total == target {\n            return vec![left + 1, right + 1];\n        } else if total < target {\n            left += 1;\n        } else {\n            right -= 1;\n        }\n    }\n    vec![]\n}"
+    },
+    {
+        "body": "fn length_of_longest_substring(s: &str) -> usize {\n    use std::collections::HashMap;\n    let mut last = HashMap::new();\n    let mut start = 0;\n    let mut best = 0;\n    for (i, c) in s.chars().enumerate() {\n        if let Some(&index) = last.get(&c) {\n            if index >= start {\n                start = index + 1;\n            }\n        }\n        last.insert(c, i);\n        best = best.max(i - start + 1);\n    }\n    best\n}"
+    },
+    {
+        "body": "fn max_area(height: &[i32]) -> i32 {\n    let mut left = 0;\n    let mut right = height.len() - 1;\n    let mut best = 0;\n    while left < right {\n        best = best.max(height[left].min(height[right]) * (right - left) as i32);\n        if height[left] < height[right] {\n            left += 1;\n        } else {\n            right -= 1;\n        }\n    }\n    best\n}"
+    }
+]
