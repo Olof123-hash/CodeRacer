@@ -1,63 +1,63 @@
 [
     {
-        "body": "function twoSum(nums, target) {\n  const seen = new Map();\n  for (let i = 0; i < nums.length; i++) {\n    const need = target - nums[i];\n    if (seen.has(need)) return [seen.get(need), i];\n    seen.set(nums[i], i);\n  }\n  return [];\n}"
+        "body": "function twoSum(nums, target) { const seen = new Map();\n  for (let i = 0; i < nums.length; i++) {\n    const need = target - nums[i];\n    if (seen.has(need)) return [seen.get(need), i];\n    seen.set(nums[i], i);\n  } return [];\n}"
     },
     {
-        "body": "function isValid(s) {\n  const stack = [];\n  const pairs = { ')': '(', ']': '[', '}': '{' };\n  for (const c of s) {\n    if (c === '(' || c === '[' || c === '{') {\n      stack.push(c);\n    } else if (stack.pop() !== pairs[c]) {\n      return false;\n    }\n  }\n  return stack.length === 0;\n}"
+        "body": "function isValid(s) { const stack = [];\n  const pairs = { ')': '(', ']': '[', '}': '{' }; for (const c of s) {\n    if (c === '(' || c === '[' || c === '{') { stack.push(c);\n    } else if (stack.pop() !== pairs[c]) { return false;\n    } }\n  return stack.length === 0;\n}"
     },
     {
-        "body": "function reverseList(head) {\n  let prev = null;\n  while (head) {\n    const next = head.next;\n    head.next = prev;\n    prev = head;\n    head = next;\n  }\n  return prev;\n}"
+        "body": "function reverseList(head) { let prev = null;\n  while (head) { const next = head.next;\n    head.next = prev;\n    prev = head;\n    head = next;\n  } return prev;\n}"
     },
     {
-        "body": "function maxSubArray(nums) {\n  let best = nums[0];\n  let cur = nums[0];\n  for (let i = 1; i < nums.length; i++) {\n    cur = Math.max(nums[i], cur + nums[i]);\n    best = Math.max(best, cur);\n  }\n  return best;\n}"
+        "body": "function maxSubArray(nums) { let best = nums[0];\n  let cur = nums[0];\n  for (let i = 1; i < nums.length; i++) {\n    cur = Math.max(nums[i], cur + nums[i]);\n    best = Math.max(best, cur);\n  } return best;\n}"
     },
     {
-        "body": "function mergeTwoLists(a, b) {\n  const dummy = { val: 0, next: null };\n  let tail = dummy;\n  while (a && b) {\n    if (a.val <= b.val) {\n      tail.next = a;\n      a = a.next;\n    } else {\n      tail.next = b;\n      b = b.next;\n    }\n    tail = tail.next;\n  }\n  tail.next = a || b;\n  return dummy.next;\n}"
+        "body": "function mergeTwoLists(a, b) {\n  const dummy = { val: 0, next: null }; let tail = dummy;\n  while (a && b) { if (a.val <= b.val) { tail.next = a;\n      a = a.next; } else { tail.next = b;\n      b = b.next; } tail = tail.next;\n  } tail.next = a || b;\n  return dummy.next; }"
     },
     {
-        "body": "function maxProfit(prices) {\n  let best = 0;\n  let low = prices[0];\n  for (const price of prices) {\n    best = Math.max(best, price - low);\n    low = Math.min(low, price);\n  }\n  return best;\n}"
+        "body": "function maxProfit(prices) { let best = 0;\n  let low = prices[0];\n  for (const price of prices) {\n    best = Math.max(best, price - low);\n    low = Math.min(low, price);\n  } return best;\n}"
     },
     {
         "body": "function isPalindrome(s) {\n  const clean = s.toLowerCase().replace(/[^a-z0-9]/g, '');\n  return clean === clean.split('').reverse().join('');\n}"
     },
     {
-        "body": "function climbStairs(n) {\n  let a = 1;\n  let b = 1;\n  for (let i = 0; i < n - 1; i++) {\n    [a, b] = [b, a + b];\n  }\n  return b;\n}"
+        "body": "function climbStairs(n) {\n  let a = 1;\n  let b = 1;\n  for (let i = 0; i < n - 1; i++) {\n    [a, b] = [b, a + b];\n  } return b;\n}"
     },
     {
-        "body": "function binarySearch(arr, target) {\n  let lo = 0;\n  let hi = arr.length - 1;\n  while (lo <= hi) {\n    const mid = Math.floor((lo + hi) / 2);\n    if (arr[mid] === target) return mid;\n    if (arr[mid] < target) lo = mid + 1;\n    else hi = mid - 1;\n  }\n  return -1;\n}"
+        "body": "function binarySearch(arr, target) { let lo = 0;\n  let hi = arr.length - 1;\n  while (lo <= hi) { const mid = Math.floor((lo + hi) / 2);\n    if (arr[mid] === target) return mid;\n    if (arr[mid] < target) lo = mid + 1;\n    else hi = mid - 1;\n  } return -1; }"
     },
     {
         "body": "function singleNumber(nums) {\n  return nums.reduce((acc, n) => acc ^ n, 0);\n}"
     },
     {
-        "body": "function containsDuplicate(nums) {\n  const seen = new Set();\n  for (const n of nums) {\n    if (seen.has(n)) return true;\n    seen.add(n);\n  }\n  return false;\n}"
+        "body": "function containsDuplicate(nums) {\n  const seen = new Set();\n  for (const n of nums) {\n    if (seen.has(n)) return true;\n    seen.add(n);\n  } return false;\n}"
     },
     {
-        "body": "function majorityElement(nums) {\n  let count = 0;\n  let candidate = 0;\n  for (const n of nums) {\n    if (count === 0) candidate = n;\n    count += n === candidate ? 1 : -1;\n  }\n  return candidate;\n}"
+        "body": "function majorityElement(nums) { let count = 0;\n  let candidate = 0;\n  for (const n of nums) {\n    if (count === 0) candidate = n;\n    count += n === candidate ? 1 : -1;\n  } return candidate;\n}"
     },
     {
-        "body": "function moveZeroes(nums) {\n  let write = 0;\n  for (const n of nums) {\n    if (n !== 0) nums[write++] = n;\n  }\n  while (write < nums.length) nums[write++] = 0;\n  return nums;\n}"
+        "body": "function moveZeroes(nums) {\n  let write = 0;\n  for (const n of nums) {\n    if (n !== 0) nums[write++] = n;\n  } while (write < nums.length) nums[write++] = 0;\n  return nums;\n}"
     },
     {
-        "body": "function productExceptSelf(nums) {\n  const n = nums.length;\n  const res = new Array(n).fill(1);\n  let left = 1;\n  for (let i = 0; i < n; i++) {\n    res[i] = left;\n    left *= nums[i];\n  }\n  let right = 1;\n  for (let i = n - 1; i >= 0; i--) {\n    res[i] *= right;\n    right *= nums[i];\n  }\n  return res;\n}"
+        "body": "function productExceptSelf(nums) { const n = nums.length;\n  const res = new Array(n).fill(1);\n  let left = 1;\n  for (let i = 0; i < n; i++) { res[i] = left;\n    left *= nums[i]; } let right = 1;\n  for (let i = n - 1; i >= 0; i--) { res[i] *= right;\n    right *= nums[i]; } return res; }"
     },
     {
-        "body": "function mergeIntervals(intervals) {\n  intervals.sort((a, b) => a[0] - b[0]);\n  const merged = [];\n  for (const [start, end] of intervals) {\n    const last = merged[merged.length - 1];\n    if (last && start <= last[1]) last[1] = Math.max(last[1], end);\n    else merged.push([start, end]);\n  }\n  return merged;\n}"
+        "body": "function mergeIntervals(intervals) { intervals.sort((a, b) => a[0] - b[0]);\n  const merged = [];\n  for (const [start, end] of intervals) {\n    const last = merged[merged.length - 1];\n    if (last && start <= last[1]) last[1] = Math.max(last[1], end);\n    else merged.push([start, end]);\n  } return merged; }"
     },
     {
-        "body": "function groupAnagrams(strs) {\n  const groups = new Map();\n  for (const s of strs) {\n    const key = s.split('').sort().join('');\n    if (!groups.has(key)) groups.set(key, []);\n    groups.get(key).push(s);\n  }\n  return [...groups.values()];\n}"
+        "body": "function groupAnagrams(strs) { const groups = new Map();\n  for (const s of strs) {\n    const key = s.split('').sort().join('');\n    if (!groups.has(key)) groups.set(key, []);\n    groups.get(key).push(s);\n  } return [...groups.values()];\n}"
     },
     {
-        "body": "function longestCommonPrefix(strs) {\n  let prefix = strs[0] || '';\n  for (const s of strs) {\n    while (!s.startsWith(prefix)) {\n      prefix = prefix.slice(0, -1);\n      if (!prefix) return '';\n    }\n  }\n  return prefix;\n}"
+        "body": "function longestCommonPrefix(strs) { let prefix = strs[0] || '';\n  for (const s of strs) { while (!s.startsWith(prefix)) {\n      prefix = prefix.slice(0, -1);\n      if (!prefix) return '';\n    } }\n  return prefix;\n}"
     },
     {
-        "body": "function romanToInt(s) {\n  const values = { I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000 };\n  let total = 0;\n  for (let i = 0; i < s.length; i++) {\n    const value = values[s[i]];\n    total += value < values[s[i + 1]] ? -value : value;\n  }\n  return total;\n}"
+        "body": "function romanToInt(s) {\n  const values = { I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000 }; let total = 0;\n  for (let i = 0; i < s.length; i++) {\n    const value = values[s[i]];\n    total += value < values[s[i + 1]] ? -value : value;\n  } return total;\n}"
     },
     {
-        "body": "function isPalindromeNumber(x) {\n  if (x < 0) return false;\n  let reversed = 0;\n  let copy = x;\n  while (copy > 0) {\n    reversed = reversed * 10 + (copy % 10);\n    copy = Math.floor(copy / 10);\n  }\n  return reversed === x;\n}"
+        "body": "function isPalindromeNumber(x) { if (x < 0) return false;\n  let reversed = 0;\n  let copy = x;\n  while (copy > 0) { reversed = reversed * 10 + (copy % 10);\n    copy = Math.floor(copy / 10);\n  } return reversed === x;\n}"
     },
     {
-        "body": "function plusOne(digits) {\n  for (let i = digits.length - 1; i >= 0; i--) {\n    if (digits[i] < 9) {\n      digits[i]++;\n      return digits;\n    }\n    digits[i] = 0;\n  }\n  return [1, ...digits];\n}"
+        "body": "function plusOne(digits) {\n  for (let i = digits.length - 1; i >= 0; i--) {\n    if (digits[i] < 9) { digits[i]++;\n      return digits;\n    } digits[i] = 0;\n  } return [1, ...digits];\n}"
     },
     {
         "body": "function removeDuplicates(nums) {\n  let write = 0;\n  for (const n of nums) {\n    if (write === 0 || n !== nums[write - 1]) nums[write++] = n;\n  }\n  return write;\n}"
@@ -69,13 +69,13 @@
         "body": "function missingNumber(nums) {\n  const n = nums.length;\n  return (n * (n + 1)) / 2 - nums.reduce((a, b) => a + b, 0);\n}"
     },
     {
-        "body": "function fizzBuzz(n) {\n  const result = [];\n  for (let i = 1; i <= n; i++) {\n    if (i % 15 === 0) result.push('FizzBuzz');\n    else if (i % 3 === 0) result.push('Fizz');\n    else if (i % 5 === 0) result.push('Buzz');\n    else result.push(String(i));\n  }\n  return result;\n}"
+        "body": "function fizzBuzz(n) { const result = [];\n  for (let i = 1; i <= n; i++) {\n    if (i % 15 === 0) result.push('FizzBuzz');\n    else if (i % 3 === 0) result.push('Fizz');\n    else if (i % 5 === 0) result.push('Buzz');\n    else result.push(String(i));\n  } return result; }"
     },
     {
         "body": "function isPowerOfTwo(n) {\n  return n > 0 && (n & (n - 1)) === 0;\n}"
     },
     {
-        "body": "function hammingWeight(n) {\n  let count = 0;\n  while (n !== 0) {\n    count += n & 1;\n    n >>>= 1;\n  }\n  return count;\n}"
+        "body": "function hammingWeight(n) {\n  let count = 0;\n  while (n !== 0) {\n    count += n & 1;\n    n >>>= 1;\n  } return count;\n}"
     },
     {
         "body": "function reverseString(s) {\n  return s.split('').reverse().join('');\n}"
@@ -90,22 +90,22 @@
         "body": "function strStr(haystack, needle) {\n  if (!needle) return 0;\n  for (let i = 0; i <= haystack.length - needle.length; i++) {\n    if (haystack.slice(i, i + needle.length) === needle) return i;\n  }\n  return -1;\n}"
     },
     {
-        "body": "function addBinary(a, b) {\n  let carry = 0;\n  let result = '';\n  let i = a.length - 1;\n  let j = b.length - 1;\n  while (i >= 0 || j >= 0 || carry) {\n    let total = carry;\n    if (i >= 0) total += Number(a[i--]);\n    if (j >= 0) total += Number(b[j--]);\n    result = String(total % 2) + result;\n    carry = Math.floor(total / 2);\n  }\n  return result;\n}"
+        "body": "function addBinary(a, b) { let carry = 0;\n  let result = ''; let i = a.length - 1; let j = b.length - 1;\n  while (i >= 0 || j >= 0 || carry) { let total = carry;\n    if (i >= 0) total += Number(a[i--]);\n    if (j >= 0) total += Number(b[j--]);\n    result = String(total % 2) + result;\n    carry = Math.floor(total / 2); } return result; }"
     },
     {
-        "body": "function mySqrt(x) {\n  if (x < 2) return x;\n  let lo = 1;\n  let hi = Math.floor(x / 2);\n  let answer = 0;\n  while (lo <= hi) {\n    const mid = Math.floor((lo + hi) / 2);\n    if (mid * mid <= x) {\n      answer = mid;\n      lo = mid + 1;\n    } else {\n      hi = mid - 1;\n    }\n  }\n  return answer;\n}"
+        "body": "function mySqrt(x) { if (x < 2) return x;\n  let lo = 1; let hi = Math.floor(x / 2);\n  let answer = 0;\n  while (lo <= hi) { const mid = Math.floor((lo + hi) / 2);\n    if (mid * mid <= x) { answer = mid;\n      lo = mid + 1; } else { hi = mid - 1; } }\n  return answer; }"
     },
     {
         "body": "function titleToNumber(columnTitle) {\n  let result = 0;\n  for (const c of columnTitle) {\n    result = result * 26 + (c.charCodeAt(0) - 64);\n  }\n  return result;\n}"
     },
     {
-        "body": "function isHappy(n) {\n  const seen = new Set();\n  while (n !== 1 && !seen.has(n)) {\n    seen.add(n);\n    n = String(n).split('').reduce((sum, d) => sum + Number(d) ** 2, 0);\n  }\n  return n === 1;\n}"
+        "body": "function isHappy(n) {\n  const seen = new Set();\n  while (n !== 1 && !seen.has(n)) {\n    seen.add(n);\n    n = String(n).split('').reduce((sum, d) => sum + Number(d) ** 2, 0);\n  } return n === 1;\n}"
     },
     {
-        "body": "function isIsomorphic(s, t) {\n  if (s.length !== t.length) return false;\n  const forward = new Map();\n  const backward = new Map();\n  for (let i = 0; i < s.length; i++) {\n    const a = s[i];\n    const b = t[i];\n    if (forward.has(a) && forward.get(a) !== b) return false;\n    if (backward.has(b) && backward.get(b) !== a) return false;\n    forward.set(a, b);\n    backward.set(b, a);\n  }\n  return true;\n}"
+        "body": "function isIsomorphic(s, t) { if (s.length !== t.length) return false;\n  const forward = new Map(); const backward = new Map();\n  for (let i = 0; i < s.length; i++) { const a = s[i];\n    const b = t[i];\n    if (forward.has(a) && forward.get(a) !== b) return false;\n    if (backward.has(b) && backward.get(b) !== a) return false;\n    forward.set(a, b); backward.set(b, a); } return true; }"
     },
     {
-        "body": "function wordPattern(pattern, s) {\n  const words = s.split(' ');\n  if (pattern.length !== words.length) return false;\n  const forward = new Map();\n  const backward = new Map();\n  for (let i = 0; i < words.length; i++) {\n    const a = pattern[i];\n    const b = words[i];\n    if (forward.has(a) && forward.get(a) !== b) return false;\n    if (backward.has(b) && backward.get(b) !== a) return false;\n    forward.set(a, b);\n    backward.set(b, a);\n  }\n  return true;\n}"
+        "body": "function wordPattern(pattern, s) { const words = s.split(' ');\n  if (pattern.length !== words.length) return false;\n  const forward = new Map(); const backward = new Map();\n  for (let i = 0; i < words.length; i++) { const a = pattern[i];\n    const b = words[i]; if (forward.has(a) && forward.get(a) !== b) return false;\n    if (backward.has(b) && backward.get(b) !== a) return false;\n    forward.set(a, b); backward.set(b, a); } return true; }"
     },
     {
         "body": "function intersection(nums1, nums2) {\n  const set = new Set(nums1);\n  return nums2.filter((n) => set.has(n)).filter((n, i, arr) => arr.indexOf(n) === i);\n}"
@@ -123,30 +123,30 @@
         "body": "function invertTree(root) {\n  if (!root) return null;\n  [root.left, root.right] = [invertTree(root.right), invertTree(root.left)];\n  return root;\n}"
     },
     {
-        "body": "function isSymmetric(root) {\n  const mirror = (a, b) => {\n    if (!a && !b) return true;\n    if (!a || !b || a.val !== b.val) return false;\n    return mirror(a.left, b.right) && mirror(a.right, b.left);\n  };\n  return !root || mirror(root.left, root.right);\n}"
+        "body": "function isSymmetric(root) {\n  const mirror = (a, b) => {\n    if (!a && !b) return true;\n    if (!a || !b || a.val !== b.val) return false;\n    return mirror(a.left, b.right) && mirror(a.right, b.left);\n  }; return !root || mirror(root.left, root.right);\n}"
     },
     {
-        "body": "function diameterOfBinaryTree(root) {\n  let best = 0;\n  const depth = (node) => {\n    if (!node) return 0;\n    const left = depth(node.left);\n    const right = depth(node.right);\n    best = Math.max(best, left + right);\n    return 1 + Math.max(left, right);\n  };\n  depth(root);\n  return best;\n}"
+        "body": "function diameterOfBinaryTree(root) { let best = 0;\n  const depth = (node) => { if (!node) return 0;\n    const left = depth(node.left);\n    const right = depth(node.right);\n    best = Math.max(best, left + right);\n    return 1 + Math.max(left, right); }; depth(root);\n  return best; }"
     },
     {
-        "body": "function isBalanced(root) {\n  const height = (node) => {\n    if (!node) return 0;\n    const left = height(node.left);\n    const right = height(node.right);\n    if (left < 0 || right < 0 || Math.abs(left - right) > 1) return -1;\n    return 1 + Math.max(left, right);\n  };\n  return height(root) >= 0;\n}"
+        "body": "function isBalanced(root) { const height = (node) => { if (!node) return 0;\n    const left = height(node.left);\n    const right = height(node.right);\n    if (left < 0 || right < 0 || Math.abs(left - right) > 1) return -1;\n    return 1 + Math.max(left, right);\n  }; return height(root) >= 0;\n}"
     },
     {
         "body": "function hasPathSum(root, targetSum) {\n  if (!root) return false;\n  if (!root.left && !root.right) return root.val === targetSum;\n  return hasPathSum(root.left, targetSum - root.val)\n    || hasPathSum(root.right, targetSum - root.val);\n}"
     },
     {
-        "body": "function lowestCommonAncestor(root, p, q) {\n  while (root) {\n    if (p.val < root.val && q.val < root.val) root = root.left;\n    else if (p.val > root.val && q.val > root.val) root = root.right;\n    else return root;\n  }\n  return null;\n}"
+        "body": "function lowestCommonAncestor(root, p, q) {\n  while (root) {\n    if (p.val < root.val && q.val < root.val) root = root.left;\n    else if (p.val > root.val && q.val > root.val) root = root.right;\n    else return root;\n  } return null;\n}"
     },
     {
-        "body": "function searchInsert(nums, target) {\n  let lo = 0;\n  let hi = nums.length;\n  while (lo < hi) {\n    const mid = Math.floor((lo + hi) / 2);\n    if (nums[mid] < target) lo = mid + 1;\n    else hi = mid;\n  }\n  return lo;\n}"
+        "body": "function searchInsert(nums, target) { let lo = 0;\n  let hi = nums.length;\n  while (lo < hi) { const mid = Math.floor((lo + hi) / 2);\n    if (nums[mid] < target) lo = mid + 1;\n    else hi = mid;\n  } return lo;\n}"
     },
     {
-        "body": "function twoSumSorted(numbers, target) {\n  let left = 0;\n  let right = numbers.length - 1;\n  while (left < right) {\n    const total = numbers[left] + numbers[right];\n    if (total === target) return [left + 1, right + 1];\n    if (total < target) left++;\n    else right--;\n  }\n  return [];\n}"
+        "body": "function twoSumSorted(numbers, target) { let left = 0;\n  let right = numbers.length - 1;\n  while (left < right) { const total = numbers[left] + numbers[right];\n    if (total === target) return [left + 1, right + 1];\n    if (total < target) left++;\n    else right--;\n  } return []; }"
     },
     {
-        "body": "function lengthOfLongestSubstring(s) {\n  const last = new Map();\n  let start = 0;\n  let best = 0;\n  for (let i = 0; i < s.length; i++) {\n    const c = s[i];\n    if (last.has(c) && last.get(c) >= start) start = last.get(c) + 1;\n    last.set(c, i);\n    best = Math.max(best, i - start + 1);\n  }\n  return best;\n}"
+        "body": "function lengthOfLongestSubstring(s) { const last = new Map();\n  let start = 0;\n  let best = 0;\n  for (let i = 0; i < s.length; i++) { const c = s[i];\n    if (last.has(c) && last.get(c) >= start) start = last.get(c) + 1;\n    last.set(c, i);\n    best = Math.max(best, i - start + 1); } return best; }"
     },
     {
-        "body": "function maxArea(height) {\n  let left = 0;\n  let right = height.length - 1;\n  let best = 0;\n  while (left < right) {\n    best = Math.max(best, Math.min(height[left], height[right]) * (right - left));\n    if (height[left] < height[right]) left++;\n    else right--;\n  }\n  return best;\n}"
+        "body": "function maxArea(height) { let left = 0;\n  let right = height.length - 1;\n  let best = 0;\n  while (left < right) {\n    best = Math.max(best, Math.min(height[left], height[right]) * (right - left));\n    if (height[left] < height[right]) left++;\n    else right--; } return best; }"
     }
 ]

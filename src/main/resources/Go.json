@@ -1,87 +1,87 @@
 [
     {
-        "body": "func twoSum(nums []int, target int) []int {\n\tseen := make(map[int]int)\n\tfor i, n := range nums {\n\t\tif j, ok := seen[target-n]; ok {\n\t\t\treturn []int{j, i}\n\t\t}\n\t\tseen[n] = i\n\t}\n\treturn nil\n}"
+        "body": "func twoSum(nums []int, target int) []int {\n\tseen := make(map[int]int)\n\tfor i, n := range nums {\n\t\tif j, ok := seen[target-n]; ok { return []int{j, i}\n\t\t} seen[n] = i\n\t} return nil\n}"
     },
     {
-        "body": "func isValid(s string) bool {\n\tstack := []rune{}\n\tpairs := map[rune]rune{')': '(', ']': '[', '}': '{'}\n\tfor _, c := range s {\n\t\tif c == '(' || c == '[' || c == '{' {\n\t\t\tstack = append(stack, c)\n\t\t} else if len(stack) == 0 || stack[len(stack)-1] != pairs[c] {\n\t\t\treturn false\n\t\t} else {\n\t\t\tstack = stack[:len(stack)-1]\n\t\t}\n\t}\n\treturn len(stack) == 0\n}"
+        "body": "func isValid(s string) bool { stack := []rune{}\n\tpairs := map[rune]rune{')': '(', ']': '[', '}': '{'}\n\tfor _, c := range s { if c == '(' || c == '[' || c == '{' { stack = append(stack, c)\n\t\t} else if len(stack) == 0 || stack[len(stack)-1] != pairs[c] { return false\n\t\t} else { stack = stack[:len(stack)-1]\n\t\t} }\n\treturn len(stack) == 0 }"
     },
     {
-        "body": "type ListNode struct {\n\tVal  int\n\tNext *ListNode\n}\n\nfunc reverseList(head *ListNode) *ListNode {\n\tvar prev *ListNode\n\tfor head != nil {\n\t\tnext := head.Next\n\t\thead.Next = prev\n\t\tprev = head\n\t\thead = next\n\t}\n\treturn prev\n}"
+        "body": "type ListNode struct { Val  int\n\tNext *ListNode\n} func reverseList(head *ListNode) *ListNode { var prev *ListNode\n\tfor head != nil { next := head.Next\n\t\thead.Next = prev\n\t\tprev = head\n\t\thead = next } return prev }"
     },
     {
-        "body": "func maxSubArray(nums []int) int {\n\tbest, cur := nums[0], nums[0]\n\tfor _, n := range nums[1:] {\n\t\tif cur+n > n {\n\t\t\tcur += n\n\t\t} else {\n\t\t\tcur = n\n\t\t}\n\t\tif cur > best {\n\t\t\tbest = cur\n\t\t}\n\t}\n\treturn best\n}"
+        "body": "func maxSubArray(nums []int) int {\n\tbest, cur := nums[0], nums[0]\n\tfor _, n := range nums[1:] { if cur+n > n { cur += n\n\t\t} else { cur = n\n\t\t} if cur > best { best = cur\n\t\t} }\n\treturn best }"
     },
     {
-        "body": "type ListNode struct {\n\tVal  int\n\tNext *ListNode\n}\n\nfunc mergeTwoLists(a, b *ListNode) *ListNode {\n\tdummy := &ListNode{}\n\ttail := dummy\n\tfor a != nil && b != nil {\n\t\tif a.Val <= b.Val {\n\t\t\ttail.Next = a\n\t\t\ta = a.Next\n\t\t} else {\n\t\t\ttail.Next = b\n\t\t\tb = b.Next\n\t\t}\n\t\ttail = tail.Next\n\t}\n\tif a != nil {\n\t\ttail.Next = a\n\t} else {\n\t\ttail.Next = b\n\t}\n\treturn dummy.Next\n}"
+        "body": "type ListNode struct { Val  int\n\tNext *ListNode } func mergeTwoLists(a, b *ListNode) *ListNode { dummy := &ListNode{}\n\ttail := dummy\n\tfor a != nil && b != nil { if a.Val <= b.Val { tail.Next = a\n\t\t\ta = a.Next } else { tail.Next = b\n\t\t\tb = b.Next } tail = tail.Next } if a != nil { tail.Next = a\n\t} else { tail.Next = b } return dummy.Next }"
     },
     {
-        "body": "func maxProfit(prices []int) int {\n\tbest, low := 0, prices[0]\n\tfor _, price := range prices {\n\t\tif price-low > best {\n\t\t\tbest = price - low\n\t\t}\n\t\tif price < low {\n\t\t\tlow = price\n\t\t}\n\t}\n\treturn best\n}"
+        "body": "func maxProfit(prices []int) int { best, low := 0, prices[0]\n\tfor _, price := range prices {\n\t\tif price-low > best { best = price - low\n\t\t} if price < low { low = price\n\t\t} }\n\treturn best\n}"
     },
     {
-        "body": "func isPalindrome(s string) bool {\n\tchars := []rune{}\n\tfor _, c := range s {\n\t\tif c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9' {\n\t\t\tchars = append(chars, unicode.ToLower(c))\n\t\t}\n\t}\n\tfor i, j := 0, len(chars)-1; i < j; i, j = i+1, j-1 {\n\t\tif chars[i] != chars[j] {\n\t\t\treturn false\n\t\t}\n\t}\n\treturn true\n}"
+        "body": "func isPalindrome(s string) bool { chars := []rune{}\n\tfor _, c := range s { if c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9' {\n\t\t\tchars = append(chars, unicode.ToLower(c))\n\t\t} }\n\tfor i, j := 0, len(chars)-1; i < j; i, j = i+1, j-1 { if chars[i] != chars[j] { return false\n\t\t} }\n\treturn true }"
     },
     {
         "body": "func climbStairs(n int) int {\n\ta, b := 1, 1\n\tfor i := 0; i < n-1; i++ {\n\t\ta, b = b, a+b\n\t}\n\treturn b\n}"
     },
     {
-        "body": "func binarySearch(arr []int, target int) int {\n\tlo, hi := 0, len(arr)-1\n\tfor lo <= hi {\n\t\tmid := lo + (hi-lo)/2\n\t\tif arr[mid] == target {\n\t\t\treturn mid\n\t\t} else if arr[mid] < target {\n\t\t\tlo = mid + 1\n\t\t} else {\n\t\t\thi = mid - 1\n\t\t}\n\t}\n\treturn -1\n}"
+        "body": "func binarySearch(arr []int, target int) int { lo, hi := 0, len(arr)-1\n\tfor lo <= hi { mid := lo + (hi-lo)/2\n\t\tif arr[mid] == target { return mid\n\t\t} else if arr[mid] < target { lo = mid + 1\n\t\t} else { hi = mid - 1\n\t\t} }\n\treturn -1 }"
     },
     {
         "body": "func singleNumber(nums []int) int {\n\tresult := 0\n\tfor _, n := range nums {\n\t\tresult ^= n\n\t}\n\treturn result\n}"
     },
     {
-        "body": "func containsDuplicate(nums []int) bool {\n\tseen := make(map[int]bool)\n\tfor _, n := range nums {\n\t\tif seen[n] {\n\t\t\treturn true\n\t\t}\n\t\tseen[n] = true\n\t}\n\treturn false\n}"
+        "body": "func containsDuplicate(nums []int) bool {\n\tseen := make(map[int]bool)\n\tfor _, n := range nums {\n\t\tif seen[n] { return true\n\t\t} seen[n] = true\n\t} return false\n}"
     },
     {
-        "body": "func majorityElement(nums []int) int {\n\tcount, candidate := 0, 0\n\tfor _, n := range nums {\n\t\tif count == 0 {\n\t\t\tcandidate = n\n\t\t}\n\t\tif n == candidate {\n\t\t\tcount++\n\t\t} else {\n\t\t\tcount--\n\t\t}\n\t}\n\treturn candidate\n}"
+        "body": "func majorityElement(nums []int) int { count, candidate := 0, 0\n\tfor _, n := range nums { if count == 0 { candidate = n\n\t\t} if n == candidate { count++\n\t\t} else { count--\n\t\t} }\n\treturn candidate\n}"
     },
     {
-        "body": "func moveZeroes(nums []int) {\n\twrite := 0\n\tfor _, n := range nums {\n\t\tif n != 0 {\n\t\t\tnums[write] = n\n\t\t\twrite++\n\t\t}\n\t}\n\tfor write < len(nums) {\n\t\tnums[write] = 0\n\t\twrite++\n\t}\n}"
+        "body": "func moveZeroes(nums []int) { write := 0\n\tfor _, n := range nums { if n != 0 { nums[write] = n\n\t\t\twrite++\n\t\t} }\n\tfor write < len(nums) { nums[write] = 0\n\t\twrite++\n\t} }"
     },
     {
-        "body": "func productExceptSelf(nums []int) []int {\n\tn := len(nums)\n\tres := make([]int, n)\n\tres[0] = 1\n\tfor i := 1; i < n; i++ {\n\t\tres[i] = res[i-1] * nums[i-1]\n\t}\n\tright := 1\n\tfor i := n - 1; i >= 0; i-- {\n\t\tres[i] *= right\n\t\tright *= nums[i]\n\t}\n\treturn res\n}"
+        "body": "func productExceptSelf(nums []int) []int { n := len(nums)\n\tres := make([]int, n)\n\tres[0] = 1\n\tfor i := 1; i < n; i++ { res[i] = res[i-1] * nums[i-1]\n\t} right := 1\n\tfor i := n - 1; i >= 0; i-- { res[i] *= right\n\t\tright *= nums[i] } return res }"
     },
     {
-        "body": "func merge(intervals [][]int) [][]int {\n\tsort.Slice(intervals, func(i, j int) bool {\n\t\treturn intervals[i][0] < intervals[j][0]\n\t})\n\tmerged := [][]int{}\n\tfor _, interval := range intervals {\n\t\tlast := len(merged) - 1\n\t\tif last < 0 || merged[last][1] < interval[0] {\n\t\t\tmerged = append(merged, interval)\n\t\t} else if interval[1] > merged[last][1] {\n\t\t\tmerged[last][1] = interval[1]\n\t\t}\n\t}\n\treturn merged\n}"
+        "body": "func merge(intervals [][]int) [][]int { sort.Slice(intervals, func(i, j int) bool {\n\t\treturn intervals[i][0] < intervals[j][0] }) merged := [][]int{}\n\tfor _, interval := range intervals { last := len(merged) - 1\n\t\tif last < 0 || merged[last][1] < interval[0] { merged = append(merged, interval)\n\t\t} else if interval[1] > merged[last][1] { merged[last][1] = interval[1]\n\t\t} }\n\treturn merged }"
     },
     {
-        "body": "func groupAnagrams(strs []string) [][]string {\n\tgroups := make(map[string][]string)\n\tfor _, s := range strs {\n\t\tchars := strings.Split(s, \"\")\n\t\tsort.Strings(chars)\n\t\tkey := strings.Join(chars, \"\")\n\t\tgroups[key] = append(groups[key], s)\n\t}\n\tresult := [][]string{}\n\tfor _, group := range groups {\n\t\tresult = append(result, group)\n\t}\n\treturn result\n}"
+        "body": "func groupAnagrams(strs []string) [][]string { groups := make(map[string][]string)\n\tfor _, s := range strs { chars := strings.Split(s, \"\")\n\t\tsort.Strings(chars)\n\t\tkey := strings.Join(chars, \"\")\n\t\tgroups[key] = append(groups[key], s) } result := [][]string{}\n\tfor _, group := range groups { result = append(result, group)\n\t} return result }"
     },
     {
-        "body": "func longestCommonPrefix(strs []string) string {\n\tprefix := strs[0]\n\tfor _, s := range strs {\n\t\tfor !strings.HasPrefix(s, prefix) {\n\t\t\tprefix = prefix[:len(prefix)-1]\n\t\t\tif prefix == \"\" {\n\t\t\t\treturn \"\"\n\t\t\t}\n\t\t}\n\t}\n\treturn prefix\n}"
+        "body": "func longestCommonPrefix(strs []string) string { prefix := strs[0]\n\tfor _, s := range strs { for !strings.HasPrefix(s, prefix) {\n\t\t\tprefix = prefix[:len(prefix)-1]\n\t\t\tif prefix == \"\" { return \"\"\n\t\t\t} }\n\t} return prefix\n}"
     },
     {
-        "body": "func romanToInt(s string) int {\n\tvalues := map[byte]int{'I': 1, 'V': 5, 'X': 10, 'L': 50, 'C': 100, 'D': 500, 'M': 1000}\n\ttotal := 0\n\tfor i := 0; i < len(s); i++ {\n\t\tif i+1 < len(s) && values[s[i]] < values[s[i+1]] {\n\t\t\ttotal -= values[s[i]]\n\t\t} else {\n\t\t\ttotal += values[s[i]]\n\t\t}\n\t}\n\treturn total\n}"
+        "body": "func romanToInt(s string) int {\n\tvalues := map[byte]int{'I': 1, 'V': 5, 'X': 10, 'L': 50, 'C': 100, 'D': 500, 'M': 1000}\n\ttotal := 0\n\tfor i := 0; i < len(s); i++ {\n\t\tif i+1 < len(s) && values[s[i]] < values[s[i+1]] { total -= values[s[i]]\n\t\t} else { total += values[s[i]] } }\n\treturn total }"
     },
     {
-        "body": "func isPalindromeNumber(x int) bool {\n\tif x < 0 {\n\t\treturn false\n\t}\n\toriginal, reversed := x, 0\n\tfor original > 0 {\n\t\treversed = reversed*10 + original%10\n\t\toriginal /= 10\n\t}\n\treturn reversed == x\n}"
+        "body": "func isPalindromeNumber(x int) bool {\n\tif x < 0 { return false\n\t} original, reversed := x, 0\n\tfor original > 0 { reversed = reversed*10 + original%10\n\t\toriginal /= 10\n\t} return reversed == x\n}"
     },
     {
-        "body": "func plusOne(digits []int) []int {\n\tfor i := len(digits) - 1; i >= 0; i-- {\n\t\tif digits[i] < 9 {\n\t\t\tdigits[i]++\n\t\t\treturn digits\n\t\t}\n\t\tdigits[i] = 0\n\t}\n\treturn append([]int{1}, digits...)\n}"
+        "body": "func plusOne(digits []int) []int {\n\tfor i := len(digits) - 1; i >= 0; i-- {\n\t\tif digits[i] < 9 { digits[i]++\n\t\t\treturn digits\n\t\t} digits[i] = 0\n\t} return append([]int{1}, digits...)\n}"
     },
     {
-        "body": "func removeDuplicates(nums []int) int {\n\twrite := 0\n\tfor _, n := range nums {\n\t\tif write == 0 || n != nums[write-1] {\n\t\t\tnums[write] = n\n\t\t\twrite++\n\t\t}\n\t}\n\treturn write\n}"
+        "body": "func removeDuplicates(nums []int) int { write := 0\n\tfor _, n := range nums {\n\t\tif write == 0 || n != nums[write-1] { nums[write] = n\n\t\t\twrite++\n\t\t} }\n\treturn write\n}"
     },
     {
-        "body": "func rotate(nums []int, k int) {\n\tn := len(nums)\n\tk %= n\n\treverse := func(left, right int) {\n\t\tfor left < right {\n\t\t\tnums[left], nums[right] = nums[right], nums[left]\n\t\t\tleft++\n\t\t\tright--\n\t\t}\n\t}\n\treverse(0, n-1)\n\treverse(0, k-1)\n\treverse(k, n-1)\n}"
+        "body": "func rotate(nums []int, k int) { n := len(nums)\n\tk %= n\n\treverse := func(left, right int) { for left < right { nums[left], nums[right] = nums[right], nums[left]\n\t\t\tleft++ right-- } }\n\treverse(0, n-1)\n\treverse(0, k-1)\n\treverse(k, n-1) }"
     },
     {
-        "body": "func missingNumber(nums []int) int {\n\tn := len(nums)\n\ttotal := n * (n + 1) / 2\n\tfor _, num := range nums {\n\t\ttotal -= num\n\t}\n\treturn total\n}"
+        "body": "func missingNumber(nums []int) int {\n\tn := len(nums)\n\ttotal := n * (n + 1) / 2\n\tfor _, num := range nums {\n\t\ttotal -= num\n\t} return total\n}"
     },
     {
-        "body": "func fizzBuzz(n int) []string {\n\tresult := make([]string, 0, n)\n\tfor i := 1; i <= n; i++ {\n\t\tswitch {\n\t\tcase i%15 == 0:\n\t\t\tresult = append(result, \"FizzBuzz\")\n\t\tcase i%3 == 0:\n\t\t\tresult = append(result, \"Fizz\")\n\t\tcase i%5 == 0:\n\t\t\tresult = append(result, \"Buzz\")\n\t\tdefault:\n\t\t\tresult = append(result, strconv.Itoa(i))\n\t\t}\n\t}\n\treturn result\n}"
+        "body": "func fizzBuzz(n int) []string { result := make([]string, 0, n)\n\tfor i := 1; i <= n; i++ { switch { case i%15 == 0:\n\t\t\tresult = append(result, \"FizzBuzz\")\n\t\tcase i%3 == 0: result = append(result, \"Fizz\")\n\t\tcase i%5 == 0: result = append(result, \"Buzz\")\n\t\tdefault: result = append(result, strconv.Itoa(i)) } }\n\treturn result }"
     },
     {
         "body": "func isPowerOfTwo(n int) bool {\n\treturn n > 0 && n&(n-1) == 0\n}"
     },
     {
-        "body": "func hammingWeight(n uint32) int {\n\tcount := 0\n\tfor n != 0 {\n\t\tcount += int(n & 1)\n\t\tn >>= 1\n\t}\n\treturn count\n}"
+        "body": "func hammingWeight(n uint32) int {\n\tcount := 0\n\tfor n != 0 {\n\t\tcount += int(n & 1)\n\t\tn >>= 1\n\t} return count\n}"
     },
     {
         "body": "func reverseString(s []byte) {\n\tfor left, right := 0, len(s)-1; left < right; left, right = left+1, right-1 {\n\t\ts[left], s[right] = s[right], s[left]\n\t}\n}"
     },
     {
-        "body": "func reverse(x int) int {\n\tresult := 0\n\tfor x != 0 {\n\t\tresult = result*10 + x%10\n\t\tx /= 10\n\t}\n\tif result < math.MinInt32 || result > math.MaxInt32 {\n\t\treturn 0\n\t}\n\treturn result\n}"
+        "body": "func reverse(x int) int { result := 0\n\tfor x != 0 { result = result*10 + x%10\n\t\tx /= 10\n\t} if result < math.MinInt32 || result > math.MaxInt32 {\n\t\treturn 0\n\t} return result\n}"
     },
     {
         "body": "func lengthOfLastWord(s string) int {\n\twords := strings.Fields(s)\n\tif len(words) == 0 {\n\t\treturn 0\n\t}\n\treturn len(words[len(words)-1])\n}"
@@ -90,63 +90,63 @@
         "body": "func strStr(haystack string, needle string) int {\n\tif needle == \"\" {\n\t\treturn 0\n\t}\n\treturn strings.Index(haystack, needle)\n}"
     },
     {
-        "body": "func addBinary(a string, b string) string {\n\ti, j, carry := len(a)-1, len(b)-1, 0\n\tresult := []byte{}\n\tfor i >= 0 || j >= 0 || carry > 0 {\n\t\ttotal := carry\n\t\tif i >= 0 {\n\t\t\ttotal += int(a[i] - '0')\n\t\t\ti--\n\t\t}\n\t\tif j >= 0 {\n\t\t\ttotal += int(b[j] - '0')\n\t\t\tj--\n\t\t}\n\t\tresult = append(result, byte(total%2)+'0')\n\t\tcarry = total / 2\n\t}\n\tfor left, right := 0, len(result)-1; left < right; left, right = left+1, right-1 {\n\t\tresult[left], result[right] = result[right], result[left]\n\t}\n\treturn string(result)\n}"
+        "body": "func addBinary(a string, b string) string { i, j, carry := len(a)-1, len(b)-1, 0\n\tresult := []byte{}\n\tfor i >= 0 || j >= 0 || carry > 0 { total := carry\n\t\tif i >= 0 { total += int(a[i] - '0')\n\t\t\ti-- } if j >= 0 { total += int(b[j] - '0')\n\t\t\tj-- } result = append(result, byte(total%2)+'0')\n\t\tcarry = total / 2 } for left, right := 0, len(result)-1; left < right; left, right = left+1, right-1 { result[left], result[right] = result[right], result[left] } return string(result) }"
     },
     {
-        "body": "func mySqrt(x int) int {\n\tif x < 2 {\n\t\treturn x\n\t}\n\tlo, hi, answer := 1, x/2, 0\n\tfor lo <= hi {\n\t\tmid := lo + (hi-lo)/2\n\t\tif mid*mid <= x {\n\t\t\tanswer = mid\n\t\t\tlo = mid + 1\n\t\t} else {\n\t\t\thi = mid - 1\n\t\t}\n\t}\n\treturn answer\n}"
+        "body": "func mySqrt(x int) int { if x < 2 { return x\n\t} lo, hi, answer := 1, x/2, 0\n\tfor lo <= hi { mid := lo + (hi-lo)/2\n\t\tif mid*mid <= x { answer = mid\n\t\t\tlo = mid + 1\n\t\t} else { hi = mid - 1 } }\n\treturn answer }"
     },
     {
         "body": "func titleToNumber(columnTitle string) int {\n\tresult := 0\n\tfor _, c := range columnTitle {\n\t\tresult = result*26 + int(c-'A'+1)\n\t}\n\treturn result\n}"
     },
     {
-        "body": "func isHappy(n int) bool {\n\tseen := make(map[int]bool)\n\tfor n != 1 && !seen[n] {\n\t\tseen[n] = true\n\t\ttotal := 0\n\t\tfor n > 0 {\n\t\t\tdigit := n % 10\n\t\t\ttotal += digit * digit\n\t\t\tn /= 10\n\t\t}\n\t\tn = total\n\t}\n\treturn n == 1\n}"
+        "body": "func isHappy(n int) bool { seen := make(map[int]bool)\n\tfor n != 1 && !seen[n] { seen[n] = true\n\t\ttotal := 0\n\t\tfor n > 0 { digit := n % 10\n\t\t\ttotal += digit * digit\n\t\t\tn /= 10 } n = total\n\t} return n == 1 }"
     },
     {
-        "body": "func isIsomorphic(s string, t string) bool {\n\tforward := make(map[byte]byte)\n\tbackward := make(map[byte]byte)\n\tfor i := 0; i < len(s); i++ {\n\t\ta, b := s[i], t[i]\n\t\tif v, ok := forward[a]; ok && v != b {\n\t\t\treturn false\n\t\t}\n\t\tif v, ok := backward[b]; ok && v != a {\n\t\t\treturn false\n\t\t}\n\t\tforward[a] = b\n\t\tbackward[b] = a\n\t}\n\treturn true\n}"
+        "body": "func isIsomorphic(s string, t string) bool { forward := make(map[byte]byte)\n\tbackward := make(map[byte]byte)\n\tfor i := 0; i < len(s); i++ { a, b := s[i], t[i]\n\t\tif v, ok := forward[a]; ok && v != b { return false\n\t\t} if v, ok := backward[b]; ok && v != a { return false\n\t\t} forward[a] = b\n\t\tbackward[b] = a } return true }"
     },
     {
-        "body": "func wordPattern(pattern string, s string) bool {\n\twords := strings.Fields(s)\n\tif len(pattern) != len(words) {\n\t\treturn false\n\t}\n\tforward := make(map[byte]string)\n\tbackward := make(map[string]byte)\n\tfor i := 0; i < len(words); i++ {\n\t\ta, b := pattern[i], words[i]\n\t\tif v, ok := forward[a]; ok && v != b {\n\t\t\treturn false\n\t\t}\n\t\tif v, ok := backward[b]; ok && v != a {\n\t\t\treturn false\n\t\t}\n\t\tforward[a] = b\n\t\tbackward[b] = a\n\t}\n\treturn true\n}"
+        "body": "func wordPattern(pattern string, s string) bool { words := strings.Fields(s)\n\tif len(pattern) != len(words) { return false } forward := make(map[byte]string)\n\tbackward := make(map[string]byte)\n\tfor i := 0; i < len(words); i++ { a, b := pattern[i], words[i]\n\t\tif v, ok := forward[a]; ok && v != b { return false\n\t\t} if v, ok := backward[b]; ok && v != a { return false } forward[a] = b\n\t\tbackward[b] = a } return true }"
     },
     {
-        "body": "func intersection(nums1 []int, nums2 []int) []int {\n\tset := make(map[int]bool)\n\tfor _, n := range nums1 {\n\t\tset[n] = true\n\t}\n\tresult := []int{}\n\tfor _, n := range nums2 {\n\t\tif set[n] {\n\t\t\tresult = append(result, n)\n\t\t\tdelete(set, n)\n\t\t}\n\t}\n\treturn result\n}"
+        "body": "func intersection(nums1 []int, nums2 []int) []int {\n\tset := make(map[int]bool)\n\tfor _, n := range nums1 { set[n] = true\n\t} result := []int{}\n\tfor _, n := range nums2 { if set[n] { result = append(result, n)\n\t\t\tdelete(set, n) } }\n\treturn result }"
     },
     {
-        "body": "func sortedSquares(nums []int) []int {\n\tresult := make([]int, len(nums))\n\tleft, right := 0, len(nums)-1\n\tfor i := len(nums) - 1; i >= 0; i-- {\n\t\tif abs(nums[left]) > abs(nums[right]) {\n\t\t\tresult[i] = nums[left] * nums[left]\n\t\t\tleft++\n\t\t} else {\n\t\t\tresult[i] = nums[right] * nums[right]\n\t\t\tright--\n\t\t}\n\t}\n\treturn result\n}"
+        "body": "func sortedSquares(nums []int) []int { result := make([]int, len(nums))\n\tleft, right := 0, len(nums)-1\n\tfor i := len(nums) - 1; i >= 0; i-- {\n\t\tif abs(nums[left]) > abs(nums[right]) { result[i] = nums[left] * nums[left]\n\t\t\tleft++ } else { result[i] = nums[right] * nums[right]\n\t\t\tright-- } }\n\treturn result }"
     },
     {
-        "body": "type TreeNode struct {\n\tVal   int\n\tLeft  *TreeNode\n\tRight *TreeNode\n}\n\nfunc maxDepth(root *TreeNode) int {\n\tif root == nil {\n\t\treturn 0\n\t}\n\tleft := maxDepth(root.Left)\n\tright := maxDepth(root.Right)\n\tif left > right {\n\t\treturn 1 + left\n\t}\n\treturn 1 + right\n}"
+        "body": "type TreeNode struct { Val   int\n\tLeft  *TreeNode\n\tRight *TreeNode\n} func maxDepth(root *TreeNode) int { if root == nil { return 0\n\t} left := maxDepth(root.Left)\n\tright := maxDepth(root.Right)\n\tif left > right { return 1 + left } return 1 + right }"
     },
     {
-        "body": "type TreeNode struct {\n\tVal   int\n\tLeft  *TreeNode\n\tRight *TreeNode\n}\n\nfunc isSameTree(p, q *TreeNode) bool {\n\tif p == nil && q == nil {\n\t\treturn true\n\t}\n\tif p == nil || q == nil || p.Val != q.Val {\n\t\treturn false\n\t}\n\treturn isSameTree(p.Left, q.Left) && isSameTree(p.Right, q.Right)\n}"
+        "body": "type TreeNode struct { Val   int\n\tLeft  *TreeNode\n\tRight *TreeNode\n} func isSameTree(p, q *TreeNode) bool { if p == nil && q == nil { return true\n\t} if p == nil || q == nil || p.Val != q.Val { return false\n\t} return isSameTree(p.Left, q.Left) && isSameTree(p.Right, q.Right)\n}"
     },
     {
-        "body": "type TreeNode struct {\n\tVal   int\n\tLeft  *TreeNode\n\tRight *TreeNode\n}\n\nfunc invertTree(root *TreeNode) *TreeNode {\n\tif root == nil {\n\t\treturn nil\n\t}\n\troot.Left, root.Right = invertTree(root.Right), invertTree(root.Left)\n\treturn root\n}"
+        "body": "type TreeNode struct { Val   int\n\tLeft  *TreeNode\n\tRight *TreeNode\n} func invertTree(root *TreeNode) *TreeNode {\n\tif root == nil { return nil\n\t} root.Left, root.Right = invertTree(root.Right), invertTree(root.Left)\n\treturn root }"
     },
     {
-        "body": "type TreeNode struct {\n\tVal   int\n\tLeft  *TreeNode\n\tRight *TreeNode\n}\n\nfunc isSymmetric(root *TreeNode) bool {\n\tvar mirror func(a, b *TreeNode) bool\n\tmirror = func(a, b *TreeNode) bool {\n\t\tif a == nil && b == nil {\n\t\t\treturn true\n\t\t}\n\t\tif a == nil || b == nil || a.Val != b.Val {\n\t\t\treturn false\n\t\t}\n\t\treturn mirror(a.Left, b.Right) && mirror(a.Right, b.Left)\n\t}\n\tif root == nil {\n\t\treturn true\n\t}\n\treturn mirror(root.Left, root.Right)\n}"
+        "body": "type TreeNode struct { Val   int\n\tLeft  *TreeNode\n\tRight *TreeNode } func isSymmetric(root *TreeNode) bool { var mirror func(a, b *TreeNode) bool\n\tmirror = func(a, b *TreeNode) bool { if a == nil && b == nil { return true\n\t\t} if a == nil || b == nil || a.Val != b.Val { return false\n\t\t} return mirror(a.Left, b.Right) && mirror(a.Right, b.Left)\n\t} if root == nil { return true } return mirror(root.Left, root.Right) }"
     },
     {
-        "body": "type TreeNode struct {\n\tVal   int\n\tLeft  *TreeNode\n\tRight *TreeNode\n}\n\nvar diameter int\n\nfunc diameterOfBinaryTree(root *TreeNode) int {\n\tdiameter = 0\n\tdepth(root)\n\treturn diameter\n}\n\nfunc depth(node *TreeNode) int {\n\tif node == nil {\n\t\treturn 0\n\t}\n\tleft := depth(node.Left)\n\tright := depth(node.Right)\n\tif left+right > diameter {\n\t\tdiameter = left + right\n\t}\n\tif left > right {\n\t\treturn 1 + left\n\t}\n\treturn 1 + right\n}"
+        "body": "type TreeNode struct { Val   int Left  *TreeNode\n\tRight *TreeNode } var diameter int\nfunc diameterOfBinaryTree(root *TreeNode) int { diameter = 0\n\tdepth(root)\n\treturn diameter } func depth(node *TreeNode) int { if node == nil { return 0 } left := depth(node.Left)\n\tright := depth(node.Right)\n\tif left+right > diameter { diameter = left + right } if left > right { return 1 + left } return 1 + right }"
     },
     {
-        "body": "type TreeNode struct {\n\tVal   int\n\tLeft  *TreeNode\n\tRight *TreeNode\n}\n\nfunc isBalanced(root *TreeNode) bool {\n\treturn height(root) >= 0\n}\n\nfunc height(node *TreeNode) int {\n\tif node == nil {\n\t\treturn 0\n\t}\n\tleft := height(node.Left)\n\tright := height(node.Right)\n\tif left < 0 || right < 0 || abs(left-right) > 1 {\n\t\treturn -1\n\t}\n\tif left > right {\n\t\treturn 1 + left\n\t}\n\treturn 1 + right\n}"
+        "body": "type TreeNode struct { Val   int\n\tLeft  *TreeNode\n\tRight *TreeNode } func isBalanced(root *TreeNode) bool { return height(root) >= 0\n} func height(node *TreeNode) int { if node == nil { return 0 } left := height(node.Left)\n\tright := height(node.Right)\n\tif left < 0 || right < 0 || abs(left-right) > 1 { return -1\n\t} if left > right { return 1 + left } return 1 + right }"
     },
     {
-        "body": "type TreeNode struct {\n\tVal   int\n\tLeft  *TreeNode\n\tRight *TreeNode\n}\n\nfunc hasPathSum(root *TreeNode, targetSum int) bool {\n\tif root == nil {\n\t\treturn false\n\t}\n\tif root.Left == nil && root.Right == nil {\n\t\treturn root.Val == targetSum\n\t}\n\treturn hasPathSum(root.Left, targetSum-root.Val) ||\n\t\thasPathSum(root.Right, targetSum-root.Val)\n}"
+        "body": "type TreeNode struct { Val   int\n\tLeft  *TreeNode\n\tRight *TreeNode\n} func hasPathSum(root *TreeNode, targetSum int) bool { if root == nil { return false\n\t} if root.Left == nil && root.Right == nil { return root.Val == targetSum\n\t} return hasPathSum(root.Left, targetSum-root.Val) ||\n\t\thasPathSum(root.Right, targetSum-root.Val) }"
     },
     {
-        "body": "type TreeNode struct {\n\tVal   int\n\tLeft  *TreeNode\n\tRight *TreeNode\n}\n\nfunc lowestCommonAncestor(root, p, q *TreeNode) *TreeNode {\n\tfor root != nil {\n\t\tif p.Val < root.Val && q.Val < root.Val {\n\t\t\troot = root.Left\n\t\t} else if p.Val > root.Val && q.Val > root.Val {\n\t\t\troot = root.Right\n\t\t} else {\n\t\t\treturn root\n\t\t}\n\t}\n\treturn nil\n}"
+        "body": "type TreeNode struct { Val   int\n\tLeft  *TreeNode\n\tRight *TreeNode } func lowestCommonAncestor(root, p, q *TreeNode) *TreeNode {\n\tfor root != nil { if p.Val < root.Val && q.Val < root.Val { root = root.Left\n\t\t} else if p.Val > root.Val && q.Val > root.Val { root = root.Right\n\t\t} else { return root } }\n\treturn nil }"
     },
     {
-        "body": "func searchInsert(nums []int, target int) int {\n\tlo, hi := 0, len(nums)\n\tfor lo < hi {\n\t\tmid := lo + (hi-lo)/2\n\t\tif nums[mid] < target {\n\t\t\tlo = mid + 1\n\t\t} else {\n\t\t\thi = mid\n\t\t}\n\t}\n\treturn lo\n}"
+        "body": "func searchInsert(nums []int, target int) int {\n\tlo, hi := 0, len(nums)\n\tfor lo < hi { mid := lo + (hi-lo)/2\n\t\tif nums[mid] < target { lo = mid + 1\n\t\t} else { hi = mid\n\t\t} }\n\treturn lo }"
     },
     {
-        "body": "func twoSumSorted(numbers []int, target int) []int {\n\tleft, right := 0, len(numbers)-1\n\tfor left < right {\n\t\ttotal := numbers[left] + numbers[right]\n\t\tif total == target {\n\t\t\treturn []int{left + 1, right + 1}\n\t\t} else if total < target {\n\t\t\tleft++\n\t\t} else {\n\t\t\tright--\n\t\t}\n\t}\n\treturn nil\n}"
+        "body": "func twoSumSorted(numbers []int, target int) []int {\n\tleft, right := 0, len(numbers)-1\n\tfor left < right { total := numbers[left] + numbers[right]\n\t\tif total == target { return []int{left + 1, right + 1}\n\t\t} else if total < target { left++\n\t\t} else { right-- } }\n\treturn nil }"
     },
     {
-        "body": "func lengthOfLongestSubstring(s string) int {\n\tlast := make(map[byte]int)\n\tstart, best := 0, 0\n\tfor i := 0; i < len(s); i++ {\n\t\tif index, ok := last[s[i]]; ok && index >= start {\n\t\t\tstart = index + 1\n\t\t}\n\t\tlast[s[i]] = i\n\t\tif i-start+1 > best {\n\t\t\tbest = i - start + 1\n\t\t}\n\t}\n\treturn best\n}"
+        "body": "func lengthOfLongestSubstring(s string) int { last := make(map[byte]int)\n\tstart, best := 0, 0\n\tfor i := 0; i < len(s); i++ {\n\t\tif index, ok := last[s[i]]; ok && index >= start { start = index + 1\n\t\t} last[s[i]] = i\n\t\tif i-start+1 > best { best = i - start + 1 } }\n\treturn best }"
     },
     {
-        "body": "func maxArea(height []int) int {\n\tleft, right, best := 0, len(height)-1, 0\n\tfor left < right {\n\t\tarea := (right - left) * min(height[left], height[right])\n\t\tif area > best {\n\t\t\tbest = area\n\t\t}\n\t\tif height[left] < height[right] {\n\t\t\tleft++\n\t\t} else {\n\t\t\tright--\n\t\t}\n\t}\n\treturn best\n}"
+        "body": "func maxArea(height []int) int { left, right, best := 0, len(height)-1, 0\n\tfor left < right {\n\t\tarea := (right - left) * min(height[left], height[right])\n\t\tif area > best { best = area\n\t\t} if height[left] < height[right] { left++\n\t\t} else { right-- } }\n\treturn best }"
     }
 ]
