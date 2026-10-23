@@ -64,10 +64,19 @@ public class RacePanel extends BackgroundPanel {
     //The size of the layout as it is defined in the designer, the layout is scaled with this size
     private Dimension baseSize;
 
+    
     //Constructor
     public RacePanel() {
         //Built in java code
         initComponents();
+        //display of Label for Selection of language
+        jLabel2.setForeground(Color.WHITE);
+        //display of combo box
+        jComboBox1.setRenderer(new DarkComboRenderer());
+        jComboBox1.setBackground(new Color(10, 5, 15));
+        jComboBox1.setForeground(new Color(255, 105, 180));
+        jComboBox1.setBorder(BorderFactory.createLineBorder(new Color(255, 20, 147), 1));
+        jComboBox1.setFocusable(false);
         //display of end race button
         endRaceButton.setOpaque(false);
         endRaceButton.setBorder(null);
@@ -272,6 +281,27 @@ public class RacePanel extends BackgroundPanel {
             accuracyLabel.setText("Accuracy" + " " + currentRace.getAccuracy() + "%");
         }
     }
+    // a ListCellRenderer created to fix the combo box displey
+    class DarkComboRenderer extends DefaultListCellRenderer {
+
+    private final Color normalBg = new Color(10, 5, 15);
+    private final Color selectedBg = new Color(120, 20, 80);
+    private final Color textColor = new Color(255, 105, 180);
+
+    @Override
+    public java.awt.Component getListCellRendererComponent(
+            JList<?> list, Object value, int index,
+            boolean isSelected, boolean cellHasFocus) {
+
+        super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+
+        setOpaque(true);
+        setBackground(isSelected ? selectedBg : normalBg);
+        setForeground(textColor);
+        setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
+        return this;
+    }
+}
 
     /* We need to use the class below because a document listener is the only way for the program to understand the changes in the text the user types
      */
@@ -508,19 +538,6 @@ public class RacePanel extends BackgroundPanel {
         }
     }
 
-    public static void main(String[] args) {
-        javax.swing.SwingUtilities.invokeLater(() -> {
-            javax.swing.JFrame frame = new javax.swing.JFrame("RacePanel test");
-            frame.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
-            frame.add(new RacePanel());
-            frame.pack();
-            //The window can not be made smaller than the layout of the designer
-            frame.setMinimumSize(frame.getPreferredSize());
-            frame.setLocationRelativeTo(null);
-            frame.setVisible(true);
-
-        });
-    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -586,12 +603,14 @@ public class RacePanel extends BackgroundPanel {
         jLabel1.setText("Time");
         add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(900, 10, -1, -1));
 
+        jComboBox1.setFont(new java.awt.Font("Consolas", 0, 14)); // NOI18N
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Random", "Python", "Java", "JavaScript", "C++", "Rust", "Go", "Assembly" }));
         jComboBox1.addActionListener(this::jComboBox1ActionPerformed);
-        add(jComboBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(1110, 10, -1, -1));
+        add(jComboBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(1047, 10, 150, 40));
 
-        jLabel2.setText("Select Langauge");
-        add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(990, 10, -1, 30));
+        jLabel2.setFont(new java.awt.Font("Consolas", 0, 14)); // NOI18N
+        jLabel2.setText("Select Language");
+        add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(887, 10, 190, 50));
     }// </editor-fold>//GEN-END:initComponents
 
     //Start button is pressed
