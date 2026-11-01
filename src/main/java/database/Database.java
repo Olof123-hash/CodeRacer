@@ -38,6 +38,7 @@ public class Database {
         if (languages.isEmpty()) {
         languages.put("Random", "/Random.json");
         languages.put("Java", "/Java.json");
+         languages.put("JavaScript", "/JavaScript.json");
         languages.put("Python", "/Python.json");
         languages.put("C++", "/C++.json");
         languages.put("Rust", "/Rust.json");

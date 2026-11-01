@@ -621,11 +621,11 @@ public class RacePanel extends BackgroundPanel {
         jComboBox1.setFont(new java.awt.Font("Consolas", 0, 14)); // NOI18N
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Random", "Python", "Java", "JavaScript", "C++", "Rust", "Go", "Assembly" }));
         jComboBox1.addActionListener(this::jComboBox1ActionPerformed);
-        add(jComboBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(1047, 10, 150, 40));
+        add(jComboBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(1030, 600, 150, 40));
 
         jLabel2.setFont(new java.awt.Font("Consolas", 0, 14)); // NOI18N
         jLabel2.setText("Select Language");
-        add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(887, 10, 190, 50));
+        add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(820, 600, 190, 50));
     }// </editor-fold>//GEN-END:initComponents
 
     //Start button is pressed
