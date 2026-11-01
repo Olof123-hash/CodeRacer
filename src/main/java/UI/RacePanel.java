@@ -116,6 +116,7 @@ public class RacePanel extends BackgroundPanel {
         typingField.getDocument().addDocumentListener(new MyDocumentListener());
         //Enter jumps to the first word of the next line instead of leaving the caret on its indentation
         installEnterKeyBinding();
+        
         //The snippet is always scaled to fit its pane, so the font has to be recalculated when the window is resized
         addComponentListener(new ComponentAdapter() {
             @Override
@@ -214,6 +215,18 @@ public class RacePanel extends BackgroundPanel {
         uiTimer.stop();
         uiTimer2.stop();
         //GameOverField.setVisible(true)
+    }
+    
+    private void disableBackspace(boolean disabled) {
+        InputMap inputMapBack = typingField.getInputMap(JComponent.WHEN_FOCUSED);
+        inputMapBack.put(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0), "disableBackspace");
+        typingField.getActionMap().put("disableBackspace", new AbstractAction () {
+             @Override
+            public void actionPerformed(ActionEvent evt) {
+                System.out.println("Working so far");
+            }
+        });
+        
     }
 
     /* Replaces the normal behaviour of the Enter key. Normally Enter only inserts a newline, which would leave the
@@ -334,7 +347,9 @@ public class RacePanel extends BackgroundPanel {
 
                             // This is Java Swing code that moves the text cursor (caret) to the very end of a text field.
                             typingField.setCaretPosition(typingField.getText().length());
+                            disableBackspace(false);
                         }
+                        disableBackspace(true);
                         // calls the method that colours the text
                         colorTypingField();
                     });
@@ -520,9 +535,9 @@ public class RacePanel extends BackgroundPanel {
     //Method that colours the text 
     private void colorTypingField() {
         String acceptedText = currentRace.getLastAcceptedText();
-        StyledDocument doc = typingField.getStyledDocument();
+        StyledDocument doc = snippetPane.getStyledDocument();
         SimpleAttributeSet greyText = new SimpleAttributeSet();
-        StyleConstants.setForeground(greyText, Color.LIGHT_GRAY);
+        StyleConstants.setForeground(greyText, Color.ORANGE);
         doc.setCharacterAttributes(0, acceptedText.length(), greyText, true);
         if (!acceptedText.isEmpty() && currentRace.getState() != RaceState.FINISHED) {
             int thatPosition = acceptedText.length() - 1;
@@ -569,7 +584,7 @@ public class RacePanel extends BackgroundPanel {
         snippetPane.setFont(new java.awt.Font("Consolas", 0, 28)); // NOI18N
         snippetPan.setViewportView(snippetPane);
 
-        add(snippetPan, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 40, 1200, 330));
+        add(snippetPan, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 70, 1200, 330));
 
         newRaceButton.setFont(new java.awt.Font("Consolas", 0, 18)); // NOI18N
         newRaceButton.setText("Start New Race");
@@ -580,7 +595,7 @@ public class RacePanel extends BackgroundPanel {
         typingField.setFont(new java.awt.Font("Consolas", 0, 24)); // NOI18N
         typingPane.setViewportView(typingField);
 
-        add(typingPane, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 385, 1200, 220));
+        add(typingPane, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 70, 1200, 330));
 
         wpmLabel.setFont(new java.awt.Font("Perpetua Titling MT", 1, 18)); // NOI18N
         wpmLabel.setText("WPM");
