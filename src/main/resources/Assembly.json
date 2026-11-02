@@ -3,7 +3,7 @@
         "body": "section .text\nglobal _start\n_start:\n    mov rax, 60\n    xor rdi, rdi\n    syscall"
     },
     {
-        "body": "section .data\n    msg db \"Hello, world\", 10\n    len equ $ - msg\nsection .text\nglobal _start\n_start:\n    mov rax, 1\n    mov rdi, 1\n    mov rsi, msg\n    mov rdx, len\n    syscall\n    mov rax, 60\n    xor rdi, rdi\n    syscall"
+        "body": "section .data\n    msg db \"Hello, world\", 10\n    len equ $ - msg\nsection .text\nglobal _start\n_start:\n    mov rax, 1"
     },
     {
         "body": "add_two:\n    mov rax, rdi\n    add rax, rsi\n    ret"
@@ -36,7 +36,7 @@
         "body": "swap:\n    mov eax, [rdi]\n    mov ecx, [rsi]\n    mov [rdi], ecx\n    mov [rsi], eax\n    ret"
     },
     {
-        "body": "strlen_custom:\n    xor rax, rax\n.loop:\n    cmp byte [rdi + rax], 0\n    je .done\n    inc rax\n    jmp .loop\n.done:\n    ret"
+        "body": "strlen_custom:\n    xor rax, rax\n.loop:\n    cmp byte [rdi + rax], 0\n    je .done\n    inc rax\n    jmp .loop"
     },
     {
         "body": "my_memcpy:\n    mov rcx, rdx\n    rep movsb\n    ret"
@@ -45,108 +45,108 @@
         "body": "my_memset:\n    mov rcx, rdx\n    mov al, sil\n    rep stosb\n    ret"
     },
     {
-        "body": "strcmp_custom:\n.loop:\n    mov al, [rdi]\n    mov cl, [rsi]\n    cmp al, cl\n    jne .different\n    test al, al\n    je .equal\n    inc rdi\n    inc rsi\n    jmp .loop\n.different:\n    movzx rax, al\n    movzx rcx, cl\n    sub rax, rcx\n    ret\n.equal:\n    xor rax, rax\n    ret"
+        "body": "strcmp_custom:\n.loop:\n    mov al, [rdi]\n    mov cl, [rsi]\n    cmp al, cl\n    jne .different\n    test al, al"
     },
     {
-        "body": "reverse_string:\n    xor rcx, rcx\n    mov rdx, rdi\n.len:\n    cmp byte [rdx + rcx], 0\n    je .start\n    inc rcx\n    jmp .len\n.start:\n    dec rcx\n    xor rax, rax\n.loop:\n    cmp rax, rcx\n    jge .done\n    mov sil, [rdi + rax]\n    mov r8b, [rdi + rcx]\n    mov [rdi + rax], r8b\n    mov [rdi + rcx], sil\n    inc rax\n    dec rcx\n    jmp .loop\n.done:\n    ret"
+        "body": "reverse_string:\n    xor rcx, rcx\n    mov rdx, rdi\n.len:\n    cmp byte [rdx + rcx], 0\n    je .start\n    inc rcx"
     },
     {
-        "body": "to_upper:\n    xor rax, rax\n.loop:\n    mov cl, [rdi + rax]\n    test cl, cl\n    je .done\n    cmp cl, 'a'\n    jb .next\n    cmp cl, 'z'\n    ja .next\n    sub cl, 32\n    mov [rdi + rax], cl\n.next:\n    inc rax\n    jmp .loop\n.done:\n    ret"
+        "body": "to_upper:\n    xor rax, rax\n.loop:\n    mov cl, [rdi + rax]\n    test cl, cl\n    je .done\n    cmp cl, 'a'"
     },
     {
-        "body": "to_lower:\n    xor rax, rax\n.loop:\n    mov cl, [rdi + rax]\n    test cl, cl\n    je .done\n    cmp cl, 'A'\n    jb .next\n    cmp cl, 'Z'\n    ja .next\n    add cl, 32\n    mov [rdi + rax], cl\n.next:\n    inc rax\n    jmp .loop\n.done:\n    ret"
+        "body": "to_lower:\n    xor rax, rax\n.loop:\n    mov cl, [rdi + rax]\n    test cl, cl\n    je .done\n    cmp cl, 'A'"
     },
     {
-        "body": "sum_array:\n    xor eax, eax\n    xor ecx, ecx\n.loop:\n    cmp rcx, rsi\n    jge .done\n    add eax, [rdi + rcx * 4]\n    inc rcx\n    jmp .loop\n.done:\n    ret"
+        "body": "sum_array:\n    xor eax, eax\n    xor ecx, ecx\n.loop:\n    cmp rcx, rsi\n    jge .done\n    add eax, [rdi + rcx * 4]"
     },
     {
-        "body": "max_array:\n    mov eax, [rdi]\n    mov rcx, 1\n.loop:\n    cmp rcx, rsi\n    jge .done\n    mov edx, [rdi + rcx * 4]\n    cmp edx, eax\n    cmovg eax, edx\n    inc rcx\n    jmp .loop\n.done:\n    ret"
+        "body": "max_array:\n    mov eax, [rdi]\n    mov rcx, 1\n.loop:\n    cmp rcx, rsi\n    jge .done\n    mov edx, [rdi + rcx * 4]"
     },
     {
-        "body": "min_array:\n    mov eax, [rdi]\n    mov rcx, 1\n.loop:\n    cmp rcx, rsi\n    jge .done\n    mov edx, [rdi + rcx * 4]\n    cmp edx, eax\n    cmovl eax, edx\n    inc rcx\n    jmp .loop\n.done:\n    ret"
+        "body": "min_array:\n    mov eax, [rdi]\n    mov rcx, 1\n.loop:\n    cmp rcx, rsi\n    jge .done\n    mov edx, [rdi + rcx * 4]"
     },
     {
-        "body": "count_evens:\n    xor eax, eax\n    xor ecx, ecx\n.loop:\n    cmp rcx, rsi\n    jge .done\n    mov edx, [rdi + rcx * 4]\n    test edx, 1\n    jnz .next\n    inc eax\n.next:\n    inc rcx\n    jmp .loop\n.done:\n    ret"
+        "body": "count_evens:\n    xor eax, eax\n    xor ecx, ecx\n.loop:\n    cmp rcx, rsi\n    jge .done\n    mov edx, [rdi + rcx * 4]"
     },
     {
-        "body": "count_positive:\n    xor eax, eax\n    xor ecx, ecx\n.loop:\n    cmp rcx, rsi\n    jge .done\n    cmp dword [rdi + rcx * 4], 0\n    jle .next\n    inc eax\n.next:\n    inc rcx\n    jmp .loop\n.done:\n    ret"
+        "body": "count_positive:\n    xor eax, eax\n    xor ecx, ecx\n.loop:\n    cmp rcx, rsi\n    jge .done\n    cmp dword [rdi + rcx * 4], 0"
     },
     {
-        "body": "linear_search:\n    xor rcx, rcx\n.loop:\n    cmp rcx, rsi\n    jge .missing\n    cmp [rdi + rcx * 4], edx\n    je .found\n    inc rcx\n    jmp .loop\n.found:\n    mov rax, rcx\n    ret\n.missing:\n    mov rax, -1\n    ret"
+        "body": "linear_search:\n    xor rcx, rcx\n.loop:\n    cmp rcx, rsi\n    jge .missing\n    cmp [rdi + rcx * 4], edx\n    je .found"
     },
     {
-        "body": "count_occurrences:\n    xor eax, eax\n    xor rcx, rcx\n.loop:\n    cmp rcx, rsi\n    jge .done\n    cmp [rdi + rcx * 4], edx\n    jne .next\n    inc eax\n.next:\n    inc rcx\n    jmp .loop\n.done:\n    ret"
+        "body": "count_occurrences:\n    xor eax, eax\n    xor rcx, rcx\n.loop:\n    cmp rcx, rsi\n    jge .done\n    cmp [rdi + rcx * 4], edx"
     },
     {
-        "body": "binary_search:\n    xor rcx, rcx\n    mov r8, rsi\n    dec r8\n.loop:\n    cmp rcx, r8\n    jg .missing\n    mov r9, rcx\n    add r9, r8\n    shr r9, 1\n    cmp [rdi + r9 * 4], edx\n    je .found\n    jl .right\n    mov r8, r9\n    dec r8\n    jmp .loop\n.right:\n    mov rcx, r9\n    inc rcx\n    jmp .loop\n.found:\n    mov rax, r9\n    ret\n.missing:\n    mov rax, -1\n    ret"
+        "body": "binary_search:\n    xor rcx, rcx\n    mov r8, rsi\n    dec r8\n.loop:\n    cmp rcx, r8\n    jg .missing"
     },
     {
-        "body": "bubble_sort:\n    xor rcx, rcx\n.outer:\n    cmp rcx, rsi\n    jge .done\n    xor rdx, rdx\n.inner:\n    mov r8, rsi\n    sub r8, rcx\n    dec r8\n    cmp rdx, r8\n    jge .next\n    mov eax, [rdi + rdx * 4]\n    mov r9d, [rdi + rdx * 4 + 4]\n    cmp eax, r9d\n    jle .skip\n    mov [rdi + rdx * 4], r9d\n    mov [rdi + rdx * 4 + 4], eax\n.skip:\n    inc rdx\n    jmp .inner\n.next:\n    inc rcx\n    jmp .outer\n.done:\n    ret"
+        "body": "bubble_sort:\n    xor rcx, rcx\n.outer:\n    cmp rcx, rsi\n    jge .done\n    xor rdx, rdx\n.inner:"
     },
     {
-        "body": "insertion_sort:\n    mov rcx, 1\n.outer:\n    cmp rcx, rsi\n    jge .done\n    mov eax, [rdi + rcx * 4]\n    mov rdx, rcx\n.inner:\n    test rdx, rdx\n    jz .place\n    cmp [rdi + rdx * 4 - 4], eax\n    jle .place\n    mov r8d, [rdi + rdx * 4 - 4]\n    mov [rdi + rdx * 4], r8d\n    dec rdx\n    jmp .inner\n.place:\n    mov [rdi + rdx * 4], eax\n    inc rcx\n    jmp .outer\n.done:\n    ret"
+        "body": "insertion_sort:\n    mov rcx, 1\n.outer:\n    cmp rcx, rsi\n    jge .done\n    mov eax, [rdi + rcx * 4]\n    mov rdx, rcx"
     },
     {
-        "body": "factorial:\n    mov rax, 1\n.loop:\n    cmp rdi, 1\n    jle .done\n    imul rax, rdi\n    dec rdi\n    jmp .loop\n.done:\n    ret"
+        "body": "factorial:\n    mov rax, 1\n.loop:\n    cmp rdi, 1\n    jle .done\n    imul rax, rdi\n    dec rdi"
     },
     {
-        "body": "fib:\n    xor rax, rax\n    mov rcx, 1\n.loop:\n    test rdi, rdi\n    jz .done\n    mov rdx, rax\n    add rdx, rcx\n    mov rax, rcx\n    mov rcx, rdx\n    dec rdi\n    jmp .loop\n.done:\n    ret"
+        "body": "fib:\n    xor rax, rax\n    mov rcx, 1\n.loop:\n    test rdi, rdi\n    jz .done\n    mov rdx, rax"
     },
     {
-        "body": "climb_stairs:\n    mov rax, 1\n    mov rcx, 1\n.loop:\n    cmp rdi, 1\n    jle .done\n    mov rdx, rax\n    add rdx, rcx\n    mov rax, rcx\n    mov rcx, rdx\n    dec rdi\n    jmp .loop\n.done:\n    mov rax, rcx\n    ret"
+        "body": "climb_stairs:\n    mov rax, 1\n    mov rcx, 1\n.loop:\n    cmp rdi, 1\n    jle .done\n    mov rdx, rax"
     },
     {
-        "body": "gcd:\n.loop:\n    test rsi, rsi\n    jz .done\n    xor rdx, rdx\n    mov rax, rdi\n    div rsi\n    mov rdi, rsi\n    mov rsi, rdx\n    jmp .loop\n.done:\n    mov rax, rdi\n    ret"
+        "body": "gcd:\n.loop:\n    test rsi, rsi\n    jz .done\n    xor rdx, rdx\n    mov rax, rdi\n    div rsi"
     },
     {
-        "body": "power:\n    mov rax, 1\n.loop:\n    test rsi, rsi\n    jz .done\n    imul rax, rdi\n    dec rsi\n    jmp .loop\n.done:\n    ret"
+        "body": "power:\n    mov rax, 1\n.loop:\n    test rsi, rsi\n    jz .done\n    imul rax, rdi\n    dec rsi"
     },
     {
         "body": "is_even:\n    mov rax, rdi\n    and rax, 1\n    xor rax, 1\n    ret"
     },
     {
-        "body": "is_prime:\n    cmp rdi, 2\n    jl .no\n    mov rcx, 2\n.loop:\n    mov rax, rcx\n    imul rax, rcx\n    cmp rax, rdi\n    jg .yes\n    mov rax, rdi\n    xor rdx, rdx\n    div rcx\n    test rdx, rdx\n    jz .no\n    inc rcx\n    jmp .loop\n.yes:\n    mov rax, 1\n    ret\n.no:\n    xor rax, rax\n    ret"
+        "body": "is_prime:\n    cmp rdi, 2\n    jl .no\n    mov rcx, 2\n.loop:\n    mov rax, rcx\n    imul rax, rcx"
     },
     {
-        "body": "count_set_bits:\n    xor rax, rax\n.loop:\n    test rdi, rdi\n    jz .done\n    mov rcx, rdi\n    and rcx, 1\n    add rax, rcx\n    shr rdi, 1\n    jmp .loop\n.done:\n    ret"
+        "body": "count_set_bits:\n    xor rax, rax\n.loop:\n    test rdi, rdi\n    jz .done\n    mov rcx, rdi\n    and rcx, 1"
     },
     {
-        "body": "is_power_of_two:\n    test rdi, rdi\n    jle .no\n    mov rax, rdi\n    dec rax\n    and rax, rdi\n    jz .yes\n.no:\n    xor rax, rax\n    ret\n.yes:\n    mov rax, 1\n    ret"
+        "body": "is_power_of_two:\n    test rdi, rdi\n    jle .no\n    mov rax, rdi\n    dec rax\n    and rax, rdi\n    jz .yes"
     },
     {
-        "body": "sum_digits:\n    xor r8, r8\n    mov rcx, 10\n.loop:\n    test rdi, rdi\n    jz .done\n    mov rax, rdi\n    xor rdx, rdx\n    div rcx\n    add r8, rdx\n    mov rdi, rax\n    jmp .loop\n.done:\n    mov rax, r8\n    ret"
+        "body": "sum_digits:\n    xor r8, r8\n    mov rcx, 10\n.loop:\n    test rdi, rdi\n    jz .done\n    mov rax, rdi"
     },
     {
-        "body": "reverse_bits:\n    xor rax, rax\n    mov rcx, 32\n.loop:\n    shl rax, 1\n    mov rdx, rdi\n    and rdx, 1\n    or rax, rdx\n    shr rdi, 1\n    dec rcx\n    jnz .loop\n    ret"
+        "body": "reverse_bits:\n    xor rax, rax\n    mov rcx, 32\n.loop:\n    shl rax, 1\n    mov rdx, rdi\n    and rdx, 1"
     },
     {
-        "body": "is_palindrome:\n    xor rax, rax\n    mov rdx, rdi\n.len:\n    cmp byte [rdx + rax], 0\n    je .start\n    inc rax\n    jmp .len\n.start:\n    dec rax\n    xor rcx, rcx\n.loop:\n    cmp rcx, rax\n    jge .yes\n    mov r8b, [rdi + rcx]\n    mov r9b, [rdi + rax]\n    cmp r8b, r9b\n    jne .no\n    inc rcx\n    dec rax\n    jmp .loop\n.yes:\n    mov rax, 1\n    ret\n.no:\n    xor rax, rax\n    ret"
+        "body": "is_palindrome:\n    xor rax, rax\n    mov rdx, rdi\n.len:\n    cmp byte [rdx + rax], 0\n    je .start\n    inc rax"
     },
     {
-        "body": "single_number:\n    xor rax, rax\n    xor rcx, rcx\n.loop:\n    cmp rcx, rsi\n    jge .done\n    xor rax, [rdi + rcx * 4]\n    inc rcx\n    jmp .loop\n.done:\n    ret"
+        "body": "single_number:\n    xor rax, rax\n    xor rcx, rcx\n.loop:\n    cmp rcx, rsi\n    jge .done\n    xor rax, [rdi + rcx * 4]"
     },
     {
-        "body": "missing_number:\n    xor rax, rax\n    xor rcx, rcx\n.loop:\n    cmp rcx, rsi\n    jge .finish\n    xor rax, rcx\n    xor rax, [rdi + rcx * 4]\n    inc rcx\n    jmp .loop\n.finish:\n    xor rax, rsi\n    ret"
+        "body": "missing_number:\n    xor rax, rax\n    xor rcx, rcx\n.loop:\n    cmp rcx, rsi\n    jge .finish\n    xor rax, rcx"
     },
     {
-        "body": "atoi:\n    xor rax, rax\n    xor rcx, rcx\n    mov r8, 1\n    cmp byte [rdi], '-'\n    jne .loop\n    mov r8, -1\n    inc rcx\n.loop:\n    movzx rdx, byte [rdi + rcx]\n    test rdx, rdx\n    jz .done\n    sub rdx, '0'\n    imul rax, rax, 10\n    add rax, rdx\n    inc rcx\n    jmp .loop\n.done:\n    imul rax, r8\n    ret"
+        "body": "atoi:\n    xor rax, rax\n    xor rcx, rcx\n    mov r8, 1\n    cmp byte [rdi], '-'\n    jne .loop\n    mov r8, -1"
     },
     {
         "body": "clamp:\n    mov rax, rdi\n    cmp rax, rsi\n    cmovl rax, rsi\n    cmp rax, rdx\n    cmovg rax, rdx\n    ret"
     },
     {
-        "body": "sign:\n    xor rax, rax\n    test rdi, rdi\n    jz .done\n    mov rax, 1\n    jg .done\n    mov rax, -1\n.done:\n    ret"
+        "body": "sign:\n    xor rax, rax\n    test rdi, rdi\n    jz .done\n    mov rax, 1\n    jg .done\n    mov rax, -1"
     },
     {
-        "body": "sum_squares:\n    xor rax, rax\n    xor rcx, rcx\n.loop:\n    cmp rcx, rsi\n    jge .done\n    mov rdx, [rdi + rcx * 4]\n    imul rdx, rdx\n    add rax, rdx\n    inc rcx\n    jmp .loop\n.done:\n    ret"
+        "body": "sum_squares:\n    xor rax, rax\n    xor rcx, rcx\n.loop:\n    cmp rcx, rsi\n    jge .done\n    mov rdx, [rdi + rcx * 4]"
     },
     {
-        "body": "fill_array:\n    xor rcx, rcx\n.loop:\n    cmp rcx, rsi\n    jge .done\n    mov [rdi + rcx * 4], edx\n    inc rcx\n    jmp .loop\n.done:\n    ret"
+        "body": "fill_array:\n    xor rcx, rcx\n.loop:\n    cmp rcx, rsi\n    jge .done\n    mov [rdi + rcx * 4], edx\n    inc rcx"
     },
     {
-        "body": "count_vowels:\n    xor rax, rax\n    xor rcx, rcx\n.loop:\n    mov dl, [rdi + rcx]\n    test dl, dl\n    jz .done\n    or dl, 32\n    cmp dl, 'a'\n    je .hit\n    cmp dl, 'e'\n    je .hit\n    cmp dl, 'i'\n    je .hit\n    cmp dl, 'o'\n    je .hit\n    cmp dl, 'u'\n    jne .next\n.hit:\n    inc rax\n.next:\n    inc rcx\n    jmp .loop\n.done:\n    ret"
+        "body": "count_vowels:\n    xor rax, rax\n    xor rcx, rcx\n.loop:\n    mov dl, [rdi + rcx]\n    test dl, dl\n    jz .done"
     },
     {
-        "body": "dot_product:\n    xor rax, rax\n    xor rcx, rcx\n.loop:\n    cmp rcx, rdx\n    jge .done\n    mov r8d, [rdi + rcx * 4]\n    imul r8d, [rsi + rcx * 4]\n    add rax, r8\n    inc rcx\n    jmp .loop\n.done:\n    ret"
+        "body": "dot_product:\n    xor rax, rax\n    xor rcx, rcx\n.loop:\n    cmp rcx, rdx\n    jge .done\n    mov r8d, [rdi + rcx * 4]"
     }
 ]
