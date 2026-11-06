@@ -41,6 +41,7 @@ public class Database {
       languages.put("Rust", "/Rust.json");
       languages.put("Go", "/Go.json");
       languages.put("Assembly", "/Assembly.json");
+      languages.put("Test", "/test.json");
     }
 
     this.gsonlist = gson.fromJson(readFileFromResource(languages.get(language)), listType);
