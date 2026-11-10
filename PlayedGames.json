@@ -1,0 +1,163 @@
+[
+  {
+    "typedText": "test",
+    "wpm": 0.0,
+    "time": 1.0,
+    "accuracy": 80.0,
+    "mistakes": 1
+  },
+  {
+    "typedText": "test",
+    "wpm": 0.0,
+    "time": 1.0,
+    "accuracy": 80.0,
+    "mistakes": 1
+  },
+  {
+    "typedText": "test",
+    "wpm": 0.0,
+    "time": 3.0,
+    "accuracy": 57.0,
+    "mistakes": 3
+  },
+  {
+    "typedText": "count_vowels:\n    xor rax, rax\n    xor rcx, rcx\n.loop:\n    mov dl, [rdi + rcx]\n    test dl, dl\n    jz .done",
+    "wpm": 18.0,
+    "time": 68.0,
+    "accuracy": 76.0,
+    "mistakes": 28
+  },
+  {
+    "typedText": "sign:\n    xor rax, rax\n    test rdi, rdi\n    jz .done\n    mov rax, 1\n    jg .done\n    mov rax, -1",
+    "wpm": 53.0,
+    "time": 21.0,
+    "accuracy": 87.0,
+    "mistakes": 11
+  },
+  {
+    "typedText": "test",
+    "wpm": 0.0,
+    "time": 0.0,
+    "accuracy": 100.0,
+    "mistakes": 0
+  },
+  {
+    "typedText": "test",
+    "wpm": 0.0,
+    "time": 0.0,
+    "accuracy": 100.0,
+    "mistakes": 0
+  },
+  {
+    "typedText": "test",
+    "wpm": 0.0,
+    "time": 0.0,
+    "accuracy": 100.0,
+    "mistakes": 0
+  },
+  {
+    "typedText": "test",
+    "wpm": 0.0,
+    "time": 1.0,
+    "accuracy": 100.0,
+    "mistakes": 0
+  },
+  {
+    "typedText": "test",
+    "wpm": 0.0,
+    "time": 2.0,
+    "accuracy": 50.0,
+    "mistakes": 4
+  },
+  {
+    "typedText": "my_memcpy:\n    mov rcx, rdx\n    rep movsb\n    ret",
+    "wpm": 46.0,
+    "time": 11.0,
+    "accuracy": 90.0,
+    "mistakes": 4
+  },
+  {
+    "typedText": "clamp:\n    mov rax, rdi\n    cmp rax, rsi\n    cmovl rax, rsi\n    cmp rax, rdx\n    cmovg rax, rdx\n    ret",
+    "wpm": 36.0,
+    "time": 33.0,
+    "accuracy": 81.0,
+    "mistakes": 18
+  },
+  {
+    "typedText": "test",
+    "wpm": 0.0,
+    "time": 0.0,
+    "accuracy": 100.0,
+    "mistakes": 0
+  },
+  {
+    "typedText": "test",
+    "wpm": 0.0,
+    "time": 0.0,
+    "accuracy": 100.0,
+    "mistakes": 0
+  },
+  {
+    "typedText": "test",
+    "wpm": 0.0,
+    "time": 0.0,
+    "accuracy": 100.0,
+    "mistakes": 0
+  },
+  {
+    "typedText": "test",
+    "wpm": 0.0,
+    "time": 0.0,
+    "accuracy": 100.0,
+    "mistakes": 0
+  },
+  {
+    "typedText": "test",
+    "wpm": 0.0,
+    "time": 0.0,
+    "accuracy": 100.0,
+    "mistakes": 0
+  },
+  {
+    "typedText": "atoi:\n    xor rax, rax\n    xor rcx, rcx\n    mov r8, 1\n    cmp byte [rdi], \u0027-\u0027\n    jne .loop\n    mov r8, -1",
+    "wpm": 39.0,
+    "time": 32.0,
+    "accuracy": 88.0,
+    "mistakes": 11
+  },
+  {
+    "typedText": "test",
+    "wpm": 0.0,
+    "time": 0.0,
+    "accuracy": 100.0,
+    "mistakes": 0
+  },
+  {
+    "typedText": "sign:\n    xor rax, rax\n    test rdi, rdi\n    jz .done\n    mov rax, 1\n    jg .done\n    mov rax, -1",
+    "wpm": 59.0,
+    "time": 19.0,
+    "accuracy": 89.0,
+    "mistakes": 9
+  },
+  {
+    "typedText": "test",
+    "wpm": 0.0,
+    "time": 0.0,
+    "accuracy": 100.0,
+    "mistakes": 0
+  },
+  {
+    "typedText": "test",
+    "wpm": 0.0,
+    "time": 0.0,
+    "accuracy": 100.0,
+    "mistakes": 0
+  },
+  {
+    "typedText": "func isPalindromeNumber(x int) bool {\n\tif x \u003c 0 {\n\t\treturn false\n\t}\n\toriginal, reversed :\u003d x, 0\n\tfor original \u003e 0 {\n\t\treversed \u003d reversed*10 + original%10",
+    "wpm": 43.0,
+    "time": 41.0,
+    "accuracy": 89.0,
+    "mistakes": 18
+  }
+]
