@@ -28,8 +28,8 @@ public class PlayedGamesDatabase extends PlayedGame {
     
     
    
-    public PlayedGamesDatabase(String typedText, double wpm, double time, double accuracy) {
-        super(typedText, wpm, time, accuracy);
+    public PlayedGamesDatabase(String typedText, double wpm, double time, double accuracy, int mistakes) {
+        super(typedText, wpm, time, accuracy, mistakes);
     }
     
     

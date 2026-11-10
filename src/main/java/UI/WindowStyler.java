@@ -1,0 +1,198 @@
+package UI;
+
+import java.awt.Component;
+import java.awt.GraphicsEnvironment;
+import java.awt.IllegalComponentStateException;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.Window;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.BorderFactory;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JRootPane;
+import javax.swing.KeyStroke;
+import javax.swing.border.Border;
+
+/**
+ * Applies the theme to the frames of the application. The race windows are undecorated, so they
+ * get their own thin frame from this class: a dark background, a subtle outline and a small accent
+ * line at the top instead of the title bar of the operating system.
+ *
+ * <p>Every window can also be closed with the Escape key, because an undecorated window has no
+ * close button of its own.
+ *
+ * <p>This class also knows where the popup windows (the game over screen and the history) should
+ * be placed. They are put next to the race window whenever the screen has room for that, so they
+ * never cover the buttons of the race screen.
+ */
+public final class WindowStyler {
+
+  /** The corners of the race window that a popup can fall back to. */
+  public enum Corner {
+    TOP_LEFT,
+    TOP_RIGHT
+  }
+
+  private WindowStyler() {
+    // Utility class, no instances
+  }
+
+  /** Styles a frame; call this before the components are packed so the border is included. */
+  public static void apply(JFrame frame) {
+    frame.setBackground(Theme.BACKGROUND);
+    frame.getContentPane().setBackground(Theme.BACKGROUND);
+    if (frame.isUndecorated()) {
+      frame.getRootPane().setBorder(frameBorder());
+    }
+    installEscapeToClose(frame.getRootPane(), frame::dispose);
+  }
+
+  /** Styles a dialog in the same way as a frame. */
+  public static void apply(JDialog dialog) {
+    dialog.setBackground(Theme.BACKGROUND);
+    dialog.getContentPane().setBackground(Theme.BACKGROUND);
+    if (dialog.isUndecorated()) {
+      dialog.getRootPane().setBorder(frameBorder());
+    }
+    installEscapeToClose(dialog.getRootPane(), dialog::dispose);
+  }
+
+  /** The border of an undecorated window: an accent line on top and an outline around the frame. */
+  public static Border frameBorder() {
+    Border accentLine = BorderFactory.createMatteBorder(3, 0, 0, 0, Theme.ACCENT);
+    Border outline = BorderFactory.createLineBorder(Theme.SUBTLE, 1);
+    return BorderFactory.createCompoundBorder(accentLine, outline);
+  }
+
+  /** Makes Escape and Ctrl+W close the given window. */
+  public static void installEscapeToClose(JRootPane rootPane, Runnable closeAction) {
+    Action action =
+        new AbstractAction() {
+          @Override
+          public void actionPerformed(ActionEvent event) {
+            closeAction.run();
+          }
+        };
+    rootPane.getActionMap().put("coderacer.closeWindow", action);
+    rootPane
+        .getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+        .put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "coderacer.closeWindow");
+    rootPane
+        .getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+        .put(
+            KeyStroke.getKeyStroke(KeyEvent.VK_W, java.awt.event.InputEvent.CTRL_DOWN_MASK),
+            "coderacer.closeWindow");
+  }
+
+  /**
+   * Places a popup window next to the race window, so that it does not cover the buttons of the
+   * race screen. The right side is tried first, then the left side, then below and above the race
+   * window. When the screen is too small for that, the popup is put in the given top corner of the
+   * race window, where the start, history and language controls stay free. Windows that are passed
+   * as {@code avoid} (for example the other popup) are not covered either.
+   */
+  public static void placePopup(Component parent, Window popup, Corner fallbackCorner, Window... avoid) {
+    Rectangle parentBounds = boundsOnScreen(parent);
+    if (parentBounds == null) {
+      // The race window is not visible (yet), so there is nothing to place the popup next to
+      popup.setLocationRelativeTo(null);
+      return;
+    }
+    Rectangle screen = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
+    int gap = 16;
+    int width = popup.getWidth();
+    int height = popup.getHeight();
+    int top = clamp(parentBounds.y, screen.y + gap, screen.y + screen.height - height - gap);
+
+    // The places where the popup could go, in the order in which they are tried. The first one
+    // that is completely on the screen and that does not cover another popup is used.
+    int[][] candidates = {
+      // Right of the race window
+      {parentBounds.x + parentBounds.width + gap, top},
+      // Left of the race window
+      {parentBounds.x - width - gap, top},
+      // Below the race window
+      {parentBounds.x, parentBounds.y + parentBounds.height + gap},
+      // Above the race window
+      {parentBounds.x, parentBounds.y - height - gap},
+      // In one of the top corners of the race window
+      {
+        fallbackCorner == Corner.TOP_RIGHT
+            ? parentBounds.x + parentBounds.width - width - gap
+            : parentBounds.x + gap,
+        parentBounds.y + gap
+      },
+      {
+        fallbackCorner == Corner.TOP_RIGHT
+            ? parentBounds.x + gap
+            : parentBounds.x + parentBounds.width - width - gap,
+        parentBounds.y + gap
+      }
+    };
+
+    Rectangle firstChoice = null;
+    for (int[] candidate : candidates) {
+      Rectangle bounds =
+          new Rectangle(candidate[0], candidate[1], width, height);
+      if (!contains(screen, bounds)) {
+        continue;
+      }
+      if (firstChoice == null) {
+        firstChoice = bounds;
+      }
+      if (!overlapsAny(bounds, avoid)) {
+        popup.setLocation(bounds.getLocation());
+        return;
+      }
+    }
+    if (firstChoice != null) {
+      popup.setLocation(firstChoice.getLocation());
+    } else {
+      popup.setLocationRelativeTo(null);
+    }
+  }
+
+  /** Returns the bounds of a component on the screen, or null when it is not visible. */
+  private static Rectangle boundsOnScreen(Component component) {
+    if (component == null || !component.isShowing()) {
+      return null;
+    }
+    try {
+      Point location = component.getLocationOnScreen();
+      return new Rectangle(location, component.getSize());
+    } catch (IllegalComponentStateException e) {
+      return null;
+    }
+  }
+
+  /** Checks whether a rectangle is completely inside another one. */
+  private static boolean contains(Rectangle outer, Rectangle inner) {
+    return inner.x >= outer.x
+        && inner.y >= outer.y
+        && inner.x + inner.width <= outer.x + outer.width
+        && inner.y + inner.height <= outer.y + outer.height;
+  }
+
+  /** Checks whether a rectangle overlaps one of the visible windows that should be avoided. */
+  private static boolean overlapsAny(Rectangle bounds, Window... avoid) {
+    for (Window window : avoid) {
+      if (window == null || !window.isVisible()) {
+        continue;
+      }
+      if (bounds.intersects(new Rectangle(window.getLocation(), window.getSize()))) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /** Keeps a value between a minimum and a maximum, used to keep popups on the screen. */
+  private static int clamp(int value, int minimum, int maximum) {
+    return Math.max(minimum, Math.min(value, maximum));
+  }
+}

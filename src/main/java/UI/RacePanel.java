@@ -24,10 +24,8 @@ import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
-import javax.swing.DefaultListCellRenderer;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
-import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
@@ -54,8 +52,6 @@ import model.Snippet;
 public class RacePanel extends BackgroundPanel {
 
   public String language = "Random";
-  // The font that is used for the snippet and for the typing field
-  private static final String CODE_FONT = "Consolas";
   // The biggest font size the snippet is allowed to have
   private static final int MAX_SNIPPET_FONT = 28;
   // The smallest font size the snippet is allowed to have, below this the text is unreadable
@@ -70,11 +66,15 @@ public class RacePanel extends BackgroundPanel {
     RUNNING,
     FINISHED;
   }
-
+  
+  
+  
   // Sets the current panel state at the very start of the application being launched to not_started
   private PanelState currentPanel = PanelState.NOT_STARTED;
   // Initializes the game over screen
   private GameOver overWindow;
+  //Initializes the match history screen.
+  private HistoryPanel historyWindow;
   // Initializes the two methods responsible for the refreshing of the values when we dynamically
   // display the statistics
   private javax.swing.Timer uiTimer;
@@ -89,56 +89,30 @@ public class RacePanel extends BackgroundPanel {
   public RacePanel() {
     // Built in java code
     initComponents();
-    // display of Label for Selection of language
-    jLabel2.setForeground(Color.WHITE);
-    // display of combo box
-    jComboBox1.setRenderer(new DarkComboRenderer());
-    jComboBox1.setBackground(new Color(10, 5, 15));
-    jComboBox1.setForeground(new Color(255, 105, 180));
-    jComboBox1.setBorder(BorderFactory.createLineBorder(new Color(255, 20, 147), 1));
-    jComboBox1.setFocusable(false);
-    // display of end race button
-    endRaceButton.setOpaque(false);
-    endRaceButton.setBorder(null);
-    endRaceButton.setBorderPainted(false);
-    endRaceButton.setContentAreaFilled(true);
-    endRaceButton.setBackground(Color.BLACK);
-    endRaceButton.setForeground(Color.RED);
-    // display of stats labels
-    wpmLabel.setForeground(Color.WHITE);
-    accuracyLabel.setForeground(Color.WHITE);
-    mistakesLabel.setForeground(Color.WHITE);
-    jLabel1.setForeground(Color.WHITE);
-    // dispay of snippetPane
-    snippetPane.setOpaque(false);
-    snippetPane.setBorder(null);
-    snippetPan.setOpaque(false);
-    snippetPan.getViewport().setOpaque(false);
-    snippetPan.setBorder(null);
-    snippetPane.setForeground(Color.ORANGE);
-    // display of typingField
-    typingField.setOpaque(false);
-    typingField.setBorder(null);
-    typingPane.setOpaque(false);
-    typingPane.getViewport().setOpaque(false);
-    typingPane.setBorder(null);
-    typingField.setCaretColor(Color.PINK);
-
-    // display of startbutton
-    newRaceButton.setFocusPainted(false);
-    newRaceButton.setOpaque(false);
-    newRaceButton.setBorderPainted(false);
-    newRaceButton.setContentAreaFilled(true);
-    newRaceButton.setBackground(Color.BLACK);
-    newRaceButton.setForeground(Color.getHSBColor(0.90f, 1.0f, 1.0f));
-    
-    //display of historybutton.
-    historyButton.setOpaque(false);
-    historyButton.setFocusPainted(false);
-    historyButton.setBorderPainted(false);
-    historyButton.setContentAreaFilled(true);
-    historyButton.setBackground(Color.BLACK);
-    historyButton.setForeground(Color.getHSBColor(0.90f, 1.0f, 1.0f));
+    // Every component gets its look from the styler classes, so the theme lives in one place.
+    // The label and the combo box for choosing a language
+    LabelStyler.applyMuted(jLabel2);
+    ComboBoxStyler.apply(jComboBox1);
+    // The buttons: starting a race is the main action, ending one is a dangerous action and the
+    // history is a secondary action
+    ButtonStyler.applyPrimary(newRaceButton);
+    ButtonStyler.applySecondary(historyButton);
+    ButtonStyler.applyDanger(endRaceButton);
+    // The statistics at the top of the screen
+    LabelStyler.applyStat(wpmLabel);
+    LabelStyler.applyStat(accuracyLabel);
+    LabelStyler.applyStat(mistakesLabel);
+    LabelStyler.applyStat(jLabel1);
+    wpmLabel.setText("WPM 0");
+    accuracyLabel.setText("ACCURACY 0%");
+    mistakesLabel.setText("MISTAKES 0");
+    jLabel1.setText("TIME 0");
+    // The snippet pane shows the code and the colour of every typed character
+    TextStyler.applyCodePane(snippetPane);
+    TextStyler.applyScrollPane(snippetPan);
+    // The typing field is an invisible input layer on top of the snippet, only its caret is shown
+    TextStyler.applyTypingPane(typingField);
+    TextStyler.applyScrollPane(typingPane);
     // DocumentListener shit !Very important code
 
     typingField.setTransferHandler(null);
@@ -239,6 +213,11 @@ public class RacePanel extends BackgroundPanel {
     if (overWindow != null) {
       overWindow.dispose();
     }
+    
+     if (historyWindow != null) {
+      historyWindow.dispose();
+    }
+    
 
     // this line makes the player able to type immediately without having to click in the typing
     // area
@@ -257,20 +236,31 @@ public class RacePanel extends BackgroundPanel {
     setRaceMode();
 
     // makes the game over window visible with statistics
-    overWindow = new GameOver(currentRace);
-    overWindow.setVisible(true);
+    if (currentRace.getState() == RaceEngine.RaceState.FINISHED) {
+      overWindow = new GameOver(currentRace);
+      // The stats are shown next to the race window (or in a free corner), so the buttons of the
+      // race screen stay usable and the history window is not covered
+      WindowStyler.placePopup(
+          this, overWindow, WindowStyler.Corner.TOP_RIGHT, historyWindow);
+      overWindow.setVisible(true);
+    }
 
     uiTimer.stop();
     uiTimer2.stop();
     // GameOverField.setVisible(true)
   }
-  
-  
-  
+
   private void gameHistory() {
-  HistoryPanel historyWindow = new HistoryPanel();
-  historyWindow.setVisible(true);
-  
+    if (historyWindow == null || !historyWindow.isDisplayable()) {
+      historyWindow = new HistoryPanel();
+      // The history is shown next to the race window (or in a free corner), so the buttons of the
+      // race screen stay usable and the game over window is not covered
+      WindowStyler.placePopup(
+          this, historyWindow, WindowStyler.Corner.TOP_LEFT, overWindow);
+      historyWindow.setVisible(true);
+    } else {
+      historyWindow.toFront();
+    }
   }
 
   /*
@@ -481,30 +471,9 @@ public class RacePanel extends BackgroundPanel {
   // Same here
   private void updateLabels() {
     if (currentPanel == PanelState.RUNNING) {
-      jLabel1.setText("Time" + " " + currentRace.getTime());
-      mistakesLabel.setText("Mistakes" + " " + currentRace.getMistakes());
-      accuracyLabel.setText("Accuracy" + " " + currentRace.getAccuracy() + "%");
-    }
-  }
-
-  // a ListCellRenderer created to fix the combo box displey
-  class DarkComboRenderer extends DefaultListCellRenderer {
-
-    private final Color normalBg = new Color(10, 5, 15);
-    private final Color selectedBg = new Color(120, 20, 80);
-    private final Color textColor = new Color(255, 105, 180);
-
-    @Override
-    public java.awt.Component getListCellRendererComponent(
-        JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-
-      super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-
-      setOpaque(true);
-      setBackground(isSelected ? selectedBg : normalBg);
-      setForeground(textColor);
-      setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
-      return this;
+      jLabel1.setText("TIME" + " " + currentRace.getTime());
+      mistakesLabel.setText("MISTAKES" + " " + currentRace.getMistakes());
+      accuracyLabel.setText("ACCURACY" + " " + currentRace.getAccuracy() + "%");
     }
   }
 
@@ -529,7 +498,7 @@ public class RacePanel extends BackgroundPanel {
           SwingUtilities.invokeLater(() -> {
             if (currentRace.getState() == RaceEngine.RaceState.FINISHED) {
                 
-              PlayedGame obj1 = new PlayedGamesDatabase(typingField.getText(),currentRace.getWPM(),currentRace.getTime(),currentRace.getAccuracy());
+              PlayedGame obj1 = new PlayedGamesDatabase(typingField.getText(),currentRace.getWPM(),currentRace.getTime(),currentRace.getAccuracy(), currentRace.getMistakes());
               
               obj1.InsertData();
               
@@ -645,7 +614,7 @@ public class RacePanel extends BackgroundPanel {
     FontMetrics metrics = null;
     int textWidth = 0;
     while (size >= MIN_SNIPPET_FONT) {
-      metrics = snippetPane.getFontMetrics(new Font(CODE_FONT, Font.PLAIN, size));
+      metrics = snippetPane.getFontMetrics(Theme.mono(size));
       textWidth = widestLine(metrics, lines);
       if (fitsInPane(metrics, textWidth, lines.length)) {
         fits = true;
@@ -657,19 +626,19 @@ public class RacePanel extends BackgroundPanel {
       // The snippet is too big even for the smallest font, so the pane is allowed to scroll after
       // all
       size = MIN_SNIPPET_FONT;
-      metrics = snippetPane.getFontMetrics(new Font(CODE_FONT, Font.PLAIN, size));
+      metrics = snippetPane.getFontMetrics(Theme.mono(size));
       textWidth = widestLine(metrics, lines);
       snippetPan.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
       snippetPan.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     }
     // Applies the font to the snippet, the font is only set when it really changed to avoid a loop
     // of repaints
-    Font snippetFont = new Font(CODE_FONT, Font.PLAIN, size);
+    Font snippetFont = Theme.mono(size);
     if (!snippetFont.equals(snippetPane.getFont())) {
       snippetPane.setFont(snippetFont);
     }
     // The typing field uses the same font size, so the text lines up with the snippet
-    Font typingFont = new Font(CODE_FONT, Font.PLAIN, size);
+    Font typingFont = Theme.mono(size);
     if (!typingFont.equals(typingField.getFont())) {
       typingField.setFont(typingFont);
     }
@@ -737,35 +706,31 @@ public class RacePanel extends BackgroundPanel {
     String acceptedText = currentRace.getLastAcceptedText();
     StyledDocument doc = snippetPane.getStyledDocument();
 
-    // Default organge background
-    SimpleAttributeSet orangeText = new SimpleAttributeSet();
-    StyleConstants.setForeground(orangeText, Color.ORANGE);
-    doc.setCharacterAttributes(0, acceptedText.length(), orangeText, true);
+    // The part of the snippet that is not typed yet keeps the normal text colour
+    SimpleAttributeSet pendingText = new SimpleAttributeSet();
+    StyleConstants.setForeground(pendingText, Theme.TEXT);
+    doc.setCharacterAttributes(0, doc.getLength(), pendingText, true);
 
-    if (!acceptedText.isEmpty() && currentRace.getState() != RaceState.FINISHED) {
-      int thatPosition = acceptedText.length() - 1;
-
-      // if you cant backspace the letter infront of you should always be orange no, not the one
-      // thats green but the one infront of the cursor?
-
-      if (!currentRace.canBackspace()) {
-        StyleConstants.setForeground(orangeText, Color.ORANGE);
-        doc.setCharacterAttributes(1, acceptedText.length(), orangeText, true);
-      }
-
-      if (currentRace.comparison(thatPosition)) {
-        SimpleAttributeSet greenText = new SimpleAttributeSet();
-        StyleConstants.setForeground(greenText, Color.GREEN);
-        doc.setCharacterAttributes(thatPosition, 1, greenText, true);
-
-        // if it was wrong but user pressed backspace it shoud be empty
-      }
-      if (!(currentRace.comparison(thatPosition)) && currentRace.canBackspace()) {
-        SimpleAttributeSet redText = new SimpleAttributeSet();
-        StyleConstants.setForeground(redText, Color.RED);
-        doc.setCharacterAttributes(thatPosition, 1, redText, true);
-      }
+      
+    if (acceptedText.isEmpty()) {
+      return;
     }
+
+    // Everything that was typed correctly is shown in the accent colour
+    SimpleAttributeSet typedText = new SimpleAttributeSet();
+    StyleConstants.setForeground(typedText, Theme.ACCENT);
+    doc.setCharacterAttributes(0, acceptedText.length(), typedText, true);
+
+    if (currentRace.getState() == RaceState.FINISHED) {
+      return;
+    }
+    
+    // The last typed character is shown in red when it does not match the snippet, otherwise shown in green
+    int lastPosition = acceptedText.length() - 1;
+    SimpleAttributeSet lastCharacter = new SimpleAttributeSet();
+    StyleConstants.setForeground(
+        lastCharacter, currentRace.comparison(lastPosition) ? Theme.GREEN : Theme.ERROR);
+    doc.setCharacterAttributes(lastPosition, 1, lastCharacter, true);
   }
 
   /**
@@ -800,7 +765,8 @@ public class RacePanel extends BackgroundPanel {
 
         add(snippetPan, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 70, 1200, 330));
 
-        newRaceButton.setFont(new java.awt.Font("Consolas", 0, 18)); // NOI18N
+        newRaceButton.setBackground(new java.awt.Color(0, 0, 0));
+        newRaceButton.setFont(new java.awt.Font("Mona Sans", 1, 18)); // NOI18N
         newRaceButton.setText("Start New Race");
         newRaceButton.setAlignmentX(0.5F);
         newRaceButton.addActionListener(this::newRaceButtonActionPerformed);
@@ -823,25 +789,28 @@ public class RacePanel extends BackgroundPanel {
         mistakesLabel.setText("Accuracy");
         add(mistakesLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 10, -1, -1));
 
-        endRaceButton.setFont(new java.awt.Font("Consolas", 1, 18)); // NOI18N
+        endRaceButton.setBackground(new java.awt.Color(0, 0, 0));
+        endRaceButton.setFont(new java.awt.Font("Mona Sans", 1, 18)); // NOI18N
         endRaceButton.setText("End Race");
         endRaceButton.addActionListener(this::endRaceButtonActionPerformed);
-        add(endRaceButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 620, -1, -1));
+        add(endRaceButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(547, 615, 130, 40));
 
         jLabel1.setFont(new java.awt.Font("Perpetua Titling MT", 1, 18)); // NOI18N
         jLabel1.setText("Time");
         add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(900, 10, -1, -1));
 
-        jComboBox1.setFont(new java.awt.Font("Consolas", 0, 14)); // NOI18N
+        jComboBox1.setBackground(new java.awt.Color(0, 0, 0));
+        jComboBox1.setFont(new java.awt.Font("Mona Sans", 1, 18)); // NOI18N
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Random", "Python", "Java", "JavaScript", "C++", "Rust", "Go", "Assembly", "Test" }));
         jComboBox1.addActionListener(this::jComboBox1ActionPerformed);
         add(jComboBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(1030, 600, 150, 40));
 
-        jLabel2.setFont(new java.awt.Font("Consolas", 0, 14)); // NOI18N
+        jLabel2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel2.setText("Select Language");
-        add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(820, 600, 190, 50));
+        add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(900, 600, 190, 40));
 
-        historyButton.setFont(new java.awt.Font("Consolas", 1, 18)); // NOI18N
+        historyButton.setBackground(new java.awt.Color(0, 0, 0));
+        historyButton.setFont(new java.awt.Font("Mona Sans", 1, 18)); // NOI18N
         historyButton.setText("View Typing History");
         historyButton.addActionListener(this::historyButtonActionPerformed);
         add(historyButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 620, 260, 40));

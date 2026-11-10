@@ -13,12 +13,14 @@ public class PlayedGame {
     private double wpm;
     private double time;
     private double accuracy;
+    private int mistakes;
     
     
-    public PlayedGame(String typedText, double wpm, double time, double accuracy) {
+    public PlayedGame(String typedText, double wpm, double time, double accuracy, int mistakes) {
         this.typedText = typedText;
         this.wpm = wpm;
         this.time = time;
+        this.mistakes = mistakes;
         this.accuracy = accuracy;
     }
 
@@ -39,7 +41,11 @@ public class PlayedGame {
      return accuracy;   
     }
     
-       public void InsertData() { 
+    public int getMistakes() {
+        return mistakes;
+    }
+    
+    public void InsertData() { 
        
-       } 
+    } 
 }

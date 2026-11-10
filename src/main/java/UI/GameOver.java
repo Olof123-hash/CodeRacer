@@ -1,7 +1,7 @@
 package UI;
 
-import java.awt.Color;
-import javax.swing.BorderFactory;
+import java.awt.Dimension;
+import javax.swing.JTextField;
 import logic.RaceEngine;
 
 /*
@@ -22,49 +22,46 @@ public class GameOver extends javax.swing.JFrame {
   // Constructor that takes the instance variable currentRace, then sets the text with the help of
   // the get methods from RaceEnginge
   public GameOver(RaceEngine currentRace) {
-    // Look and feel of the stats pane
+    // The window chrome has to be installed before the components are packed, so the frame of the
+    // window is included in its size. The window is undecorated and closes with Escape.
     setUndecorated(true);
-    getContentPane().setBackground(new Color(10, 5, 15));
-    getRootPane().setBorder(BorderFactory.createLineBorder(new Color(255, 20, 147), 2));
+    WindowStyler.apply(this);
 
     this.currentRace = currentRace;
     initComponents();
-    GameOverFieldWPM.setText("" + currentRace.getWPM());
-    GameOverFieldAccuracy.setText(currentRace.getAccuracy() + "");
-    GameOverFieldMistakes.setText("" + currentRace.getMistakes());
+    if (currentRace != null) {
+      GameOverFieldWPM.setText(String.valueOf(currentRace.getWPM()));
+      GameOverFieldAccuracy.setText(Math.round(currentRace.getAccuracy()) + "%");
+      GameOverFieldMistakes.setText(String.valueOf(currentRace.getMistakes()));
+    }
+    styleStats();
+    setLocationRelativeTo(null);
+  }
 
-    // Dislay of WPM stats
-    GameOverFieldWPM.setForeground(Color.getHSBColor(0.90f, 1.0f, 1.0f));
-    GameOverFieldWPM.setOpaque(false);
-    GameOverFieldWPM.setBorder(null);
-    GameOverFieldWPM.setBackground(Color.black);
-    WPM.setForeground(Color.CYAN);
-    WPM.setOpaque(false);
-    WPM.setBorder(null);
+  /** Applies the theme to the title, the captions and the values of the statistics. */
+  private void styleStats() {
+    Title.setText("RACE STATS");
+    LabelStyler.applyTitle(Title, 22);
 
-    // Display of Accuracy stats
-    GameOverFieldAccuracy.setForeground(Color.getHSBColor(0.90f, 1.0f, 1.0f));
-    GameOverFieldAccuracy.setOpaque(false);
-    GameOverFieldAccuracy.setBorder(null);
-    GameOverFieldAccuracy.setBackground(Color.black);
-    Accuracy.setForeground(Color.CYAN);
-    Accuracy.setOpaque(false);
-    Accuracy.setBorder(null);
+    LabelStyler.applyCaption(WPM);
+    LabelStyler.applyCaption(Accuracy);
+    LabelStyler.applyCaption(Mistakes);
 
-    // Display of Mistakes stats
-    GameOverFieldMistakes.setForeground(Color.getHSBColor(0.90f, 1.0f, 1.0f));
-    GameOverFieldMistakes.setOpaque(false);
-    GameOverFieldMistakes.setBorder(null);
-    GameOverFieldMistakes.setBackground(Color.black);
-    Mistakes.setForeground(Color.CYAN);
-    Mistakes.setOpaque(false);
-    Mistakes.setBorder(null);
+    styleValue(GameOverFieldWPM);
+    styleValue(GameOverFieldAccuracy);
+    styleValue(GameOverFieldMistakes);
 
-    // display of title
-    Title.setOpaque(false);
-    Title.setBorder(null);
-    Title.setBackground(Color.black);
-    Title.setForeground(Color.CYAN);
+    // The values use a bigger font than the designer expected, so the fields are widened. The
+    // window is packed again because the fields are part of its preferred size.
+    Dimension valueSize = new Dimension(96, 30);
+    GameOverFieldWPM.setPreferredSize(valueSize);
+    GameOverFieldAccuracy.setPreferredSize(valueSize);
+    GameOverFieldMistakes.setPreferredSize(valueSize);
+    pack();
+  }
+
+  private void styleValue(JTextField field) {
+    TextStyler.applyStatValue(field);
   }
 
   /**

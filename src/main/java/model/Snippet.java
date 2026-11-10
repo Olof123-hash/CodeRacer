@@ -16,7 +16,10 @@ public class Snippet {
     this.body = newBody;
   }
 
+ 
   public String getBody() {
     return this.body;
   }
+  
+
 }

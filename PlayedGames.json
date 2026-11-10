@@ -1,176 +1,142 @@
 [
   {
-    "typedText": "public boolean wordPattern(String pattern, String s) {\n    String[] words \u003d s.split(\" \");\n    if (pattern.length() !\u003d words.length) return false;\n    Map\u003cCharacter, String\u003e forward \u003d new HashMap\u003c\u003e();\n    Map\u003cString, Character\u003e backward \u003d new HashMap\u003c\u003e();\n    for (int i \u003d 0; i \u003c words.length; i++) {\n        char c \u003d pattern.charAt(i);",
-    "wpm": 61.0,
-    "time": 65.0,
-    "accuracy": 93.0
+    "typedText": "test",
+    "wpm": 0.0,
+    "time": 1.0,
+    "accuracy": 80.0,
+    "mistakes": 1
   },
   {
-    "typedText": "def intersection(nums1, nums2):\n    return list(set(nums1) \u0026 set(nums2))",
-    "wpm": 57.0,
-    "time": 14.0,
-    "accuracy": 91.0
+    "typedText": "test",
+    "wpm": 0.0,
+    "time": 1.0,
+    "accuracy": 80.0,
+    "mistakes": 1
+  },
+  {
+    "typedText": "test",
+    "wpm": 0.0,
+    "time": 3.0,
+    "accuracy": 57.0,
+    "mistakes": 3
+  },
+  {
+    "typedText": "count_vowels:\n    xor rax, rax\n    xor rcx, rcx\n.loop:\n    mov dl, [rdi + rcx]\n    test dl, dl\n    jz .done",
+    "wpm": 18.0,
+    "time": 68.0,
+    "accuracy": 76.0,
+    "mistakes": 28
+  },
+  {
+    "typedText": "sign:\n    xor rax, rax\n    test rdi, rdi\n    jz .done\n    mov rax, 1\n    jg .done\n    mov rax, -1",
+    "wpm": 53.0,
+    "time": 21.0,
+    "accuracy": 87.0,
+    "mistakes": 11
   },
   {
     "typedText": "test",
     "wpm": 0.0,
     "time": 0.0,
-    "accuracy": 100.0
+    "accuracy": 100.0,
+    "mistakes": 0
   },
   {
     "typedText": "test",
     "wpm": 0.0,
     "time": 0.0,
-    "accuracy": 100.0
+    "accuracy": 100.0,
+    "mistakes": 0
   },
   {
     "typedText": "test",
     "wpm": 0.0,
     "time": 0.0,
-    "accuracy": 100.0
+    "accuracy": 100.0,
+    "mistakes": 0
   },
   {
     "typedText": "test",
     "wpm": 0.0,
-    "time": 0.0,
-    "accuracy": 100.0
-  },
-  {
-    "typedText": "test",
-    "wpm": 0.0,
-    "time": 0.0,
-    "accuracy": 100.0
-  },
-  {
-    "typedText": "test",
-    "wpm": 0.0,
-    "time": 0.0,
-    "accuracy": 100.0
-  },
-  {
-    "typedText": "test",
-    "wpm": 0.0,
-    "time": 0.0,
-    "accuracy": 80.0
-  },
-  {
-    "typedText": "test",
-    "wpm": 0.0,
-    "time": 0.0,
-    "accuracy": 100.0
-  },
-  {
-    "typedText": "test",
-    "wpm": 0.0,
-    "time": 0.0,
-    "accuracy": 100.0
-  },
-  {
-    "typedText": "test",
-    "wpm": 0.0,
-    "time": 0.0,
-    "accuracy": 100.0
-  },
-  {
-    "typedText": "test",
-    "wpm": 0.0,
-    "time": 0.0,
-    "accuracy": 100.0
-  },
-  {
-    "typedText": "test",
-    "wpm": 0.0,
-    "time": 0.0,
-    "accuracy": 100.0
-  },
-  {
-    "typedText": "test",
-    "wpm": 0.0,
-    "time": 0.0,
-    "accuracy": 100.0
-  },
-  {
-    "typedText": "public int[] twoSumSorted(int[] numbers, int target) {\n    int left \u003d 0, right \u003d numbers.length - 1;\n    while (left \u003c right) {\n        int total \u003d numbers[left] + numbers[right];\n        if (total \u003d\u003d target) return new int[]{left + 1, right + 1};\n        if (total \u003c target) left++;\n        else right--;",
-    "wpm": 56.0,
-    "time": 64.0,
-    "accuracy": 90.0
-  },
-  {
-    "typedText": "negate:\n    mov rax, rdi\n    neg rax\n    ret",
-    "wpm": 60.0,
-    "time": 7.0,
-    "accuracy": 86.0
-  },
-  {
-    "typedText": "climb_stairs:\n    mov rax, 1\n    mov rcx, 1\n.loop:\n    cmp rdi, 1\n    jle .done\n    mov rdx, rax",
-    "wpm": 62.0,
-    "time": 18.0,
-    "accuracy": 93.0
-  },
-  {
-    "typedText": "fn single_number(nums: \u0026[i32]) -\u003e i32 {\n    nums.iter().fold(0, |acc, \u0026n| acc ^ n)\n}",
-    "wpm": 22.0,
-    "time": 42.0,
-    "accuracy": 73.0
-  },
-  {
-    "typedText": "to_lower:\n    xor rax, rax\n.loop:\n    mov cl, [rdi + rax]\n    test cl, cl\n    je .done\n    cmp cl, \u0027A\u0027",
-    "wpm": 51.0,
-    "time": 23.0,
-    "accuracy": 89.0
-  },
-  {
-    "typedText": "fn rotate_array(nums: \u0026mut Vec\u003ci32\u003e, k: usize) {\n    let n \u003d nums.len();\n    if n \u003d\u003d 0 {\n        return;\n    }\n    let k \u003d k % n;\n    nums.rotate_right(k);",
-    "wpm": 44.0,
-    "time": 41.0,
-    "accuracy": 87.0
+    "time": 1.0,
+    "accuracy": 100.0,
+    "mistakes": 0
   },
   {
     "typedText": "test",
     "wpm": 0.0,
     "time": 2.0,
-    "accuracy": 57.0
+    "accuracy": 50.0,
+    "mistakes": 4
+  },
+  {
+    "typedText": "my_memcpy:\n    mov rcx, rdx\n    rep movsb\n    ret",
+    "wpm": 46.0,
+    "time": 11.0,
+    "accuracy": 90.0,
+    "mistakes": 4
+  },
+  {
+    "typedText": "clamp:\n    mov rax, rdi\n    cmp rax, rsi\n    cmovl rax, rsi\n    cmp rax, rdx\n    cmovg rax, rdx\n    ret",
+    "wpm": 36.0,
+    "time": 33.0,
+    "accuracy": 81.0,
+    "mistakes": 18
   },
   {
     "typedText": "test",
     "wpm": 0.0,
     "time": 0.0,
-    "accuracy": 100.0
-  },
-  {
-    "typedText": "#[derive(PartialEq, Eq, Clone, Debug)]\npub struct ListNode {\n    pub val: i32,\n    pub next: Option\u003cBox\u003cListNode\u003e\u003e,\n}\n\npub fn merge_two_lists(",
-    "wpm": 48.0,
-    "time": 35.0,
-    "accuracy": 89.0
+    "accuracy": 100.0,
+    "mistakes": 0
   },
   {
     "typedText": "test",
     "wpm": 0.0,
     "time": 0.0,
-    "accuracy": 100.0
+    "accuracy": 100.0,
+    "mistakes": 0
   },
   {
     "typedText": "test",
     "wpm": 0.0,
     "time": 0.0,
-    "accuracy": 100.0
+    "accuracy": 100.0,
+    "mistakes": 0
   },
   {
     "typedText": "test",
     "wpm": 0.0,
     "time": 0.0,
-    "accuracy": 100.0
+    "accuracy": 100.0,
+    "mistakes": 0
   },
   {
     "typedText": "test",
     "wpm": 0.0,
     "time": 0.0,
-    "accuracy": 100.0
+    "accuracy": 100.0,
+    "mistakes": 0
+  },
+  {
+    "typedText": "atoi:\n    xor rax, rax\n    xor rcx, rcx\n    mov r8, 1\n    cmp byte [rdi], \u0027-\u0027\n    jne .loop\n    mov r8, -1",
+    "wpm": 39.0,
+    "time": 32.0,
+    "accuracy": 88.0,
+    "mistakes": 11
   },
   {
     "typedText": "test",
     "wpm": 0.0,
     "time": 0.0,
-    "accuracy": 100.0
+    "accuracy": 100.0,
+    "mistakes": 0
+  },
+  {
+    "typedText": "sign:\n    xor rax, rax\n    test rdi, rdi\n    jz .done\n    mov rax, 1\n    jg .done\n    mov rax, -1",
+    "wpm": 59.0,
+    "time": 19.0,
+    "accuracy": 89.0,
+    "mistakes": 9
   }
 ]
