@@ -39,8 +39,7 @@ public class HistoryPanel extends javax.swing.JFrame {
         WindowStyler.apply(this);
         initComponents();
 
-        jButton1.setText("Close");
-        ButtonStyler.applyGhost(jButton1);
+       
 
        
         GroupLayout layout = (GroupLayout) getContentPane().getLayout();
@@ -52,7 +51,7 @@ public class HistoryPanel extends javax.swing.JFrame {
         // The minimise, fullscreen and close buttons of the window sit in its top right corner
         getContentPane().add(WindowControls.titleBar(this), BorderLayout.NORTH);
         getContentPane().add(history, BorderLayout.CENTER);
-        getContentPane().add(jButton1, BorderLayout.SOUTH);
+     
 
         pack();
         setLocationRelativeTo(null);
@@ -178,36 +177,21 @@ public class HistoryPanel extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jButton1 = new javax.swing.JButton();
-
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        jButton1.setBackground(new java.awt.Color(0, 0, 0));
-        jButton1.setFont(new java.awt.Font("Mona Sans", 1, 18)); // NOI18N
-        jButton1.setText("jButton1");
-        jButton1.addActionListener(this::jButton1ActionPerformed);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(0, 321, Short.MAX_VALUE)
-                .addComponent(jButton1))
+            .addGap(0, 428, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jButton1)
-                .addContainerGap(286, Short.MAX_VALUE))
+            .addGap(0, 321, Short.MAX_VALUE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-      dispose();
-    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -235,6 +219,5 @@ public class HistoryPanel extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
     // End of variables declaration//GEN-END:variables
 }
