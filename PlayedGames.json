@@ -159,5 +159,26 @@
     "time": 41.0,
     "accuracy": 89.0,
     "mistakes": 18
+  },
+  {
+    "typedText": "test",
+    "wpm": 0.0,
+    "time": 0.0,
+    "accuracy": 100.0,
+    "mistakes": 0
+  },
+  {
+    "typedText": "func containsDuplicate(nums []int) bool {\n\tseen :\u003d make(map[int]bool)\n\tfor _, n :\u003d range nums {\n\t\tif seen[n] {\n\t\t\treturn true\n\t\t}\n\t\tseen[n] \u003d true",
+    "wpm": 46.0,
+    "time": 37.0,
+    "accuracy": 88.0,
+    "mistakes": 18
+  },
+  {
+    "typedText": "fn max_subarray(nums: \u0026[i32]) -\u003e i32 {\n    let mut best \u003d nums[0];\n    let mut cur \u003d nums[0];\n    for \u0026n in \u0026nums[1..] {\n        cur \u003d n.max(cur + n);\n        best \u003d best.max(cur);\n    }",
+    "wpm": 39.0,
+    "time": 56.0,
+    "accuracy": 87.0,
+    "mistakes": 24
   }
 ]

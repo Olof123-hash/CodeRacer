@@ -1,6 +1,8 @@
 package UI;
 
 import java.awt.Component;
+import java.awt.Frame;
+import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.IllegalComponentStateException;
 import java.awt.Point;
@@ -11,11 +13,13 @@ import java.awt.event.KeyEvent;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JRootPane;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 
 /**
@@ -87,6 +91,78 @@ public final class WindowStyler {
         .put(
             KeyStroke.getKeyStroke(KeyEvent.VK_W, java.awt.event.InputEvent.CTRL_DOWN_MASK),
             "coderacer.closeWindow");
+  }
+
+  /** The text of the fullscreen button while the window is windowed. */
+  private static final String FULLSCREEN_TEXT = "Fullscreen";
+
+  /** The text of the fullscreen button while the window fills the screen. */
+  private static final String WINDOWED_TEXT = "Windowed";
+
+  /**
+   * Creates a button that switches the window that contains {@code context} between fullscreen and
+   * windowed. The context can be the window itself or a component inside it.
+   */
+  public static JButton fullscreenButton(Component context) {
+    JButton button = new JButton(FULLSCREEN_TEXT);
+    ButtonStyler.applyGhost(button);
+    button.addActionListener(
+        event -> {
+          toggleFullscreen(context);
+          button.setText(isFullscreen(context) ? WINDOWED_TEXT : FULLSCREEN_TEXT);
+        });
+    return button;
+  }
+
+  /**
+   * Puts the window that contains {@code context} into fullscreen, or brings it back to its windowed
+   * size and position. The button text follows the current state.
+   */
+  public static void toggleFullscreen(Component context) {
+    Window window = windowOf(context);
+    if (window == null || window.getGraphicsConfiguration() == null) {
+      return;
+    }
+    GraphicsDevice device = window.getGraphicsConfiguration().getDevice();
+    if (!device.isFullScreenSupported()) {
+      // Not every environment supports the exclusive fullscreen mode, maximizing is the closest
+      toggleMaximized(window);
+      return;
+    }
+    // Leaving fullscreen gives the window its old size and position back
+    device.setFullScreenWindow(device.getFullScreenWindow() == window ? null : window);
+  }
+
+  /** Tells whether the window that contains the component currently fills the screen. */
+  public static boolean isFullscreen(Component context) {
+    Window window = windowOf(context);
+    if (window == null || window.getGraphicsConfiguration() == null) {
+      return false;
+    }
+    if (window.getGraphicsConfiguration().getDevice().getFullScreenWindow() == window) {
+      return true;
+    }
+    // The fallback for screens without fullscreen support maximizes the window instead
+    return window instanceof Frame
+        && (((Frame) window).getExtendedState() & Frame.MAXIMIZED_BOTH) == Frame.MAXIMIZED_BOTH;
+  }
+
+  /** Used instead of the exclusive fullscreen mode when the screen does not support it. */
+  private static void toggleMaximized(Window window) {
+    if (!(window instanceof Frame)) {
+      return;
+    }
+    Frame frame = (Frame) window;
+    if ((frame.getExtendedState() & Frame.MAXIMIZED_BOTH) == Frame.MAXIMIZED_BOTH) {
+      frame.setExtendedState(Frame.NORMAL);
+    } else {
+      frame.setExtendedState(Frame.MAXIMIZED_BOTH);
+    }
+  }
+
+  /** The window that owns a component, or the component itself when it already is a window. */
+  private static Window windowOf(Component context) {
+    return context instanceof Window ? (Window) context : SwingUtilities.getWindowAncestor(context);
   }
 
   /**

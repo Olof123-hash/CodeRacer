@@ -49,6 +49,8 @@ public class HistoryPanel extends javax.swing.JFrame {
         
         getContentPane().removeAll();
         getContentPane().setLayout(new BorderLayout());
+        // The minimise, fullscreen and close buttons of the window sit in its top right corner
+        getContentPane().add(WindowControls.titleBar(this), BorderLayout.NORTH);
         getContentPane().add(history, BorderLayout.CENTER);
         getContentPane().add(jButton1, BorderLayout.SOUTH);
 

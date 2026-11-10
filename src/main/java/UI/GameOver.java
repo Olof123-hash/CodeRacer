@@ -1,6 +1,8 @@
 package UI;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
 import logic.RaceEngine;
 
@@ -35,7 +37,25 @@ public class GameOver extends javax.swing.JFrame {
       GameOverFieldMistakes.setText(String.valueOf(currentRace.getMistakes()));
     }
     styleStats();
+    addWindowButtons();
     setLocationRelativeTo(null);
+  }
+
+  /**
+   * Puts the minimise, fullscreen and close buttons of the window in its top right corner. The
+   * statistics keep their generated layout; the whole content pane is just moved into a panel that
+   * has room for the buttons above them.
+   */
+  private void addWindowButtons() {
+    JPanel stats = (JPanel) getContentPane();
+
+    JPanel content = new JPanel(new BorderLayout());
+    content.setOpaque(false);
+    content.add(WindowControls.titleBar(this), BorderLayout.NORTH);
+    content.add(stats, BorderLayout.CENTER);
+
+    setContentPane(content);
+    pack();
   }
 
   /** Applies the theme to the title, the captions and the values of the statistics. */
