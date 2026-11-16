@@ -38,27 +38,53 @@ import model.Settings;
  * also tells it about the change through {@link #addSettingsChangeListener(Runnable)}, which is how
  * the new colour scheme is applied while the window is still open.
  *
- * <p>There are three settings, each in its own card with the caption on the left and the control on
- * the right:
+ * <p>There are four settings, each in its own section: a small monospaced title with a thin rule
+ * under it, then the rows with the caption on the left and the control on the right. The type is the
+ * type of the race screen: monospaced for everything that shows a value, the interface font for the
+ * captions, and the same secondary buttons as the race window. There are no boxes around the
+ * sections, the race screen does not use them either.
  *
  * <ul>
  *   <li>the colour scheme, chosen from a drop down that shows a swatch of every scheme; the "Pick
  *       own..." button opens a colour chooser for an accent colour of the player's own
  *       ({@link ColourScheme#CUSTOM})
- *   <li>whether the player types code snippets or plain text, as a switch
+ *   <li>the background behind the race screen, chosen from a drop down of the classic backgrounds
+ *       (the choices are only listed so far, nothing behind them is implemented yet)
+ *   <li>whether the player types code snippets or plain text, as a switch 
  *   <li>which kind of plain text is used, random words or a passage from a text
  * </ul>
  */
 public class SettingsPanel extends javax.swing.JFrame {
 
   /** The size of the window: wide enough for a caption, a hint and a control on one row. */
-  private static final Dimension WINDOW_SIZE = new Dimension(560, 600);
+  private static final Dimension WINDOW_SIZE = new Dimension(560, 690);
+
+  /**
+   * The backgrounds the player can pick for the race screen. The last entry is not a background:
+   * it is the place where the player will upload a PDF of their own, which is why it is named
+   * after that instead of after colours. Only the names exist so far, choosing one does nothing.
+   */
+  private static final String[] BACKGROUND_OPTIONS = {
+   //Should not be a pdf 
+    "Black",
+    "Grey",
+    "White",
+    "Green",
+    "Black and grey",
+    "White and blue",
+    "Green and black",
+    "Navy and cyan",
+    "Sand and cream",
+    "Upload own PDF",
+    "Choose your own"
+  };
 
   /** The settings this window edits; the race screen keeps the same object. */
   private final Settings settings;
 
   // The controls, they are built in buildWindow()
   private JComboBox<String> schemeBox;
+  private JComboBox<String> backgroundBox;
   private JComboBox<String> textSourceBox;
   private JCheckBox codeModeSwitch;
   private JButton pickColourButton;
@@ -68,12 +94,13 @@ public class SettingsPanel extends javax.swing.JFrame {
   private JButton resetButton;
   private JPanel textSourceRow;
 
-  // The labels and cards, kept so refreshTheme can style them again after a scheme change
+  // The labels and the rules under the section titles, kept so refreshTheme can style them again
+  // after a scheme change
   private JLabel heading;
   private final List<JLabel> sectionTitles = new ArrayList<>();
   private final List<JLabel> captions = new ArrayList<>();
   private final List<JLabel> hints = new ArrayList<>();
-  private final List<JPanel> cards = new ArrayList<>();
+  private final List<JPanel> rules = new ArrayList<>();
 
   // The accent colour of the custom scheme, kept in sync with the settings object
   private Color customAccent;
@@ -97,6 +124,7 @@ public class SettingsPanel extends javax.swing.JFrame {
     this.caretColour = new Color(this.settings.getCaretColour());
     this.correctColour = new Color(this.settings.getCorrectColour());
     this.errorColour = new Color(this.settings.getErrorColour());
+    //this.background = 
 
     setUndecorated(true);
     // The window chrome has to be installed before the window is packed, so the frame is included
@@ -112,8 +140,8 @@ public class SettingsPanel extends javax.swing.JFrame {
   // ------------------------------------------------------------------------------- Layout
 
   /**
-   * Builds the window: the window buttons in the top right corner, the title and the three
-   * settings in their cards, and the reset button at the bottom.
+   * Builds the window: the window buttons in the top right corner, the title and the four
+   * settings in their sections, and the reset button at the bottom.
    */
   private void buildWindow() {
     JPanel content = new JPanel(new BorderLayout());
@@ -131,8 +159,8 @@ public class SettingsPanel extends javax.swing.JFrame {
     panel.setOpaque(false);
     panel.setBorder(BorderFactory.createEmptyBorder(4, 18, 16, 18));
 
-    // The title and the cards are kept together at the top, so the cards keep their own height and
-    // the empty room of the window stays below them.
+    // The title and the sections are kept together at the top, so the sections keep their own height
+    // and the empty room of the window stays below them.
     JPanel header = new JPanel(new BorderLayout(0, 14));
     header.setOpaque(false);
 
@@ -144,6 +172,8 @@ public class SettingsPanel extends javax.swing.JFrame {
     cardPanel.setOpaque(false);
     cardPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
     cardPanel.add(buildAppearanceCard());
+    cardPanel.add(Box.createVerticalStrut(12));
+    cardPanel.add(buildBackgroundCard());
     cardPanel.add(Box.createVerticalStrut(12));
     cardPanel.add(buildTypingCard());
     cardPanel.add(Box.createVerticalStrut(12));
@@ -181,6 +211,37 @@ public class SettingsPanel extends javax.swing.JFrame {
     card.add(
         settingRow("Accent colour", "The swatch shows the colour of the scheme.", controls));
     return card;
+  }
+
+  /**
+   * The card with the background of the race screen. The drop down lists the classic backgrounds and
+   * the entry for a PDF of the player's own; neither of them is used yet, the window only shows the
+   * choice so the setting can be wired up later.
+   */
+  private JPanel buildBackgroundCard() {
+    JPanel card = settingCard("BACKGROUND");
+
+    backgroundBox = new JComboBox<>(BACKGROUND_OPTIONS);
+    ComboBoxStyler.apply(backgroundBox);
+    // The widest entry decides the width of the control, so the box does not change size when the
+    // player opens it
+    backgroundBox.setPrototypeDisplayValue(
+        BACKGROUND_OPTIONS[BACKGROUND_OPTIONS.length - 1]);
+    backgroundBox.setPreferredSize(new Dimension(200, 34));
+    backgroundBox.setToolTipText("Background of the race screen");
+    backgroundBox.getAccessibleContext().setAccessibleName("Change background");
+
+    card.add(
+        settingRow(
+            "Change background",
+            "Pick a classic background, or upload a PDF of your own.",
+            backgroundBox));
+    return card;
+  }
+  
+  public String getbackground() {
+      String background = (String)backgroundBox.getSelectedItem();
+      return background;
   }
 
   /**
@@ -260,8 +321,8 @@ public class SettingsPanel extends javax.swing.JFrame {
   }
 
   /**
-   * A card of the settings screen: the quiet title of the group and room for the rows. The title
-   * uses the same font and colour as the other section headers of the application.
+   * A section of the settings screen: the title of the group, a thin rule and room for the rows.
+   * The sections are not drawn as boxes, a rule under the title is the only separation there is.
    */
   private JPanel settingCard(String title) {
     JPanel card = new JPanel();
@@ -273,9 +334,20 @@ public class SettingsPanel extends javax.swing.JFrame {
     titleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
     sectionTitles.add(titleLabel);
 
+    // A one pixel line in the border colour, stretched over the full width of the section
+    JPanel rule = new JPanel();
+    rule.setOpaque(true);
+    rule.setBackground(Theme.SUBTLE);
+    rule.setAlignmentX(Component.LEFT_ALIGNMENT);
+    rule.setMinimumSize(new Dimension(10, 1));
+    rule.setPreferredSize(new Dimension(10, 1));
+    rule.setMaximumSize(new Dimension(Integer.MAX_VALUE, 1));
+    rules.add(rule);
+
     card.add(titleLabel);
-    card.add(Box.createVerticalStrut(8));
-    cards.add(card);
+    card.add(Box.createVerticalStrut(4));
+    card.add(rule);
+    card.add(Box.createVerticalStrut(10));
     return card;
   }
 
@@ -332,7 +404,8 @@ public class SettingsPanel extends javax.swing.JFrame {
   private JButton colourButton(Color colour, String tooltip) {
     JButton button = new JButton();
     button.setToolTipText(tooltip);
-    button.setPreferredSize(new Dimension(140, 34));
+    // Wide and tall enough for the padding of the secondary button style and the swatch
+    button.setPreferredSize(new Dimension(150, 38));
     paintColourButton(button, colour);
     return button;
   }
@@ -343,7 +416,7 @@ public class SettingsPanel extends javax.swing.JFrame {
     button.setIcon(new SwatchIcon(colour, 14));
     button.setIconTextGap(9);
     // Styling again after the icon changed keeps the padding and the hover behaviour
-    ButtonStyler.applyGhost(button);
+    ButtonStyler.applySecondary(button);
     button.repaint();
   }
 
@@ -487,30 +560,36 @@ public class SettingsPanel extends javax.swing.JFrame {
 
   /** Applies the current palette to the window and to all of its components again. */
   public void refreshTheme() {
-    LabelStyler.applyTitle(heading, 17);
+    // The title of the window is the monospaced accent type of the other windows, at the size of the
+    // statistics of the race screen
+    LabelStyler.applyTitle(heading, 16);
+    // The sections use the same monospaced type one size down, so they read as quiet headers above
+    // their rows instead of as filled titles
     for (JLabel label : sectionTitles) {
-      LabelStyler.applyAccent(label);
+      LabelStyler.applyTitle(label, 12);
     }
+    // The captions are the interface font of the race screen, quiet and one size below the labels
     for (JLabel label : captions) {
-      LabelStyler.apply(label);
+      LabelStyler.applyMuted(label);
     }
     for (JLabel label : hints) {
       LabelStyler.applyCaption(label);
     }
-    for (JPanel card : cards) {
-      card.setBorder(Theme.roundedBorder(Theme.SUBTLE, 10, 1, 14, 10));
+    for (JPanel rule : rules) {
+      rule.setBackground(Theme.SUBTLE);
     }
 
-    ButtonStyler.applyGhost(pickColourButton);
-    ButtonStyler.applyGhost(caretButton);
-    ButtonStyler.applyGhost(correctButton);
-    ButtonStyler.applyGhost(errorButton);
-    ButtonStyler.applyGhost(resetButton);
+    ButtonStyler.applySecondary(pickColourButton);
+    ButtonStyler.applySecondary(caretButton);
+    ButtonStyler.applySecondary(correctButton);
+    ButtonStyler.applySecondary(errorButton);
+    ButtonStyler.applySecondary(resetButton);
 
     // The combo box styler installs its own renderer, so the swatches are put back after it
     ComboBoxStyler.apply(schemeBox);
     schemeBox.setRenderer(new SchemeRenderer());
     ComboBoxStyler.apply(textSourceBox);
+    ComboBoxStyler.apply(backgroundBox);
     ToggleSwitchStyler.apply(codeModeSwitch);
 
     WindowStyler.refresh(this);

@@ -11,6 +11,8 @@ import java.awt.GridBagLayout;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
@@ -19,13 +21,24 @@ import javax.swing.JPanel;
  */
 public class BackgroundPanel extends JPanel {
 
+  HashMap<Integer, String> backgrounds = new HashMap<>();
+  
+  
+  public void initalizeMap(){
+  backgrounds.put(1, "/backgrounds/greyblackpanel.jpg");
+  backgrounds.put(2, "/backgrounds/greenandblackpanel.jpg");
+  backgrounds.put(3, "/backgrounds/navycyanpanel.jpg");
+  backgrounds.put(4, "/backgrounds/whitebluepanel.jpg");
+  }
+  
   boolean showImage = true;
   BufferedImage image;
 
   public BackgroundPanel() {
+    initalizeMap();
     setLayout(new GridBagLayout());
     try {
-      URL url = getClass().getResource("/backgroundstartpanel.jpg");
+      URL url = getClass().getResource(backgrounds.get(1));
       image = ImageIO.read(url);
     } catch (IOException | IllegalArgumentException e) {
       image = null;
