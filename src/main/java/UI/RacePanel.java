@@ -118,7 +118,10 @@ public class RacePanel extends BackgroundPanel {
     Theme.applyTypingColours(
         new Color(settings.getCaretColour()),
         new Color(settings.getCorrectColour()),
-        new Color(settings.getErrorColour()));
+        new Color(settings.getErrorColour()),
+        new Color(settings.getTextColour()));
+    // The background the player picked last time
+    showBackground(settings.getBackground());
 
     // Built in java code
     initComponents();
@@ -259,6 +262,9 @@ public class RacePanel extends BackgroundPanel {
     currentRace = new RaceEngine(snip.getBody());
     // Sets the text of the snippetPane with that of the current snippet
     snippetPane.setText(snip.getBody());
+    // Colours the new snippet before the first keystroke, so the whole text already has the colour
+    // of the text that is waiting to be typed
+    colorTypingField();
     // Removes the text of the previous race from the typing field
     typingField.setText("");
     // Scales the font of the snippet so that the whole snippet fits in the snippet pane without
@@ -362,8 +368,12 @@ public class RacePanel extends BackgroundPanel {
     Theme.applyTypingColours(
         new Color(settings.getCaretColour()),
         new Color(settings.getCorrectColour()),
-        new Color(settings.getErrorColour()));
+        new Color(settings.getErrorColour()),
+        new Color(settings.getTextColour()));
     applyTheme();
+
+    // The background behind the race screen
+    showBackground(settings.getBackground());
 
     // The content type. The drop down lists languages or text sources, depending on the switch.
     applyContentMode();
@@ -880,9 +890,10 @@ public class RacePanel extends BackgroundPanel {
     String acceptedText = currentRace.getLastAcceptedText();
     StyledDocument doc = snippetPane.getStyledDocument();
 
-    // The part of the snippet that is not typed yet keeps the normal text colour
+    // The part of the snippet that is not typed yet gets the colour the player picked for the text
+    // that is still waiting to be typed
     SimpleAttributeSet pendingText = new SimpleAttributeSet();
-    StyleConstants.setForeground(pendingText, Theme.TEXT);
+    StyleConstants.setForeground(pendingText, Theme.UNTYPED_TEXT);
     doc.setCharacterAttributes(0, doc.getLength(), pendingText, true);
 
     if (acceptedText.isEmpty()) {

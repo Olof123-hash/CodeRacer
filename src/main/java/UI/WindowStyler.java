@@ -1,6 +1,8 @@
 package UI;
 
 import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
@@ -10,6 +12,8 @@ import java.awt.Rectangle;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
@@ -51,7 +55,11 @@ public final class WindowStyler {
     frame.setBackground(Theme.BACKGROUND);
     frame.getContentPane().setBackground(Theme.BACKGROUND);
     if (frame.isUndecorated()) {
-      frame.getRootPane().setBorder(frameBorder());
+      // A window without a title bar has no edges to drag either, so the border leaves a margin
+      // around the content that the resize handler below turns into a resize edge.
+      frame.setResizable(true);
+      frame.getRootPane().setBorder(resizableFrameBorder());
+      ResizeHandler.install(frame);
     }
     installEscapeToClose(frame.getRootPane(), frame::dispose);
   }
@@ -75,7 +83,7 @@ public final class WindowStyler {
     frame.setBackground(Theme.BACKGROUND);
     frame.getContentPane().setBackground(Theme.BACKGROUND);
     if (frame.isUndecorated()) {
-      frame.getRootPane().setBorder(frameBorder());
+      frame.getRootPane().setBorder(resizableFrameBorder());
     }
     frame.repaint();
   }
@@ -85,6 +93,161 @@ public final class WindowStyler {
     Border accentLine = BorderFactory.createMatteBorder(3, 0, 0, 0, Theme.ACCENT);
     Border outline = BorderFactory.createLineBorder(Theme.SUBTLE, 1);
     return BorderFactory.createCompoundBorder(accentLine, outline);
+  }
+
+  /** The width of the invisible edge of a window in which a drag resizes it. */
+  private static final int RESIZE_MARGIN = 6;
+
+  /** The smallest size a resized window can have. */
+  private static final Dimension MIN_RESIZED = new Dimension(360, 240);
+
+  /**
+   * The frame border with an invisible margin around it. The margin belongs to the root pane, which
+   * is not covered by the content, so mouse events there reach the resize handler.
+   */
+  private static Border resizableFrameBorder() {
+    return BorderFactory.createCompoundBorder(
+        BorderFactory.createEmptyBorder(RESIZE_MARGIN, RESIZE_MARGIN, RESIZE_MARGIN, RESIZE_MARGIN),
+        frameBorder());
+  }
+
+  /**
+   * Resizes an undecorated window while an edge or a corner of its border is dragged. The listener
+   * sits on the root pane, which owns the margin that {@link #resizableFrameBorder()} leaves around
+   * the content.
+   */
+  private static final class ResizeHandler extends MouseAdapter {
+
+    private static final int NONE = 0;
+    private static final int NORTH = 1;
+    private static final int SOUTH = 2;
+    private static final int WEST = 4;
+    private static final int EAST = 8;
+
+    private final JFrame frame;
+    private int edge = NONE;
+    private Point pressed;
+    private Rectangle startBounds;
+
+    private ResizeHandler(JFrame frame) {
+      this.frame = frame;
+    }
+
+    private static void install(JFrame frame) {
+      ResizeHandler handler = new ResizeHandler(frame);
+      frame.getRootPane().addMouseListener(handler);
+      frame.getRootPane().addMouseMotionListener(handler);
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent event) {
+      frame.getRootPane().setCursor(Cursor.getPredefinedCursor(cursorOf(edgeAt(event))));
+    }
+
+    @Override
+    public void mouseExited(MouseEvent event) {
+      frame.getRootPane().setCursor(Cursor.getDefaultCursor());
+    }
+
+    @Override
+    public void mousePressed(MouseEvent event) {
+      edge = edgeAt(event);
+      pressed = event.getLocationOnScreen();
+      startBounds = frame.getBounds();
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent event) {
+      edge = NONE;
+      pressed = null;
+    }
+
+    @Override
+    public void mouseDragged(MouseEvent event) {
+      if (edge == NONE || pressed == null) {
+        return;
+      }
+      Point now = event.getLocationOnScreen();
+      int dx = now.x - pressed.x;
+      int dy = now.y - pressed.y;
+      int x = startBounds.x;
+      int y = startBounds.y;
+      int width = startBounds.width;
+      int height = startBounds.height;
+      if ((edge & WEST) != 0) {
+        x += dx;
+        width -= dx;
+      }
+      if ((edge & EAST) != 0) {
+        width += dx;
+      }
+      if ((edge & NORTH) != 0) {
+        y += dy;
+        height -= dy;
+      }
+      if ((edge & SOUTH) != 0) {
+        height += dy;
+      }
+      // Keep the smallest size, and keep the edge opposite to the drag where it was
+      if (width < MIN_RESIZED.width) {
+        if ((edge & WEST) != 0) {
+          x = startBounds.x + startBounds.width - MIN_RESIZED.width;
+        }
+        width = MIN_RESIZED.width;
+      }
+      if (height < MIN_RESIZED.height) {
+        if ((edge & NORTH) != 0) {
+          y = startBounds.y + startBounds.height - MIN_RESIZED.height;
+        }
+        height = MIN_RESIZED.height;
+      }
+      frame.setBounds(x, y, width, height);
+    }
+
+    /** Which edges of the window the mouse is near, as a combination of the constants above. */
+    private int edgeAt(MouseEvent event) {
+      int x = event.getX();
+      int y = event.getY();
+      int width = frame.getRootPane().getWidth();
+      int height = frame.getRootPane().getHeight();
+      int edge = NONE;
+      if (y <= RESIZE_MARGIN) {
+        edge |= NORTH;
+      }
+      if (y >= height - RESIZE_MARGIN) {
+        edge |= SOUTH;
+      }
+      if (x <= RESIZE_MARGIN) {
+        edge |= WEST;
+      }
+      if (x >= width - RESIZE_MARGIN) {
+        edge |= EAST;
+      }
+      return edge;
+    }
+
+    private int cursorOf(int edge) {
+      switch (edge) {
+        case NORTH:
+          return Cursor.N_RESIZE_CURSOR;
+        case SOUTH:
+          return Cursor.S_RESIZE_CURSOR;
+        case WEST:
+          return Cursor.W_RESIZE_CURSOR;
+        case EAST:
+          return Cursor.E_RESIZE_CURSOR;
+        case NORTH | WEST:
+          return Cursor.NW_RESIZE_CURSOR;
+        case NORTH | EAST:
+          return Cursor.NE_RESIZE_CURSOR;
+        case SOUTH | WEST:
+          return Cursor.SW_RESIZE_CURSOR;
+        case SOUTH | EAST:
+          return Cursor.SE_RESIZE_CURSOR;
+        default:
+          return Cursor.DEFAULT_CURSOR;
+      }
+    }
   }
 
   /** Makes Escape and Ctrl+W close the given window. */

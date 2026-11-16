@@ -11,6 +11,7 @@ import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -48,8 +49,9 @@ import model.Settings;
  *   <li>the colour scheme, chosen from a drop down that shows a swatch of every scheme; the "Pick
  *       own..." button opens a colour chooser for an accent colour of the player's own
  *       ({@link ColourScheme#CUSTOM})
- *   <li>the background behind the race screen, chosen from a drop down of the classic backgrounds
- *       (the choices are only listed so far, nothing behind them is implemented yet)
+ *   <li>the background behind the race screen, chosen from a drop down of the images in
+ *       {@code src/main/resources/backgrounds}; picking one paints it behind the race screen right
+ *       away
  *   <li>whether the player types code snippets or plain text, as a switch 
  *   <li>which kind of plain text is used, random words or a passage from a text
  * </ul>
@@ -57,27 +59,14 @@ import model.Settings;
 public class SettingsPanel extends javax.swing.JFrame {
 
   /** The size of the window: wide enough for a caption, a hint and a control on one row. */
-  private static final Dimension WINDOW_SIZE = new Dimension(560, 690);
+  private static final Dimension WINDOW_SIZE = new Dimension(560, 740);
 
   /**
-   * The backgrounds the player can pick for the race screen. The last entry is not a background:
-   * it is the place where the player will upload a PDF of their own, which is why it is named
-   * after that instead of after colours. Only the names exist so far, choosing one does nothing.
+   * The two entries of the background drop down that are not a background yet. They are listed so
+   * the plan is visible, but picking one leaves the image that is shown: "Upload own PDF" needs a
+   * file chooser of its own and "Choose your own" needs a colour picker, and neither is built yet.
    */
-  private static final String[] BACKGROUND_OPTIONS = {
-   //Should not be a pdf 
-    "Black",
-    "Grey",
-    "White",
-    "Green",
-    "Black and grey",
-    "White and blue",
-    "Green and black",
-    "Navy and cyan",
-    "Sand and cream",
-    "Upload own PDF",
-    "Choose your own"
-  };
+  private static final String BACKGROUND_UPLOAD = "Upload own PDF";
 
   /** The settings this window edits; the race screen keeps the same object. */
   private final Settings settings;
@@ -91,6 +80,7 @@ public class SettingsPanel extends javax.swing.JFrame {
   private JButton caretButton;
   private JButton correctButton;
   private JButton errorButton;
+  private JButton textButton;
   private JButton resetButton;
   private JPanel textSourceRow;
 
@@ -105,10 +95,11 @@ public class SettingsPanel extends javax.swing.JFrame {
   // The accent colour of the custom scheme, kept in sync with the settings object
   private Color customAccent;
 
-  // The three colours of typing, kept in sync with the settings object
+  // The colours of typing, kept in sync with the settings object
   private Color caretColour;
   private Color correctColour;
   private Color errorColour;
+  private Color textColour;
 
   // The rest of the application can subscribe here instead of polling the window
   private final List<Runnable> changeListeners = new ArrayList<>();
@@ -124,7 +115,7 @@ public class SettingsPanel extends javax.swing.JFrame {
     this.caretColour = new Color(this.settings.getCaretColour());
     this.correctColour = new Color(this.settings.getCorrectColour());
     this.errorColour = new Color(this.settings.getErrorColour());
-    //this.background = 
+    this.textColour = new Color(this.settings.getTextColour());
 
     setUndecorated(true);
     // The window chrome has to be installed before the window is packed, so the frame is included
@@ -214,22 +205,21 @@ public class SettingsPanel extends javax.swing.JFrame {
   }
 
   /**
-   * The card with the background of the race screen. The drop down lists the classic backgrounds and
-   * the entry for a PDF of the player's own; neither of them is used yet, the window only shows the
-   * choice so the setting can be wired up later.
+   * The card with the background of the race screen. The drop down lists the backgrounds that come
+   * with the application and the two entries that are not a background yet.
    */
   private JPanel buildBackgroundCard() {
     JPanel card = settingCard("BACKGROUND");
 
-    backgroundBox = new JComboBox<>(BACKGROUND_OPTIONS);
+    backgroundBox = new JComboBox<>(backgroundOptions());
     ComboBoxStyler.apply(backgroundBox);
     // The widest entry decides the width of the control, so the box does not change size when the
     // player opens it
-    backgroundBox.setPrototypeDisplayValue(
-        BACKGROUND_OPTIONS[BACKGROUND_OPTIONS.length - 1]);
+    
     backgroundBox.setPreferredSize(new Dimension(200, 34));
     backgroundBox.setToolTipText("Background of the race screen");
     backgroundBox.getAccessibleContext().setAccessibleName("Change background");
+    backgroundBox.addActionListener(event -> fireSettingsChanged());
 
     card.add(
         settingRow(
@@ -239,14 +229,20 @@ public class SettingsPanel extends javax.swing.JFrame {
     return card;
   }
   
-  public String getbackground() {
-      String background = (String)backgroundBox.getSelectedItem();
-      return background;
+  /**
+   * The entries of the background drop down: the backgrounds that exist, from
+   * {@link BackgroundPanel#backgroundNames()}, followed by the two that are not a background yet.
+   */
+  private static String[] backgroundOptions() {
+    String[] names = BackgroundPanel.backgroundNames();
+    String[] options = Arrays.copyOf(names, names.length + 2);
+    options[names.length] = BACKGROUND_UPLOAD;
+    return options;
   }
 
   /**
-   * The card with the three colours that are used while the player types. They are settings of
-   * their own, so they stay the same when another colour scheme is picked.
+   * The card with the colours that are used while the player types. They are settings of their
+   * own, so they stay the same when another colour scheme is picked.
    *
    * <p>Every row is one button that shows its colour as a swatch and as a hex value; pressing it
    * opens the colour chooser and the new colour is written into the settings object immediately.
@@ -273,6 +269,11 @@ public class SettingsPanel extends javax.swing.JFrame {
     errorButton = colourButton(errorColour, "The character you typed wrongly");
     errorButton.addActionListener(event -> pickErrorColour());
     card.add(colourRow("Wrong text", errorButton));
+    card.add(Box.createVerticalStrut(8));
+
+    textButton = colourButton(textColour, "The text that is still waiting to be typed");
+    textButton.addActionListener(event -> pickTextColour());
+    card.add(colourRow("Untyped text", textButton));
     return card;
   }
 
@@ -431,13 +432,16 @@ public class SettingsPanel extends javax.swing.JFrame {
       codeModeSwitch.setSelected(settings.isCodeMode());
       textSourceBox.setSelectedItem(settings.getTextSource());
       textSourceRow.setVisible(!settings.isCodeMode());
+      backgroundBox.setSelectedItem(settings.getBackground());
 
       caretColour = new Color(settings.getCaretColour());
       correctColour = new Color(settings.getCorrectColour());
       errorColour = new Color(settings.getErrorColour());
+      textColour = new Color(settings.getTextColour());
       paintColourButton(caretButton, caretColour);
       paintColourButton(correctButton, correctColour);
       paintColourButton(errorButton, errorColour);
+      paintColourButton(textButton, textColour);
     } finally {
       notifying = true;
     }
@@ -510,6 +514,18 @@ public class SettingsPanel extends javax.swing.JFrame {
     fireSettingsChanged();
   }
 
+  /** Asks for the colour of the text that has not been typed yet and stores it as a setting. */
+  private void pickTextColour() {
+    Color picked =
+        JColorChooser.showDialog(this, "Pick the colour of the untyped text", textColour);
+    if (picked == null) {
+      return;
+    }
+    textColour = picked;
+    paintColourButton(textButton, textColour);
+    fireSettingsChanged();
+  }
+
   /** Puts every control back to the values the window starts with. */
   private void resetToDefaults() {
     notifying = false;
@@ -519,13 +535,16 @@ public class SettingsPanel extends javax.swing.JFrame {
       codeModeSwitch.setSelected(true);
       textSourceBox.setSelectedItem(Settings.TEXT_SOURCE_WORDS);
       textSourceRow.setVisible(false);
+      backgroundBox.setSelectedItem(Settings.DEFAULT_BACKGROUND);
 
       caretColour = new Color(Settings.DEFAULT_CARET_COLOUR_RGB);
       correctColour = new Color(Settings.DEFAULT_CORRECT_COLOUR_RGB);
       errorColour = new Color(Settings.DEFAULT_ERROR_COLOUR_RGB);
+      textColour = new Color(Settings.DEFAULT_TEXT_COLOUR_RGB);
       paintColourButton(caretButton, caretColour);
       paintColourButton(correctButton, correctColour);
       paintColourButton(errorButton, errorColour);
+      paintColourButton(textButton, textColour);
     } finally {
       notifying = true;
     }
@@ -548,9 +567,11 @@ public class SettingsPanel extends javax.swing.JFrame {
     settings.setCustomAccent(customAccent.getRGB() & 0xffffff);
     settings.setCodeMode(codeModeSwitch.isSelected());
     settings.setTextSource(getTextSource());
+    settings.setBackground(getSelectedBackground());
     settings.setCaretColour(caretColour.getRGB() & 0xffffff);
     settings.setCorrectColour(correctColour.getRGB() & 0xffffff);
     settings.setErrorColour(errorColour.getRGB() & 0xffffff);
+    settings.setTextColour(textColour.getRGB() & 0xffffff);
     settings.save();
 
     for (Runnable listener : List.copyOf(changeListeners)) {
@@ -583,6 +604,7 @@ public class SettingsPanel extends javax.swing.JFrame {
     ButtonStyler.applySecondary(caretButton);
     ButtonStyler.applySecondary(correctButton);
     ButtonStyler.applySecondary(errorButton);
+    ButtonStyler.applySecondary(textButton);
     ButtonStyler.applySecondary(resetButton);
 
     // The combo box styler installs its own renderer, so the swatches are put back after it
@@ -631,6 +653,12 @@ public class SettingsPanel extends javax.swing.JFrame {
   public String getTextSource() {
     Object selected = textSourceBox.getSelectedItem();
     return selected == null ? Settings.TEXT_SOURCE_WORDS : selected.toString();
+  }
+
+  /** The background the player chose, one of {@link BackgroundPanel#backgroundNames()}. */
+  public String getSelectedBackground() {
+    Object selected = backgroundBox.getSelectedItem();
+    return selected == null ? Settings.DEFAULT_BACKGROUND : selected.toString();
   }
 
   // ------------------------------------------------------------------------------- Painting

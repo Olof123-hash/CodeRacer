@@ -60,7 +60,7 @@ public final class Theme {
   /** A dark version of the accent, used for filled areas. */
   public static Color ACCENT_DIM = new Color(0x7a3f06);
 
-  // The three colours of typing are settings of their own, so they do not change when the player
+  // The four colours of typing are settings of their own, so they do not change when the player
   // switches scheme. They are not final either, because the settings window can change them while
   // the race screen is open; Theme.applyTypingColours replaces them.
 
@@ -70,6 +70,8 @@ public final class Theme {
   public static Color TYPED_CORRECT = new Color(0x4ade80);
   /** The colour of a character that the player typed wrongly. */
   public static Color TYPED_ERROR = new Color(0xd1334a);
+  /** The colour of the text that the player has not typed yet, so everything left to type. */
+  public static Color UNTYPED_TEXT = new Color(0xd8d4cc);
 
   /** The colour of a mistake in the interface, for example the close button of a window. */
   public static final Color ERROR = new Color(0xd1334a);
@@ -128,15 +130,15 @@ public final class Theme {
   }
 
   /**
-   * Replaces the three colours that are used while typing: the caret and the colour of text that
-   * was typed right or wrong. They are not part of a colour scheme, so switching scheme does not
-   * touch them; only the settings window does. A null value keeps the colour that is in use, which
-   * is handy when only one of the three changed.
+   * Replaces the colours that are used while typing: the caret, the colour of text that was typed
+   * right or wrong, and the colour of the text that is still waiting to be typed. They are not part
+   * of a colour scheme, so switching scheme does not touch them; only the settings window does. A
+   * null value keeps the colour that is in use, which is handy when only one of them changed.
    *
-   * <p>The caret is set on the text panes by {@link TextStyler}, the other two are read by
-   * {@code RacePanel.colorTypingField()} every time a character is typed.
+   * <p>The caret is set on the text panes by {@link TextStyler}, the other three are read by
+   * {@code RacePanel.colorTypingField()} every time the text of the race changes.
    */
-  public static void applyTypingColours(Color caret, Color correct, Color error) {
+  public static void applyTypingColours(Color caret, Color correct, Color error, Color untyped) {
     if (caret != null) {
       CARET = caret;
     }
@@ -145,6 +147,9 @@ public final class Theme {
     }
     if (error != null) {
       TYPED_ERROR = error;
+    }
+    if (untyped != null) {
+      UNTYPED_TEXT = untyped;
     }
   }
 
