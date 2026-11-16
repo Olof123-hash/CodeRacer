@@ -44,6 +44,9 @@ public class Database {
 
   public Database(String language) {
 
+    // The key of the file that is read is kept, so getRandomSnippet can tell random words apart
+    this.language = language;
+
     if (languages.isEmpty()) {
       languages.put("Random", "/Random.json");
       languages.put("Java", "/Java.json");
@@ -54,9 +57,15 @@ public class Database {
       languages.put("Go", "/Go.json");
       languages.put("Assembly", "/Assembly.json");
       languages.put("Test", "/test.json");
+      // The two plain text sources, used when the player switched code snippets off. "Words" is a
+      // list of single words that getRandomSnippet joins into a line, "Text" is a list of passages.
+      languages.put("Words", "/Words.json");
+      languages.put("Text", "/Text.json");
     }
 
-    this.gsonlist = gson.fromJson(readFileFromResource(languages.get(language)), listType);
+    // An unknown key (for example from an old settings file) falls back to the mixed code list
+    String resource = languages.getOrDefault(language, languages.get("Random"));
+    this.gsonlist = gson.fromJson(readFileFromResource(resource), listType);
   }
   
   
@@ -94,7 +103,11 @@ public class Database {
 
   public Snippet getRandomSnippet() {
 
-    if (this.gsonlist != null) {
+    if (this.gsonlist != null && !this.gsonlist.isEmpty()) {
+      // The word list holds single words, a race always uses a line of them
+      if ("Words".equals(language)) {
+        return randomWords();
+      }
       int r1 = position.nextInt(this.gsonlist.size());
       Snippet snip = this.gsonlist.get(r1);
       return snip;
@@ -102,6 +115,20 @@ public class Database {
       System.out.println("Snippet list is empty");
       return null;
     }
+  }
+
+  /** Builds a line of random words from the word list, so a text race is long enough to type. */
+  private Snippet randomWords() {
+    // Between 10 and 14 words, which is about the length of the shorter code snippets
+    int wordCount = 10 + position.nextInt(5);
+    StringBuilder line = new StringBuilder();
+    for (int word = 0; word < wordCount; word++) {
+      if (word > 0) {
+        line.append(' ');
+      }
+      line.append(this.gsonlist.get(position.nextInt(this.gsonlist.size())).getBody());
+    }
+    return new Snippet(line.toString());
   }
   
   /**

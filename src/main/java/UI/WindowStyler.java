@@ -66,6 +66,20 @@ public final class WindowStyler {
     installEscapeToClose(dialog.getRootPane(), dialog::dispose);
   }
 
+  /**
+   * Applies the theme again to a window that is already on the screen, after the palette changed.
+   * The components of the window keep the colours they were created with, so the window styles its
+   * own content again; this method only takes care of the frame and its border.
+   */
+  public static void refresh(JFrame frame) {
+    frame.setBackground(Theme.BACKGROUND);
+    frame.getContentPane().setBackground(Theme.BACKGROUND);
+    if (frame.isUndecorated()) {
+      frame.getRootPane().setBorder(frameBorder());
+    }
+    frame.repaint();
+  }
+
   /** The border of an undecorated window: an accent line on top and an outline around the frame. */
   public static Border frameBorder() {
     Border accentLine = BorderFactory.createMatteBorder(3, 0, 0, 0, Theme.ACCENT);

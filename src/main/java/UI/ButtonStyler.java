@@ -3,7 +3,6 @@ package UI;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Cursor;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
@@ -35,16 +34,6 @@ public final class ButtonStyler {
   private ButtonStyler() {
     // Utility class, no instances
   }
-
-  // The palette used to live in this class; it is kept here so existing code keeps compiling.
-  public static final Color backgroundColor = Theme.BACKGROUND;
-  public static final Color backgroundAltColor = Theme.BACKGROUND_ALT;
-  public static final Color subColor = Theme.SUBTLE;
-  public static final Color textColor = Theme.TEXT;
-  public static final Color mainColor = Theme.ACCENT;
-  public static final Color errorColor = Theme.ERROR;
-  public static final Color errorDimColor = Theme.ERROR_DIM;
-  public static final Font mainFont = Theme.ui(14);
 
   // Client properties that tell the button UI how to paint the button
   private static final String FILL = "coderacer.fill";

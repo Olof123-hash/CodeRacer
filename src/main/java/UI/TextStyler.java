@@ -32,7 +32,8 @@ public final class TextStyler {
     pane.setBorder(null);
     pane.setFont(Theme.mono(18));
     pane.setForeground(Theme.TEXT);
-    pane.setCaretColor(Theme.ACCENT);
+    // The caret colour is one of the typing settings, so it does not come from the scheme
+    pane.setCaretColor(Theme.CARET);
     pane.setSelectionColor(Theme.withAlpha(Theme.ACCENT, 70));
     pane.setSelectedTextColor(Theme.BACKGROUND);
     pane.setMargin(new Insets(0, 0, 0, 0));

@@ -36,33 +36,135 @@ public final class Theme {
 
   // ------------------------------------------------------------------------------- Palette
 
+  // The colours of the active scheme. They are not final, because the player can switch schemes
+  // while the application is running; Theme.applyScheme replaces them and the screens re-apply
+  // their stylers. Everything that paints reads these fields at paint time, so it follows a new
+  // scheme without any extra work.
+
   /** The colour of the window background. */
-  public static final Color BACKGROUND = new Color(0x0a0a0a);
+  public static Color BACKGROUND = new Color(0x0a0a0a);
   /** A slightly lighter background, used for panels, fields and buttons. */
-  public static final Color BACKGROUND_ALT = new Color(0x141414);
+  public static Color BACKGROUND_ALT = new Color(0x141414);
   /** The background that appears when the mouse hovers over a component. */
-  public static final Color SURFACE = new Color(0x1f1f1f);
+  public static Color SURFACE = new Color(0x1f1f1f);
   /** The colour of borders, scrollbar thumbs and other quiet details. */
-  public static final Color SUBTLE = new Color(0x5c5c5c);
+  public static Color SUBTLE = new Color(0x5c5c5c);
   /** The normal text colour. */
-  public static final Color TEXT = new Color(0xd8d4cc);
+  public static Color TEXT = new Color(0xd8d4cc);
   /** The text colour for hints and captions. */
-  public static final Color TEXT_MUTED = new Color(0x8f8a82);
+  public static Color TEXT_MUTED = new Color(0x8f8a82);
   /** The main accent colour of the application. */
-  public static final Color ACCENT = new Color(0xff8a1f);
+  public static Color ACCENT = new Color(0xff8a1f);
   /** The accent colour that is used when the mouse hovers over something. */
-  public static final Color ACCENT_BRIGHT = new Color(0xffa64d);
+  public static Color ACCENT_BRIGHT = new Color(0xffa64d);
   /** A dark version of the accent, used for filled areas. */
-  public static final Color ACCENT_DIM = new Color(0x7a3f06);
-  /** The colour of text that was typed correctly. */
-  public static final Color SUCCESS = new Color(0x4ade80);
-  
-  /** The colour of text that was typed correctly. */
-  public static final Color GREEN = new Color(0, 255, 0);
-  /** The colour of a mistake. */
+  public static Color ACCENT_DIM = new Color(0x7a3f06);
+
+  // The three colours of typing are settings of their own, so they do not change when the player
+  // switches scheme. They are not final either, because the settings window can change them while
+  // the race screen is open; Theme.applyTypingColours replaces them.
+
+  /** The colour of the caret in the typing pane. */
+  public static Color CARET = new Color(0xff8a1f);
+  /** The colour of a character that the player typed correctly. */
+  public static Color TYPED_CORRECT = new Color(0x4ade80);
+  /** The colour of a character that the player typed wrongly. */
+  public static Color TYPED_ERROR = new Color(0xd1334a);
+
+  /** The colour of a mistake in the interface, for example the close button of a window. */
   public static final Color ERROR = new Color(0xd1334a);
   /** The dark red that is used as the background of a dangerous button. */
   public static final Color ERROR_DIM = new Color(0x6b1a26);
+
+  // The scheme that is active now, so the settings window can show which one is selected
+  private static ColourScheme currentScheme = ColourScheme.EMBER;
+
+  // ------------------------------------------------------------------------- Applying a scheme
+
+  /** The scheme that is active at the moment. */
+  public static ColourScheme currentScheme() {
+    return currentScheme;
+  }
+
+  /**
+   * Replaces the whole palette with the palette of a scheme. For {@link ColourScheme#CUSTOM} the
+   * neutral colours of Ember are used and the accent is the colour the player picked, from which a
+   * brighter and a darker version are derived so hover states and filled areas stay readable.
+   *
+   * <p>The defaults that Swing itself uses are set again as well, so components that are created
+   * after the change (a popup list, for example) start with the new palette. Components that are
+   * already on the screen have to be styled again by their window, they keep the colours that were
+   * set when they were created.
+   */
+  public static void applyScheme(ColourScheme scheme, Color customAccent) {
+    ColourScheme palette = scheme == null ? ColourScheme.EMBER : scheme;
+    if (palette == ColourScheme.CUSTOM) {
+      // A custom scheme keeps the neutral colours of Ember and only changes the accent family
+      ColourScheme base = ColourScheme.EMBER;
+      BACKGROUND = base.background();
+      BACKGROUND_ALT = base.backgroundAlt();
+      SURFACE = base.surface();
+      SUBTLE = base.subtle();
+      TEXT = base.text();
+      TEXT_MUTED = base.textMuted();
+
+      Color accent = customAccent == null ? base.accent() : customAccent;
+      ACCENT = accent;
+      ACCENT_BRIGHT = blend(accent, Color.WHITE, 0.30);
+      ACCENT_DIM = blend(accent, base.background(), 0.55);
+    } else {
+      BACKGROUND = palette.background();
+      BACKGROUND_ALT = palette.backgroundAlt();
+      SURFACE = palette.surface();
+      SUBTLE = palette.subtle();
+      TEXT = palette.text();
+      TEXT_MUTED = palette.textMuted();
+      ACCENT = palette.accent();
+      ACCENT_BRIGHT = palette.accentBright();
+      ACCENT_DIM = palette.accentDim();
+    }
+    currentScheme = palette;
+    installDefaults();
+  }
+
+  /**
+   * Replaces the three colours that are used while typing: the caret and the colour of text that
+   * was typed right or wrong. They are not part of a colour scheme, so switching scheme does not
+   * touch them; only the settings window does. A null value keeps the colour that is in use, which
+   * is handy when only one of the three changed.
+   *
+   * <p>The caret is set on the text panes by {@link TextStyler}, the other two are read by
+   * {@code RacePanel.colorTypingField()} every time a character is typed.
+   */
+  public static void applyTypingColours(Color caret, Color correct, Color error) {
+    if (caret != null) {
+      CARET = caret;
+    }
+    if (correct != null) {
+      TYPED_CORRECT = correct;
+    }
+    if (error != null) {
+      TYPED_ERROR = error;
+    }
+  }
+
+  /** Returns a colour that is mixed with another one; 0 keeps the first, 1 returns the second. */
+  public static Color blend(Color from, Color to, double ratio) {
+    double amount = Math.max(0.0, Math.min(1.0, ratio));
+    return new Color(
+        (int) Math.round(from.getRed() + (to.getRed() - from.getRed()) * amount),
+        (int) Math.round(from.getGreen() + (to.getGreen() - from.getGreen()) * amount),
+        (int) Math.round(from.getBlue() + (to.getBlue() - from.getBlue()) * amount),
+        from.getAlpha());
+  }
+
+  /** The accent of a scheme, used for the swatches in the settings window. */
+  public static Color accentOf(ColourScheme scheme, Color customAccent) {
+    if (scheme == ColourScheme.CUSTOM) {
+      return customAccent == null ? ColourScheme.EMBER.accent() : customAccent;
+    }
+    return scheme == null ? ColourScheme.EMBER.accent() : scheme.accent();
+  }
 
   // --------------------------------------------------------------------------------- Fonts
 
