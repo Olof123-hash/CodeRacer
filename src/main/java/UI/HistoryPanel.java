@@ -100,7 +100,7 @@ public class HistoryPanel extends javax.swing.JFrame {
             // Every row gets its own small "x" button, so a single game can be picked out.
             JButton deleteButton = new JButton("x");
             ButtonStyler.applyRowDelete(deleteButton);
-            deleteButton.addActionListener(event -> { database.deleteEntry(); 
+            deleteButton.addActionListener(event -> { database.deleteEntry(entry.getKey()); 
             refresh();
             });
             
