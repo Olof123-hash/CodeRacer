@@ -42,6 +42,15 @@ public class Settings {
   /** The language that is used when the player has not chosen one yet. */
   public static final String DEFAULT_LANGUAGE = "Random";
 
+  /** The size of the snippet text that is used when the player has not chosen one yet. */
+  public static final int DEFAULT_SNIPPET_FONT_SIZE = 22;
+
+  /** The smallest snippet text the player can pick, below this the code is too small to read. */
+  public static final int MIN_SNIPPET_FONT_SIZE = 12;
+
+  /** The biggest snippet text the player can pick; bigger text simply scrolls more. */
+  public static final int MAX_SNIPPET_FONT_SIZE = 40;
+
   // Pretty printing keeps the file readable when it is opened by hand
   private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
@@ -73,6 +82,7 @@ public class Settings {
   private int correctColour = DEFAULT_CORRECT_COLOUR_RGB;
   private int errorColour = DEFAULT_ERROR_COLOUR_RGB;
   private int textColour = DEFAULT_TEXT_COLOUR_RGB;
+  private int snippetFontSize = DEFAULT_SNIPPET_FONT_SIZE;
 
   /**
    * Reads the settings from Settings.json. When the file is missing or broken, the defaults are
@@ -124,6 +134,19 @@ public class Settings {
 
   public void setScheme(String scheme) {
     this.scheme = scheme == null ? DEFAULT_SCHEME : scheme;
+  }
+
+  /**
+   * The size of the snippet text, in points. It is kept inside the range that the settings window
+   * offers, so a broken or old file can never make the text unreadable or huge.
+   */
+  public int getSnippetFontSize() {
+    return snippetFontSize;
+  }
+
+  public void setSnippetFontSize(int snippetFontSize) {
+    this.snippetFontSize =
+        Math.max(MIN_SNIPPET_FONT_SIZE, Math.min(MAX_SNIPPET_FONT_SIZE, snippetFontSize));
   }
 
   /** The background of the race screen, for example "Black and grey". */

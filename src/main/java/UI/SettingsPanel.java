@@ -26,6 +26,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JSlider;
 import model.Settings;
 
 /**
@@ -39,7 +40,7 @@ import model.Settings;
  * also tells it about the change through {@link #addSettingsChangeListener(Runnable)}, which is how
  * the new colour scheme is applied while the window is still open.
  *
- * <p>There are four settings, each in its own section: a small monospaced title with a thin rule
+ * <p>The settings live in their own sections: a small monospaced title with a thin rule
  * under it, then the rows with the caption on the left and the control on the right. The type is the
  * type of the race screen: monospaced for everything that shows a value, the interface font for the
  * captions, and the same secondary buttons as the race window. There are no boxes around the
@@ -59,7 +60,7 @@ import model.Settings;
 public class SettingsPanel extends javax.swing.JFrame {
 
   /** The size of the window: wide enough for a caption, a hint and a control on one row. */
-  private static final Dimension WINDOW_SIZE = new Dimension(560, 740);
+  private static final Dimension WINDOW_SIZE = new Dimension(560, 790);
 
   /**
    * The two entries of the background drop down that are not a background yet. They are listed so
@@ -82,6 +83,8 @@ public class SettingsPanel extends javax.swing.JFrame {
   private JButton errorButton;
   private JButton textButton;
   private JButton resetButton;
+  private JSlider sizeSlider;
+  private JLabel sizeValue;
   private JPanel textSourceRow;
 
   // The labels and the rules under the section titles, kept so refreshTheme can style them again
@@ -254,6 +257,30 @@ public class SettingsPanel extends javax.swing.JFrame {
     description.setAlignmentX(Component.LEFT_ALIGNMENT);
     hints.add(description);
     card.add(description);
+    card.add(Box.createVerticalStrut(10));
+
+    // The size of the snippet text, dragged with a slider instead of typed into a field
+    sizeSlider =
+        new JSlider(
+            Settings.MIN_SNIPPET_FONT_SIZE,
+            Settings.MAX_SNIPPET_FONT_SIZE,
+            settings.getSnippetFontSize());
+    SliderStyler.apply(sizeSlider);
+    sizeSlider.setToolTipText("Size of the code you type");
+    sizeSlider.getAccessibleContext().setAccessibleName("Text size");
+    sizeSlider.addChangeListener(event -> sizeChanged());
+
+    sizeValue = new JLabel(sizeSlider.getValue() + " pt");
+    JPanel sizeControls = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
+    sizeControls.setOpaque(false);
+    sizeControls.add(sizeSlider);
+    sizeControls.add(sizeValue);
+
+    card.add(
+        settingRow(
+            "Text size",
+            "Drag the handle, or use the arrow keys, to make the code bigger or smaller.",
+            sizeControls));
     card.add(Box.createVerticalStrut(10));
 
     caretButton = colourButton(caretColour, "The blinking line that shows where you type");
@@ -433,6 +460,7 @@ public class SettingsPanel extends javax.swing.JFrame {
       textSourceBox.setSelectedItem(settings.getTextSource());
       textSourceRow.setVisible(!settings.isCodeMode());
       backgroundBox.setSelectedItem(settings.getBackground());
+      sizeSlider.setValue(settings.getSnippetFontSize());
 
       caretColour = new Color(settings.getCaretColour());
       correctColour = new Color(settings.getCorrectColour());
@@ -514,6 +542,12 @@ public class SettingsPanel extends javax.swing.JFrame {
     fireSettingsChanged();
   }
 
+  /** Keeps the size label and the settings in step while the handle of the slider is dragged. */
+  private void sizeChanged() {
+    sizeValue.setText(sizeSlider.getValue() + " pt");
+    fireSettingsChanged();
+  }
+
   /** Asks for the colour of the text that has not been typed yet and stores it as a setting. */
   private void pickTextColour() {
     Color picked =
@@ -536,6 +570,7 @@ public class SettingsPanel extends javax.swing.JFrame {
       textSourceBox.setSelectedItem(Settings.TEXT_SOURCE_WORDS);
       textSourceRow.setVisible(false);
       backgroundBox.setSelectedItem(Settings.DEFAULT_BACKGROUND);
+      sizeSlider.setValue(Settings.DEFAULT_SNIPPET_FONT_SIZE);
 
       caretColour = new Color(Settings.DEFAULT_CARET_COLOUR_RGB);
       correctColour = new Color(Settings.DEFAULT_CORRECT_COLOUR_RGB);
@@ -572,6 +607,7 @@ public class SettingsPanel extends javax.swing.JFrame {
     settings.setCorrectColour(correctColour.getRGB() & 0xffffff);
     settings.setErrorColour(errorColour.getRGB() & 0xffffff);
     settings.setTextColour(textColour.getRGB() & 0xffffff);
+    settings.setSnippetFontSize(sizeSlider.getValue());
     settings.save();
 
     for (Runnable listener : List.copyOf(changeListeners)) {
@@ -606,6 +642,9 @@ public class SettingsPanel extends javax.swing.JFrame {
     ButtonStyler.applySecondary(errorButton);
     ButtonStyler.applySecondary(textButton);
     ButtonStyler.applySecondary(resetButton);
+    // The slider and its value are painted by their own UI, so they are styled again as well
+    SliderStyler.apply(sizeSlider);
+    LabelStyler.applyCaption(sizeValue);
 
     // The combo box styler installs its own renderer, so the swatches are put back after it
     ComboBoxStyler.apply(schemeBox);

@@ -7,12 +7,9 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Insets;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -62,10 +59,13 @@ public class RacePanel extends BackgroundPanel {
   private static final String[] TEXT_OPTIONS = {
     Settings.TEXT_SOURCE_WORDS, Settings.TEXT_SOURCE_PASSAGE
   };
-  // The biggest font size the snippet is allowed to have
-  private static final int MAX_SNIPPET_FONT = 28;
-  // The smallest font size the snippet is allowed to have, below this the text is unreadable
-  private static final int MIN_SNIPPET_FONT = 8;
+  // The size of the snippet text comes from the settings, and it is the same for every snippet on
+  // purpose: the text keeps its size and its place instead of being scaled to the length of the
+  // code, and a snippet that is too long for the pane scrolls instead.
+  // The space between the edge of the pane and the first character, the same for every snippet
+  private static final int SNIPPET_PADDING = 24;
+  // How much of the text stays visible around the caret while a long snippet scrolls
+  private static final int SCROLL_MARGIN = 40;
   // The space that is kept below the end race button
   private static final int BOTTOM_MARGIN = 15;
 
@@ -153,15 +153,9 @@ public class RacePanel extends BackgroundPanel {
     // Backspace can only remove a mistake at the end of the typed text
     installBackspaceKeyBinding();
 
-    // The snippet is always scaled to fit its pane, so the font has to be recalculated when the
-    // window is resized
-    addComponentListener(
-        new ComponentAdapter() {
-          @Override
-          public void componentResized(ComponentEvent e) {
-            SwingUtilities.invokeLater(RacePanel.this::fitSnippetFont);
-          }
-        });
+    // The snippet keeps its size and its place; a snippet that is longer than the pane scrolls, and
+    // both panes follow the caret so the line the player is typing stays visible
+    typingField.addCaretListener(event -> scrollToCaret());
 
     // The drop down has to list the languages of the current content type before anything is
     // shown, so it matches what the settings say.
@@ -267,9 +261,13 @@ public class RacePanel extends BackgroundPanel {
     colorTypingField();
     // Removes the text of the previous race from the typing field
     typingField.setText("");
-    // Scales the font of the snippet so that the whole snippet fits in the snippet pane without
-    // scrolling
-    SwingUtilities.invokeLater(this::fitSnippetFont);
+    // Gives the snippet and the typing field their fixed font and padding again, and starts the
+    // race at the top of the snippet
+    SwingUtilities.invokeLater(
+        () -> {
+          applySnippetFont();
+          resetSnippetScroll();
+        });
     // This calls the function that is responsible for showing statistics on the screen
     startUiTimer();
 
@@ -396,7 +394,7 @@ public class RacePanel extends BackgroundPanel {
     // coloured again. It is done in every state, so a finished race keeps up as well.
     if (currentRace != null) {
       colorTypingField();
-      SwingUtilities.invokeLater(this::fitSnippetFont);
+      SwingUtilities.invokeLater(this::applySnippetFont);
     }
     revalidate();
     repaint();
@@ -772,117 +770,77 @@ public class RacePanel extends BackgroundPanel {
   }
 
   /**
-   * Scales the font of the snippet pane so that the whole snippet is always visible without
-   * scrolling. The font starts at the biggest size and is made smaller until the text fits in the
-   * pane. The text is centered in the pane and the typing field uses the same font and the same
-   * border, so that the text the user types lines up with the snippet.
+   * Gives the snippet and the typing field their fixed look: the same font at the same size, the
+   * same padding, and scroll bars when the snippet is longer than the pane. Nothing here depends on
+   * the length of the snippet, so the text keeps its size and its position from one race to the next;
+   * before this the font was shrunk until the whole snippet fitted, which made longer text very
+   * small and moved it around.
+   *
+   * <p>The typing field is an invisible layer on top of the snippet, so both get the same font and
+   * the same border and their characters line up.
    */
-  private void fitSnippetFont() {
-    String text = snippetPane.getText();
-    if (text == null || text.isEmpty()) {
-      return;
-    }
-    // Splits the snippet into its lines
-    String[] lines = text.split("\n", -1);
-    // The border is used to center the text, it is empty while the font is fitted
-    snippetPane.setBorder(BorderFactory.createEmptyBorder());
-    typingField.setBorder(BorderFactory.createEmptyBorder());
-    // The snippet pane does not scroll, the font is scaled instead
-    snippetPan.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
-    snippetPan.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-    // Makes the visible area of the pane match the new scrollbar policy
-    snippetPan.doLayout();
-    // Tries the biggest font first and makes it smaller until the snippet fits in the pane
-    int size = MAX_SNIPPET_FONT;
-    boolean fits = false;
-    FontMetrics metrics = null;
-    int textWidth = 0;
-    while (size >= MIN_SNIPPET_FONT) {
-      metrics = snippetPane.getFontMetrics(Theme.mono(size));
-      textWidth = widestLine(metrics, lines);
-      if (fitsInPane(metrics, textWidth, lines.length)) {
-        fits = true;
-        break;
-      }
-      size--;
-    }
-    if (!fits) {
-      // The snippet is too big even for the smallest font, so the pane is allowed to scroll after
-      // all
-      size = MIN_SNIPPET_FONT;
-      metrics = snippetPane.getFontMetrics(Theme.mono(size));
-      textWidth = widestLine(metrics, lines);
-      snippetPan.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-      snippetPan.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-    }
-    // Applies the font to the snippet, the font is only set when it really changed to avoid a loop
-    // of repaints
-    Font snippetFont = Theme.mono(size);
+  private void applySnippetFont() {
+    Font snippetFont = Theme.mono(settings.getSnippetFontSize());
+    // The font is only set when it really changed, so this does not repaint the panes for nothing
     if (!snippetFont.equals(snippetPane.getFont())) {
       snippetPane.setFont(snippetFont);
     }
-    // The typing field uses the same font size, so the text lines up with the snippet
-    Font typingFont = Theme.mono(size);
-    if (!typingFont.equals(typingField.getFont())) {
-      typingField.setFont(typingFont);
+    if (!snippetFont.equals(typingField.getFont())) {
+      typingField.setFont(snippetFont);
     }
-    // Centers the text of the snippet and of the typing field in their panes
-    centerText(metrics, textWidth, lines.length);
+    // The first character is always in the same place, in both panes
+    snippetPane.setBorder(
+        BorderFactory.createEmptyBorder(SNIPPET_PADDING, SNIPPET_PADDING, 0, 0));
+    typingField.setBorder(
+        BorderFactory.createEmptyBorder(SNIPPET_PADDING, SNIPPET_PADDING, 0, 0));
+    // A snippet that is too long for the pane scrolls instead of being shrunk
+    snippetPan.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+    snippetPan.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
   }
 
-  /** Returns the width of the widest line of the snippet. */
-  private int widestLine(FontMetrics metrics, String[] lines) {
-    int width = 0;
-    for (String line : lines) {
-      width = Math.max(width, metrics.stringWidth(line));
-    }
-    return width;
+  /** Puts both panes back at the beginning of the snippet, used when a race starts. */
+  private void resetSnippetScroll() {
+    snippetPan.getViewport().setViewPosition(new Point(0, 0));
+    typingPane.getViewport().setViewPosition(new Point(0, 0));
   }
 
   /**
-   * Centers the text in the snippet pane and in the typing field. This is done with an empty border
-   * around the text, the text itself stays left aligned, so that the text the user types lines up
-   * with the lines of the snippet.
+   * Scrolls the snippet and the typing field so the caret stays visible. A long snippet is not
+   * shrunk any more, so this is what keeps the line the player is typing on the screen.
+   *
+   * <p>The typing field is scrolled first and the snippet is then put at the same position: the
+   * typing field only holds the text that was typed, so it can not always scroll as far as the
+   * snippet, and taking its position is what keeps the two texts lined up.
    */
-  private void centerText(FontMetrics metrics, int textWidth, int lineCount) {
-    int textHeight = lineCount * metrics.getHeight();
-    // Both panes have the same width, so the text starts at the same place in both of them
-    Dimension snippetVisible = visibleSize(snippetPan);
-    int left = Math.max(0, (snippetVisible.width - textWidth) / 2);
-    // Every pane centers the text in its own height
-    int snippetTop = Math.max(0, (snippetVisible.height - textHeight) / 2);
-    snippetPane.setBorder(BorderFactory.createEmptyBorder(snippetTop, left, 0, 0));
-    Dimension typingVisible = visibleSize(typingPane);
-    int typingTop = Math.max(0, (typingVisible.height - textHeight) / 2);
-    typingField.setBorder(BorderFactory.createEmptyBorder(typingTop, left, 0, 0));
-  }
-
-  /** Checks if the snippet fits in the visible area of the snippet pane with the given font. */
-  private boolean fitsInPane(FontMetrics metrics, int textWidth, int lineCount) {
-    // The size of the text that is visible inside the pane
-    Dimension visible = visibleSize(snippetPan);
-    // The border of the text pane is the space around the text itself
-    Insets insets = snippetPane.getInsets();
-    int availableWidth = visible.width - insets.left - insets.right;
-    int availableHeight = visible.height - insets.top - insets.bottom;
-    if (availableWidth <= 0 || availableHeight <= 0) {
-      return false;
+  private void scrollToCaret() {
+    if (currentPanel != PanelState.RUNNING) {
+      return;
     }
-    return textWidth <= availableWidth && lineCount * metrics.getHeight() <= availableHeight;
-  }
-
-  /** Returns the size of the area that is visible inside a scroll pane. */
-  private Dimension visibleSize(JScrollPane scrollPane) {
-    Dimension visible = scrollPane.getViewport().getExtentSize();
-    if (visible.width <= 0 || visible.height <= 0) {
-      // The pane has not been laid out yet, the size of the pane itself is used instead
-      Insets insets = scrollPane.getInsets();
-      visible =
-          new Dimension(
-              scrollPane.getWidth() - insets.left - insets.right,
-              scrollPane.getHeight() - insets.top - insets.bottom);
+    try {
+      Rectangle caret = typingField.modelToView2D(typingField.getCaretPosition()).getBounds();
+      Dimension view = typingPane.getViewport().getExtentSize();
+      if (caret == null || view.width <= 0 || view.height <= 0) {
+        return;
+      }
+      Point current = typingPane.getViewport().getViewPosition();
+      int x = current.x;
+      int y = current.y;
+      if (caret.y + caret.height > y + view.height - SCROLL_MARGIN) {
+        y = caret.y + caret.height - view.height + SCROLL_MARGIN;
+      } else if (caret.y < y + SCROLL_MARGIN) {
+        y = Math.max(0, caret.y - SCROLL_MARGIN);
+      }
+      if (caret.x + caret.width > x + view.width - SCROLL_MARGIN) {
+        x = caret.x + caret.width - view.width + SCROLL_MARGIN;
+      } else if (caret.x < x) {
+        x = Math.max(0, caret.x);
+      }
+      typingPane.getViewport().setViewPosition(new Point(Math.max(0, x), Math.max(0, y)));
+      // The position the typing field really took, which keeps both panes on the same text
+      snippetPan.getViewport().setViewPosition(typingPane.getViewport().getViewPosition());
+    } catch (BadLocationException e) {
+      // The caret is not in the document yet, so there is nothing to scroll to
     }
-    return visible;
   }
 
   // Method that colours the text

@@ -1,16 +1,1 @@
-[
-  {
-    "typedText": "test",
-    "wpm": 0.0,
-    "time": 1.0,
-    "accuracy": 100.0,
-    "mistakes": 0
-  },
-  {
-    "typedText": "int climb_stairs(int n) {\n    int a \u003d 1, b \u003d 1;\n    for (int i \u003d 0; i \u003c n - 1; i++) {\n        int temp \u003d a + b;\n        a \u003d b;\n        b \u003d temp;\n    }",
-    "wpm": 58.0,
-    "time": 30.0,
-    "accuracy": 90.0,
-    "mistakes": 13
-  }
-]
+[]

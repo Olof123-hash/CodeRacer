@@ -1,10 +1,13 @@
 {
-  "scheme": "Ember",
+  "scheme": "Grape",
+  "background": "Black and grey (default)",
   "customAccent": 16747039,
   "codeMode": true,
   "textSource": "Random words",
-  "language": "Go",
-  "caretColour": 16763955,
-  "correctColour": 4906624,
-  "errorColour": 13710154
+  "language": "Random",
+  "caretColour": 16747039,
+  "correctColour": 13382400,
+  "errorColour": 13710154,
+  "textColour": 14210252,
+  "snippetFontSize": 30
 }
