@@ -1,4 +1,4 @@
-CodeRacer
+## CodeRacer
 
 A speed typing app with an emphasis on coding and programming languages, inspired by popular websites such as MonkeyType and TypeRacer. This project originally started as a project in an introduction to programming course at TU/e. It has since been redeveloped and expanded into its current state.
 
