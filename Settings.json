@@ -1,13 +1,13 @@
 {
-  "scheme": "Grape",
+  "scheme": "Custom",
   "background": "Black and grey (default)",
-  "customAccent": 16747039,
+  "customAccent": 8330525,
   "codeMode": true,
   "textSource": "Random words",
-  "language": "Random",
+  "language": "Test",
   "caretColour": 16747039,
-  "correctColour": 13382400,
+  "correctColour": 4906624,
   "errorColour": 13710154,
   "textColour": 14210252,
-  "snippetFontSize": 30
+  "snippetFontSize": 40
 }

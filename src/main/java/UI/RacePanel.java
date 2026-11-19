@@ -878,9 +878,29 @@ public class RacePanel extends BackgroundPanel {
     int lastPosition = acceptedText.length() - 1;
     if (!currentRace.comparison(lastPosition)) {
       SimpleAttributeSet wrongCharacter = new SimpleAttributeSet();
-      StyleConstants.setForeground(wrongCharacter, Theme.TYPED_ERROR);
+      if (isBlankSpace(lastPosition)) {
+        // The player typed over a space. A space has no shape of its own, so a red character would
+        // not be visible there; the background of the space is painted red instead, which shows
+        // where the mistake is even between two words.
+        StyleConstants.setBackground(wrongCharacter, Theme.TYPED_ERROR);
+      } else {
+        StyleConstants.setForeground(wrongCharacter, Theme.TYPED_ERROR);
+      }
       doc.setCharacterAttributes(lastPosition, 1, wrongCharacter, true);
     }
+  }
+
+  /**
+   * True when the snippet has a space or a tab at the given position, which is where the player
+   * typed a wrong character instead of the space bar.
+   */
+  private boolean isBlankSpace(int position) {
+    String snippet = snippetPane.getText();
+    if (snippet == null || position < 0 || position >= snippet.length()) {
+      return false;
+    }
+    char expected = snippet.charAt(position);
+    return expected == ' ' || expected == '\t';
   }
 
   /**
