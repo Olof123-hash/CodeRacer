@@ -14,6 +14,7 @@ import java.awt.geom.Line2D;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -111,6 +112,11 @@ public class SettingsPanel extends javax.swing.JFrame {
   // change of the player and is not saved again
   private boolean notifying = true;
 
+  // True while at least one setting is different from the defaults. It is recomputed from the
+  // settings object (see updateResetVisibility) instead of being set by hand, so it can not get
+  // out of step with what the window shows.
+  private boolean hasChanged = false;
+
   /** Creates the settings window for the given settings object. */
   public SettingsPanel(Settings settings) {
     this.settings = settings == null ? new Settings() : settings;
@@ -127,6 +133,9 @@ public class SettingsPanel extends javax.swing.JFrame {
 
     buildWindow();
     restoreFromSettings();
+    // The saved settings may already differ from the defaults, in which case the reset button is
+    // offered straight away
+    updateResetVisibility();
     pack();
     setLocationRelativeTo(null);
   }
@@ -317,7 +326,7 @@ public class SettingsPanel extends javax.swing.JFrame {
     codeModeSwitch.addActionListener(event -> codeModeChanged());
 
     card.add(
-        settingRow("Code snippets", "Switch it off to type plain text instead.", codeModeSwitch));
+        settingRow("Code snippets", "", codeModeSwitch));
     card.add(Box.createVerticalStrut(10));
 
     textSourceBox =
@@ -345,6 +354,8 @@ public class SettingsPanel extends javax.swing.JFrame {
     resetButton = new JButton("Reset to defaults");
     resetButton.setToolTipText("Back to Ember, code snippets and random words");
     resetButton.addActionListener(event -> resetToDefaults());
+    // The button is only shown while something differs from the defaults, see updateResetVisibility
+    resetButton.setVisible(false);
     footer.add(resetButton);
     return footer;
   }
@@ -492,6 +503,7 @@ public class SettingsPanel extends javax.swing.JFrame {
 
   /** Asks the player for an accent colour and makes it the colour of the custom scheme. */
   private void pickOwnColour() {
+      
     Color picked = ColourPickerDialog.showDialog(this, "Accent colour", customAccent);
     if (picked == null) {
       // The player closed the chooser, so the old colour stays
@@ -511,6 +523,7 @@ public class SettingsPanel extends javax.swing.JFrame {
 
   /** Asks for the caret colour and stores it as a setting. */
   private void pickCaretColour() {
+    
     Color picked = ColourPickerDialog.showDialog(this, "Caret colour", caretColour);
     if (picked == null) {
       // The chooser was closed without picking, so the old colour stays
@@ -523,6 +536,7 @@ public class SettingsPanel extends javax.swing.JFrame {
 
   /** Asks for the colour of correctly typed text and stores it as a setting. */
   private void pickCorrectColour() {
+      
     Color picked = ColourPickerDialog.showDialog(this, "Correct text", correctColour);
     if (picked == null) {
       return;
@@ -534,6 +548,7 @@ public class SettingsPanel extends javax.swing.JFrame {
 
   /** Asks for the colour of a mistake and stores it as a setting. */
   private void pickErrorColour() {
+     
     Color picked = ColourPickerDialog.showDialog(this, "Wrong text", errorColour);
     if (picked == null) {
       return;
@@ -549,6 +564,7 @@ public class SettingsPanel extends javax.swing.JFrame {
    * JSON file, so doing that for every intermediate value would make dragging feel heavy.
    */
   private void sizeChanged() {
+   
     sizeValue.setText(sizeSlider.getValue() + " pt");
     if (!sizeSlider.getValueIsAdjusting()) {
       fireSettingsChanged();
@@ -601,6 +617,7 @@ public class SettingsPanel extends javax.swing.JFrame {
    * setting is added.
    */
   private void fireSettingsChanged() {
+    // While the window fills its own controls there is no change of the player to save
     if (!notifying) {
       return;
     }
@@ -615,9 +632,40 @@ public class SettingsPanel extends javax.swing.JFrame {
     settings.setTextColour(textColour.getRGB() & 0xffffff);
     settings.setSnippetFontSize(sizeSlider.getValue());
     SettingsStore.save(settings);
+    updateResetVisibility();
 
     for (Runnable listener : List.copyOf(changeListeners)) {
       listener.run();
+    }
+  }
+
+  /**
+   * Shows the reset button only while at least one setting differs from the value the application
+   * starts with. The flag is recomputed from the settings object every time, so resetting the
+   * window to the defaults hides the button again and changing one control shows it.
+   */
+  private void updateResetVisibility() {
+    Settings defaults = new Settings();
+    hasChanged =
+        !Objects.equals(settings.getScheme(), defaults.getScheme())
+            || settings.getCustomAccent() != defaults.getCustomAccent()
+            || settings.isCodeMode() != defaults.isCodeMode()
+            || !Objects.equals(settings.getTextSource(), defaults.getTextSource())
+            || !Objects.equals(settings.getBackground(), defaults.getBackground())
+            || settings.getCaretColour() != defaults.getCaretColour()
+            || settings.getCorrectColour() != defaults.getCorrectColour()
+            || settings.getErrorColour() != defaults.getErrorColour()
+            || settings.getTextColour() != defaults.getTextColour()
+            || settings.getSnippetFontSize() != defaults.getSnippetFontSize();
+
+    if (resetButton == null || resetButton.isVisible() == hasChanged) {
+      return;
+    }
+    resetButton.setVisible(hasChanged);
+    // Lay the footer out again, so a hidden button does not leave a gap where it used to be
+    if (resetButton.getParent() != null) {
+      resetButton.getParent().revalidate();
+      resetButton.getParent().repaint();
     }
   }
 
