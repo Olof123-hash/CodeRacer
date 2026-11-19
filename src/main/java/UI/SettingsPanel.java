@@ -20,7 +20,6 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -484,13 +483,9 @@ public class SettingsPanel extends javax.swing.JFrame {
     fireSettingsChanged();
   }
 
-  /**
-   * Asks the player for an accent colour and makes it the colour of the custom scheme. The colour
-   * chooser is a normal Swing dialog, it is the only part of the application that is not painted
-   * by the theme.
-   */
+  /** Asks the player for an accent colour and makes it the colour of the custom scheme. */
   private void pickOwnColour() {
-    Color picked = JColorChooser.showDialog(this, "Pick an accent colour", customAccent);
+    Color picked = ColourPickerDialog.showDialog(this, "Accent colour", customAccent);
     if (picked == null) {
       // The player closed the chooser, so the old colour stays
       return;
@@ -509,7 +504,7 @@ public class SettingsPanel extends javax.swing.JFrame {
 
   /** Asks for the caret colour and stores it as a setting. */
   private void pickCaretColour() {
-    Color picked = JColorChooser.showDialog(this, "Pick the caret colour", caretColour);
+    Color picked = ColourPickerDialog.showDialog(this, "Caret colour", caretColour);
     if (picked == null) {
       // The chooser was closed without picking, so the old colour stays
       return;
@@ -521,8 +516,7 @@ public class SettingsPanel extends javax.swing.JFrame {
 
   /** Asks for the colour of correctly typed text and stores it as a setting. */
   private void pickCorrectColour() {
-    Color picked =
-        JColorChooser.showDialog(this, "Pick the colour of correct text", correctColour);
+    Color picked = ColourPickerDialog.showDialog(this, "Correct text", correctColour);
     if (picked == null) {
       return;
     }
@@ -533,7 +527,7 @@ public class SettingsPanel extends javax.swing.JFrame {
 
   /** Asks for the colour of a mistake and stores it as a setting. */
   private void pickErrorColour() {
-    Color picked = JColorChooser.showDialog(this, "Pick the colour of a mistake", errorColour);
+    Color picked = ColourPickerDialog.showDialog(this, "Wrong text", errorColour);
     if (picked == null) {
       return;
     }
@@ -550,8 +544,7 @@ public class SettingsPanel extends javax.swing.JFrame {
 
   /** Asks for the colour of the text that has not been typed yet and stores it as a setting. */
   private void pickTextColour() {
-    Color picked =
-        JColorChooser.showDialog(this, "Pick the colour of the untyped text", textColour);
+    Color picked = ColourPickerDialog.showDialog(this, "Untyped text", textColour);
     if (picked == null) {
       return;
     }
