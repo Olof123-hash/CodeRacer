@@ -11,8 +11,8 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import javax.swing.BorderFactory;
@@ -20,6 +20,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -63,19 +64,12 @@ public class SettingsPanel extends javax.swing.JFrame {
   /** The size of the window: wide enough for a caption, a hint and a control on one row. */
   private static final Dimension WINDOW_SIZE = new Dimension(560, 790);
 
-  /**
-   * The two entries of the background drop down that are not a background yet. They are listed so
-   * the plan is visible, but picking one leaves the image that is shown: "Upload own PDF" needs a
-   * file chooser of its own and "Choose your own" needs a colour picker, and neither is built yet.
-   */
-  private static final String BACKGROUND_UPLOAD = "Upload own PDF";
-
   /** The settings this window edits; the race screen keeps the same object. */
   private final Settings settings;
 
   // The controls, they are built in buildWindow()
   private JComboBox<String> schemeBox;
-  private JComboBox<String> backgroundBox;
+  private JButton backgroundButton;
   private JComboBox<String> textSourceBox;
   private JCheckBox codeModeSwitch;
   private JButton pickColourButton;
@@ -98,6 +92,12 @@ public class SettingsPanel extends javax.swing.JFrame {
 
   // The accent colour of the custom scheme, kept in sync with the settings object
   private Color customAccent;
+
+  // The background on the button: a name from BackgroundPanel, or Settings.BACKGROUND_CUSTOM_COLOUR
+  // together with the plain colour that is painted instead of an image
+  private String backgroundName;
+  private Color backgroundColour;
+  private String backgroundPath;
 
   // The colours of typing, kept in sync with the settings object
   private Color caretColour;
@@ -217,40 +217,28 @@ public class SettingsPanel extends javax.swing.JFrame {
   }
 
   /**
-   * The card with the background of the race screen. The drop down lists the backgrounds that come
-   * with the application and the placeholder entry that is not a background yet.
+   * The card with the background of the race screen. The button shows the background that is in use
+   * and opens a window with the images that come with the application and a grid of colours, the
+   * same way every colour setting opens a window; a picked colour fills the screen instead of an
+   * image.
    */
   private JPanel buildBackgroundCard() {
     JPanel card = settingCard("BACKGROUND");
 
-    backgroundBox = new JComboBox<>(backgroundOptions());
-    ComboBoxStyler.apply(backgroundBox);
-    // The widest entry decides the width of the control, so the box does not change size when the
-    // player opens it
-    
-    backgroundBox.setPreferredSize(new Dimension(200, 34));
-    backgroundBox.setToolTipText("Background of the race screen");
-    backgroundBox.getAccessibleContext().setAccessibleName("Change background");
-    backgroundBox.addActionListener(event -> fireSettingsChanged());
+    backgroundButton = new JButton();
+    ButtonStyler.applySecondary(backgroundButton);
+    // Wide and tall enough for the name of a background in front of its preview
+    backgroundButton.setPreferredSize(new Dimension(210, 38));
+    backgroundButton.setToolTipText("Background of the race screen");
+    backgroundButton.getAccessibleContext().setAccessibleName("Change background");
+    backgroundButton.addActionListener(event -> pickBackground());
 
     card.add(
         settingRow(
             "Change background",
-            "Pick a classic background, or upload a PDF of your own.",
-            backgroundBox));
+            "Open the window to pick an image, or choose any colour for a plain background.",
+            backgroundButton));
     return card;
-  }
-  
-  /**
-   * The entries of the background drop down: the backgrounds that exist, from
-   * {@link BackgroundPanel#backgroundNames()}, followed by the placeholder that is not a
-   * background yet.
-   */
-  private static String[] backgroundOptions() {
-    String[] names = BackgroundPanel.backgroundNames();
-    String[] options = Arrays.copyOf(names, names.length + 1);
-    options[names.length] = BACKGROUND_UPLOAD;
-    return options;
   }
 
   /**
@@ -473,10 +461,12 @@ public class SettingsPanel extends javax.swing.JFrame {
       codeModeSwitch.setSelected(settings.isCodeMode());
       textSourceBox.setSelectedItem(settings.getTextSource());
       textSourceRow.setVisible(!settings.isCodeMode());
-      backgroundBox.setSelectedItem(
+      backgroundName =
           BackgroundPanel.hasBackground(settings.getBackground())
               ? settings.getBackground()
-              : Settings.DEFAULT_BACKGROUND);
+              : Settings.DEFAULT_BACKGROUND;
+      backgroundColour = new Color(settings.getBackgroundColour());
+      backgroundPath = settings.getOwnBackgroundPath();
       sizeSlider.setValue(settings.getSnippetFontSize());
 
       caretColour = new Color(settings.getCaretColour());
@@ -582,6 +572,61 @@ public class SettingsPanel extends javax.swing.JFrame {
     fireSettingsChanged();
   }
 
+  /** Opens the background window: the prebuilt images and a colour grid in one place. */
+  private void pickBackground() {
+    BackgroundPickerDialog.Choice choice =
+        BackgroundPickerDialog.showDialog(
+            this, getSelectedBackground(), getSelectedBackgroundColour(), backgroundPath);
+    if (choice == null) {
+      // The window was closed without picking, so the background stays
+      return;
+    }
+    backgroundName = choice.background;
+    if (choice.colour != null) {
+      backgroundColour = choice.colour;
+    }
+    if (choice.path != null) {
+      backgroundPath = choice.path;
+    }
+    paintBackgroundButton();
+    fireSettingsChanged();
+  }
+
+  /**
+   * Draws the background on its button: a preview of the image with its name, or the swatch and hex
+   * value of a plain colour.
+   */
+  private void paintBackgroundButton() {
+    if (backgroundButton == null) {
+      return;
+    }
+    String name = getSelectedBackground();
+    if (Settings.BACKGROUND_CUSTOM_COLOUR.equals(name)) {
+      Color colour = getSelectedBackgroundColour();
+      backgroundButton.setText(String.format("#%06X", colour.getRGB() & 0xffffff));
+      backgroundButton.setIcon(new SwatchIcon(colour, 14));
+    } else if (Settings.BACKGROUND_OWN_IMAGE.equals(name)) {
+      // The button names the file, so the player can tell which image is behind the race screen
+      backgroundButton.setText(
+          backgroundPath == null || backgroundPath.isBlank()
+              ? Settings.BACKGROUND_OWN_IMAGE
+              : new java.io.File(backgroundPath).getName());
+      BufferedImage preview =
+          backgroundPath == null
+              ? null
+              : BackgroundPanel.thumbnailOfPath(backgroundPath, 34, 20);
+      backgroundButton.setIcon(preview == null ? null : new ImageIcon(preview));
+    } else {
+      backgroundButton.setText(name);
+      BufferedImage preview = BackgroundPanel.thumbnail(name, 34, 20);
+      backgroundButton.setIcon(preview == null ? null : new ImageIcon(preview));
+    }
+    backgroundButton.setIconTextGap(9);
+    // Styling again after the icon changed keeps the padding and the hover behaviour
+    ButtonStyler.applySecondary(backgroundButton);
+    backgroundButton.repaint();
+  }
+
   /** Puts every control back to the values the window starts with. */
   private void resetToDefaults() {
     notifying = false;
@@ -591,7 +636,10 @@ public class SettingsPanel extends javax.swing.JFrame {
       codeModeSwitch.setSelected(true);
       textSourceBox.setSelectedItem(Settings.TEXT_SOURCE_WORDS);
       textSourceRow.setVisible(false);
-      backgroundBox.setSelectedItem(Settings.DEFAULT_BACKGROUND);
+      backgroundName = Settings.DEFAULT_BACKGROUND;
+      backgroundColour = new Color(Settings.DEFAULT_BACKGROUND_COLOUR_RGB);
+      backgroundPath = "";
+      paintBackgroundButton();
       sizeSlider.setValue(Settings.DEFAULT_SNIPPET_FONT_SIZE);
 
       caretColour = new Color(Settings.DEFAULT_CARET_COLOUR_RGB);
@@ -626,6 +674,8 @@ public class SettingsPanel extends javax.swing.JFrame {
     settings.setCodeMode(codeModeSwitch.isSelected());
     settings.setTextSource(getTextSource());
     settings.setBackground(getSelectedBackground());
+    settings.setBackgroundColour(getSelectedBackgroundColour().getRGB() & 0xffffff);
+    settings.setOwnBackgroundPath(backgroundPath);
     settings.setCaretColour(caretColour.getRGB() & 0xffffff);
     settings.setCorrectColour(correctColour.getRGB() & 0xffffff);
     settings.setErrorColour(errorColour.getRGB() & 0xffffff);
@@ -652,6 +702,8 @@ public class SettingsPanel extends javax.swing.JFrame {
             || settings.isCodeMode() != defaults.isCodeMode()
             || !Objects.equals(settings.getTextSource(), defaults.getTextSource())
             || !Objects.equals(settings.getBackground(), defaults.getBackground())
+            || settings.getBackgroundColour() != defaults.getBackgroundColour()
+            || !Objects.equals(settings.getOwnBackgroundPath(), defaults.getOwnBackgroundPath())
             || settings.getCaretColour() != defaults.getCaretColour()
             || settings.getCorrectColour() != defaults.getCorrectColour()
             || settings.getErrorColour() != defaults.getErrorColour()
@@ -704,7 +756,7 @@ public class SettingsPanel extends javax.swing.JFrame {
     ComboBoxStyler.apply(schemeBox);
     schemeBox.setRenderer(new SchemeRenderer());
     ComboBoxStyler.apply(textSourceBox);
-    ComboBoxStyler.apply(backgroundBox);
+    paintBackgroundButton();
     ToggleSwitchStyler.apply(codeModeSwitch);
 
     WindowStyler.refresh(this);
@@ -750,17 +802,18 @@ public class SettingsPanel extends javax.swing.JFrame {
     return selected == null ? Settings.TEXT_SOURCE_WORDS : selected.toString();
   }
 
-  /** The background the player chose, one of {@link BackgroundPanel#backgroundNames()}. */
+  /** The background the player chose: a name from {@link BackgroundPanel}, or the colour entry. */
   public String getSelectedBackground() {
-    Object selected = backgroundBox.getSelectedItem();
-    String name = selected == null ? null : selected.toString();
-    if (BackgroundPanel.hasBackground(name)) {
-      return name;
-    }
-    // The placeholder ("Upload own PDF") has no image yet, so the current background is kept
-    return BackgroundPanel.hasBackground(settings.getBackground())
-        ? settings.getBackground()
+    return BackgroundPanel.hasBackground(backgroundName)
+        ? backgroundName
         : Settings.DEFAULT_BACKGROUND;
+  }
+
+  /** The colour that fills the race screen when the player picked a colour, not an image. */
+  public Color getSelectedBackgroundColour() {
+    return backgroundColour == null
+        ? new Color(Settings.DEFAULT_BACKGROUND_COLOUR_RGB)
+        : backgroundColour;
   }
 
   // ------------------------------------------------------------------------------- Painting

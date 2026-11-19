@@ -38,7 +38,8 @@ public final class ColourPickerDialog extends JDialog {
    * The colours that are offered, eight to a row: a row of greys, a row of soft tints, then the
    * normal, the deep and the dark version of the same eight hues.
    */
-  private static final int[] PRESET_COLOURS = {
+  // Package private, because the background window offers the same colours as it does
+  static final int[] PRESET_COLOURS = {
     0xffffff, 0xe4e4e7, 0xa1a1aa, 0x71717a, 0x3f3f46, 0x27272a, 0x18181b, 0x0a0a0a,
     0xfecaca, 0xfed7aa, 0xfef08a, 0xbbf7d0, 0xa5f3fc, 0xbfdbfe, 0xc4b5fd, 0xfbcfe8,
     0xef4444, 0xf97316, 0xeab308, 0x22c55e, 0x06b6d4, 0x3b82f6, 0x8b5cf6, 0xec4899,

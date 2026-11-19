@@ -1,13 +1,15 @@
 {
-  "scheme": "Custom",
-  "background": "Black and grey (default)",
-  "customAccent": 8330525,
-  "codeMode": true,
-  "textSource": "Random words",
-  "language": "Test",
+  "scheme": "Ember",
+  "background": "Custom colour",
+  "backgroundColour": 12573694,
+  "ownBackgroundPath": "C:\\Users\\mathi\\OneDrive\\Pictures\\Screenshots\\lol1.png",
+  "customAccent": 16747039,
+  "codeMode": false,
+  "textSource": "Text passage",
+  "language": "Assembly",
   "caretColour": 16747039,
   "correctColour": 4906624,
   "errorColour": 13710154,
   "textColour": 14210252,
-  "snippetFontSize": 40
+  "snippetFontSize": 32
 }

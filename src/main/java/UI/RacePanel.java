@@ -122,7 +122,10 @@ public class RacePanel extends BackgroundPanel {
         new Color(settings.getErrorColour()),
         new Color(settings.getTextColour()));
     // The background the player picked last time
-    showBackground(settings.getBackground());
+    showBackground(
+        settings.getBackground(),
+        new Color(settings.getBackgroundColour()),
+        settings.getOwnBackgroundPath());
 
     // Built in java code
     initComponents();
@@ -372,7 +375,10 @@ public class RacePanel extends BackgroundPanel {
     applyTheme();
 
     // The background behind the race screen
-    showBackground(settings.getBackground());
+    showBackground(
+        settings.getBackground(),
+        new Color(settings.getBackgroundColour()),
+        settings.getOwnBackgroundPath());
 
     // The content type. The drop down lists languages or text sources, depending on the switch.
     applyContentMode();
