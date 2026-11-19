@@ -1,34 +1,23 @@
 package model;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.Writer;
-
 /**
- * The preferences of the player, as one object. The settings window writes into it, the race
- * screen reads from it, and it saves itself to {@code Settings.json} next to {@code
- * PlayedGames.json}.
+ * The preferences of the player, as one object. The settings window writes into it and the race
+ * screen reads from it; {@code database.SettingsStore} is responsible for loading it from and
+ * saving it to {@code Settings.json}.
  *
- * <p>The application creates one instance when it starts ({@link #load()}), passes it to the
- * settings window and keeps it: the getters always return what is in the file at the moment the
- * player changes something, because the settings window updates this object directly.
+ * <p>The application creates one instance when it starts, passes it to the settings window and
+ * keeps it: the getters always return what the player picked, because the settings window updates
+ * this object directly.
  *
- * <p>Every value is a plain String, boolean or int, so Gson can write and read the file without
- * any custom code. Unknown or missing values fall back to the defaults, a broken file never stops
- * the application from starting.
+ * <p>Every value is a plain String, boolean or int, so Gson can read and write the file without
+ * any custom code. {@link #normalise()} repairs values that an old, hand-edited or broken file
+ * could contain; a missing or unreadable file is handled by the store, which falls back to these
+ * defaults.
  */
 public class Settings {
 
-  /** The file the settings are saved to, in the working directory of the application. */
-  public static final String FILE_NAME = "Settings.json";
-
   /** The scheme that is used when the player has not chosen one yet. */
-  public static final String DEFAULT_SCHEME = "Ember (default)";
+  public static final String DEFAULT_SCHEME = "Ember";
 
   /** The background of the race screen that is used when the player has not chosen one yet. */
   public static final String DEFAULT_BACKGROUND = "Black and grey (default)";
@@ -51,9 +40,6 @@ public class Settings {
   /** The biggest snippet text the player can pick; bigger text simply scrolls more. */
   public static final int MAX_SNIPPET_FONT_SIZE = 40;
 
-  // Pretty printing keeps the file readable when it is opened by hand
-  private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-
   // The colour of the custom scheme until the player picks one, it is the accent of Ember
   /** The accent colour of the custom scheme until the player picks one. */
   public static final int DEFAULT_CUSTOM_ACCENT_RGB = 0xff8a1f;
@@ -70,7 +56,7 @@ public class Settings {
   /** The colour of the text that is still waiting to be typed until the player picks one. */
   public static final int DEFAULT_TEXT_COLOUR_RGB = 0xd8d4cc;
 
-  // The values that are saved; the defaults are the values the application started with. The three
+  // The values that are saved; the defaults are the values the application started with. The four
   // typing colours are RGB values without alpha, so they are written as plain numbers in the file.
   private String scheme = DEFAULT_SCHEME;
   private String background = DEFAULT_BACKGROUND;
@@ -85,46 +71,21 @@ public class Settings {
   private int snippetFontSize = DEFAULT_SNIPPET_FONT_SIZE;
 
   /**
-   * Reads the settings from Settings.json. When the file is missing or broken, the defaults are
-   * returned instead, so a first start and a damaged file both end up in a working application.
+   * Repairs values that an old, hand-edited or broken file could contain. Gson fills fields
+   * directly, so it bypasses the setters that normally clamp the font size and mask the colours;
+   * this method runs all of them once after loading. A missing name falls back to its default.
    */
-  public static Settings load() {
-    File file = new File(FILE_NAME);
-    if (!file.exists() || file.length() == 0) {
-      return new Settings();
-    }
-    try (Reader reader = new FileReader(file)) {
-      Settings settings = GSON.fromJson(reader, Settings.class);
-      if (settings == null) {
-        return new Settings();
-      }
-      // Gson leaves a value null when the file contains a null instead of a name
-      if (settings.scheme == null) {
-        settings.scheme = DEFAULT_SCHEME;
-      }
-      if (settings.background == null) {
-        settings.background = DEFAULT_BACKGROUND;
-      }
-      if (settings.textSource == null) {
-        settings.textSource = TEXT_SOURCE_WORDS;
-      }
-      if (settings.language == null) {
-        settings.language = DEFAULT_LANGUAGE;
-      }
-      return settings;
-    } catch (IOException | RuntimeException e) {
-      // A settings file that can not be read should never stop the game from starting
-      return new Settings();
-    }
-  }
-
-  /** Writes the current settings to Settings.json. */
-  public void save() {
-    try (Writer writer = new FileWriter(FILE_NAME)) {
-      GSON.toJson(this, writer);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+  public void normalise() {
+    setScheme(scheme);
+    setBackground(background);
+    setTextSource(textSource);
+    setLanguage(language);
+    setCustomAccent(customAccent);
+    setSnippetFontSize(snippetFontSize);
+    setCaretColour(caretColour);
+    setCorrectColour(correctColour);
+    setErrorColour(errorColour);
+    setTextColour(textColour);
   }
 
   /** The name of the colour scheme, for example "Ember". */
@@ -164,7 +125,7 @@ public class Settings {
   }
 
   public void setCustomAccent(int customAccent) {
-    this.customAccent = customAccent;
+    this.customAccent = customAccent & 0xffffff;
   }
 
   /** Tells whether the player types code snippets, instead of plain text. */
@@ -185,7 +146,9 @@ public class Settings {
   }
 
   public void setTextSource(String textSource) {
-    this.textSource = textSource == null ? TEXT_SOURCE_WORDS : textSource;
+    // Only the two known sources are accepted; an old or hand-edited file falls back to words
+    this.textSource =
+        TEXT_SOURCE_PASSAGE.equals(textSource) ? TEXT_SOURCE_PASSAGE : TEXT_SOURCE_WORDS;
   }
 
   /** The language of the code snippets, for example "Python" or "Random". */

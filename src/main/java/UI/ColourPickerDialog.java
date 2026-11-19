@@ -65,7 +65,14 @@ public final class ColourPickerDialog extends JDialog {
    * colour, or null when nothing was picked.
    */
   public static Color showDialog(Component parent, String title, Color current) {
-    Window owner = parent == null ? null : SwingUtilities.getWindowAncestor(parent);
+    // getWindowAncestor returns null when the component is already a window, which is exactly what
+    // the settings window passes in; the dialog would then open on its own instead of on top of it
+    Window owner = null;
+    if (parent instanceof Window) {
+      owner = (Window) parent;
+    } else if (parent != null) {
+      owner = SwingUtilities.getWindowAncestor(parent);
+    }
     ColourPickerDialog dialog = new ColourPickerDialog(owner, title, current);
     dialog.setVisible(true);
     return dialog.picked;

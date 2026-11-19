@@ -3,6 +3,7 @@ package UI;
 import database.Database;
 import database.PlayedGame;
 import database.PlayedGamesDatabase;
+import database.SettingsStore;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -112,7 +113,7 @@ public class RacePanel extends BackgroundPanel {
   public RacePanel() {
     // The saved preferences are read before any component exists, so the first window already has
     // the colour scheme and the content type that the player chose last time.
-    settings = Settings.load();
+    settings = SettingsStore.load();
     Theme.applyScheme(
         ColourScheme.byName(settings.getScheme()), new Color(settings.getCustomAccent()));
     Theme.applyTypingColours(
@@ -412,8 +413,17 @@ public class RacePanel extends BackgroundPanel {
     // the drop down would read that as the player picking another language.
     repopulatingLanguages = true;
     try {
+      String chosen = contains(options, preferred) ? preferred : options[0];
       jComboBox1.setModel(new DefaultComboBoxModel<>(options));
-      jComboBox1.setSelectedItem(contains(options, preferred) ? preferred : options[0]);
+      jComboBox1.setSelectedItem(chosen);
+      // Keep the settings object in step with the fallback as well. Otherwise an old or
+      // hand-edited value such as "Cobol" would stay in the object and newGame() would ask the
+      // Database for a language that does not exist.
+      if (settings.isCodeMode()) {
+        settings.setLanguage(chosen);
+      } else {
+        settings.setTextSource(chosen);
+      }
     } finally {
       repopulatingLanguages = false;
     }
@@ -986,7 +996,7 @@ public class RacePanel extends BackgroundPanel {
       } else {
         settings.setTextSource(selected.toString());
       }
-      settings.save();
+      SettingsStore.save(settings);
     }
     if (currentPanel == PanelState.RUNNING) {
       newGame();

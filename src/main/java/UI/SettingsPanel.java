@@ -1,5 +1,6 @@
 package UI;
 
+import database.SettingsStore;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -208,7 +209,7 @@ public class SettingsPanel extends javax.swing.JFrame {
 
   /**
    * The card with the background of the race screen. The drop down lists the backgrounds that come
-   * with the application and the two entries that are not a background yet.
+   * with the application and the placeholder entry that is not a background yet.
    */
   private JPanel buildBackgroundCard() {
     JPanel card = settingCard("BACKGROUND");
@@ -233,11 +234,12 @@ public class SettingsPanel extends javax.swing.JFrame {
   
   /**
    * The entries of the background drop down: the backgrounds that exist, from
-   * {@link BackgroundPanel#backgroundNames()}, followed by the two that are not a background yet.
+   * {@link BackgroundPanel#backgroundNames()}, followed by the placeholder that is not a
+   * background yet.
    */
   private static String[] backgroundOptions() {
     String[] names = BackgroundPanel.backgroundNames();
-    String[] options = Arrays.copyOf(names, names.length + 2);
+    String[] options = Arrays.copyOf(names, names.length + 1);
     options[names.length] = BACKGROUND_UPLOAD;
     return options;
   }
@@ -454,11 +456,16 @@ public class SettingsPanel extends javax.swing.JFrame {
     notifying = false;
     try {
       customAccent = new Color(settings.getCustomAccent());
-      schemeBox.setSelectedItem(settings.getScheme());
+      // An old or hand-edited file can contain a name that no longer exists; the byName lookup
+      // falls back to Ember and the drop down shows that instead of a blank entry
+      schemeBox.setSelectedItem(ColourScheme.byName(settings.getScheme()).displayName());
       codeModeSwitch.setSelected(settings.isCodeMode());
       textSourceBox.setSelectedItem(settings.getTextSource());
       textSourceRow.setVisible(!settings.isCodeMode());
-      backgroundBox.setSelectedItem(settings.getBackground());
+      backgroundBox.setSelectedItem(
+          BackgroundPanel.hasBackground(settings.getBackground())
+              ? settings.getBackground()
+              : Settings.DEFAULT_BACKGROUND);
       sizeSlider.setValue(settings.getSnippetFontSize());
 
       caretColour = new Color(settings.getCaretColour());
@@ -536,10 +543,16 @@ public class SettingsPanel extends javax.swing.JFrame {
     fireSettingsChanged();
   }
 
-  /** Keeps the size label and the settings in step while the handle of the slider is dragged. */
+  /**
+   * Keeps the size label in step while the handle of the slider is dragged. The settings are only
+   * saved and applied when the drag ends: every change re-themes the race screen and writes the
+   * JSON file, so doing that for every intermediate value would make dragging feel heavy.
+   */
   private void sizeChanged() {
     sizeValue.setText(sizeSlider.getValue() + " pt");
-    fireSettingsChanged();
+    if (!sizeSlider.getValueIsAdjusting()) {
+      fireSettingsChanged();
+    }
   }
 
   /** Asks for the colour of the text that has not been typed yet and stores it as a setting. */
@@ -601,7 +614,7 @@ public class SettingsPanel extends javax.swing.JFrame {
     settings.setErrorColour(errorColour.getRGB() & 0xffffff);
     settings.setTextColour(textColour.getRGB() & 0xffffff);
     settings.setSnippetFontSize(sizeSlider.getValue());
-    settings.save();
+    SettingsStore.save(settings);
 
     for (Runnable listener : List.copyOf(changeListeners)) {
       listener.run();
@@ -665,7 +678,9 @@ public class SettingsPanel extends javax.swing.JFrame {
   /** The scheme the player chose, one of {@link ColourScheme#displayNames()}. */
   public String getSelectedScheme() {
     Object selected = schemeBox.getSelectedItem();
-    return selected == null ? Settings.DEFAULT_SCHEME : selected.toString();
+    return selected == null
+        ? Settings.DEFAULT_SCHEME
+        : ColourScheme.byName(selected.toString()).displayName();
   }
 
   /** The accent colour of the custom scheme, which is also the last one the player picked. */
@@ -690,7 +705,14 @@ public class SettingsPanel extends javax.swing.JFrame {
   /** The background the player chose, one of {@link BackgroundPanel#backgroundNames()}. */
   public String getSelectedBackground() {
     Object selected = backgroundBox.getSelectedItem();
-    return selected == null ? Settings.DEFAULT_BACKGROUND : selected.toString();
+    String name = selected == null ? null : selected.toString();
+    if (BackgroundPanel.hasBackground(name)) {
+      return name;
+    }
+    // The placeholder ("Upload own PDF") has no image yet, so the current background is kept
+    return BackgroundPanel.hasBackground(settings.getBackground())
+        ? settings.getBackground()
+        : Settings.DEFAULT_BACKGROUND;
   }
 
   // ------------------------------------------------------------------------------- Painting
