@@ -11,7 +11,6 @@ import java.awt.Graphics2D;
 import java.awt.GridBagLayout;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -64,9 +63,6 @@ public class BackgroundPanel extends JPanel {
   // The colour the player picked when the background is Settings.BACKGROUND_CUSTOM_COLOUR
   private Color customColour = new Color(Settings.DEFAULT_BACKGROUND_COLOUR_RGB);
 
-  // The image file the player uploaded when the background is Settings.BACKGROUND_OWN_IMAGE
-  private String ownImagePath = "";
-
   public BackgroundPanel() {
     setLayout(new GridBagLayout());
     showBackground(Settings.DEFAULT_BACKGROUND);
@@ -89,8 +85,7 @@ public class BackgroundPanel extends JPanel {
     return name != null
         && (BACKGROUNDS.containsKey(name)
             || SOLID_BACKGROUNDS.containsKey(name)
-            || Settings.BACKGROUND_CUSTOM_COLOUR.equals(name)
-            || Settings.BACKGROUND_OWN_IMAGE.equals(name));
+            || Settings.BACKGROUND_CUSTOM_COLOUR.equals(name));
   }
 
   /**
@@ -98,7 +93,7 @@ public class BackgroundPanel extends JPanel {
    * that is already shown stays; the placeholder entries of the settings window rely on that.
    */
   public void showBackground(String name) {
-    showBackground(name, customColour, ownImagePath);
+    showBackground(name, customColour);
   }
 
   /**
@@ -106,31 +101,12 @@ public class BackgroundPanel extends JPanel {
    * {@link Settings#BACKGROUND_CUSTOM_COLOUR}. A null colour keeps the colour that is in use.
    */
   public void showBackground(String name, Color pickedColour) {
-    showBackground(name, pickedColour, ownImagePath);
-  }
-
-  /**
-   * Paints the background with the given name from now on. The colour is used for
-   * {@link Settings#BACKGROUND_CUSTOM_COLOUR}, the path for {@link Settings#BACKGROUND_OWN_IMAGE};
-   * null values keep what is in use, so the caller can pass a setting that was never picked. An
-   * image file that can not be read falls back to the plain colour.
-   */
-  public void showBackground(String name, Color pickedColour, String ownPath) {
     if (pickedColour != null) {
       customColour = pickedColour;
-    }
-    if (ownPath != null) {
-      ownImagePath = ownPath;
     }
     if (Settings.BACKGROUND_CUSTOM_COLOUR.equals(name)) {
       image = null;
       plainColour = customColour;
-      repaint();
-      return;
-    }
-    if (Settings.BACKGROUND_OWN_IMAGE.equals(name)) {
-      image = readFile(ownImagePath);
-      plainColour = new Color(Settings.DEFAULT_BACKGROUND_COLOUR_RGB);
       repaint();
       return;
     }
@@ -153,16 +129,7 @@ public class BackgroundPanel extends JPanel {
   /** A small copy of a background image, used as its preview in the settings windows. */
   static BufferedImage thumbnail(String name, int width, int height) {
     String resource = BACKGROUNDS.get(name);
-    return resource == null ? null : scale(readImage(resource), width, height);
-  }
-
-  /** A small copy of an image file the player uploaded, or null when it can not be read. */
-  static BufferedImage thumbnailOfPath(String path, int width, int height) {
-    return scale(readFile(path), width, height);
-  }
-
-  /** Shrinks an image to the size of a preview, keeping its proportions out of the question. */
-  private static BufferedImage scale(BufferedImage full, int width, int height) {
+    BufferedImage full = resource == null ? null : readImage(resource);
     if (full == null) {
       return null;
     }
@@ -173,19 +140,6 @@ public class BackgroundPanel extends JPanel {
     graphics.drawImage(full, 0, 0, width, height, null);
     graphics.dispose();
     return small;
-  }
-
-  /** Reads an image from a file on the computer, or returns null when it is not there. */
-  private static BufferedImage readFile(String path) {
-    if (path == null || path.isBlank()) {
-      return null;
-    }
-    try {
-      return ImageIO.read(new File(path));
-    } catch (IOException e) {
-      // A moved or broken file falls back to the plain colour, it is not worth stopping the game
-      return null;
-    }
   }
 
   /** Reads an image from the resources folder, or returns null when it is not there. */

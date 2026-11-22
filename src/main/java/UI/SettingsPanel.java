@@ -97,7 +97,6 @@ public class SettingsPanel extends javax.swing.JFrame {
   // together with the plain colour that is painted instead of an image
   private String backgroundName;
   private Color backgroundColour;
-  private String backgroundPath;
 
   // The colours of typing, kept in sync with the settings object
   private Color caretColour;
@@ -466,7 +465,6 @@ public class SettingsPanel extends javax.swing.JFrame {
               ? settings.getBackground()
               : Settings.DEFAULT_BACKGROUND;
       backgroundColour = new Color(settings.getBackgroundColour());
-      backgroundPath = settings.getOwnBackgroundPath();
       sizeSlider.setValue(settings.getSnippetFontSize());
 
       caretColour = new Color(settings.getCaretColour());
@@ -576,7 +574,7 @@ public class SettingsPanel extends javax.swing.JFrame {
   private void pickBackground() {
     BackgroundPickerDialog.Choice choice =
         BackgroundPickerDialog.showDialog(
-            this, getSelectedBackground(), getSelectedBackgroundColour(), backgroundPath);
+            this, getSelectedBackground(), getSelectedBackgroundColour());
     if (choice == null) {
       // The window was closed without picking, so the background stays
       return;
@@ -584,9 +582,6 @@ public class SettingsPanel extends javax.swing.JFrame {
     backgroundName = choice.background;
     if (choice.colour != null) {
       backgroundColour = choice.colour;
-    }
-    if (choice.path != null) {
-      backgroundPath = choice.path;
     }
     paintBackgroundButton();
     fireSettingsChanged();
@@ -605,17 +600,6 @@ public class SettingsPanel extends javax.swing.JFrame {
       Color colour = getSelectedBackgroundColour();
       backgroundButton.setText(String.format("#%06X", colour.getRGB() & 0xffffff));
       backgroundButton.setIcon(new SwatchIcon(colour, 14));
-    } else if (Settings.BACKGROUND_OWN_IMAGE.equals(name)) {
-      // The button names the file, so the player can tell which image is behind the race screen
-      backgroundButton.setText(
-          backgroundPath == null || backgroundPath.isBlank()
-              ? Settings.BACKGROUND_OWN_IMAGE
-              : new java.io.File(backgroundPath).getName());
-      BufferedImage preview =
-          backgroundPath == null
-              ? null
-              : BackgroundPanel.thumbnailOfPath(backgroundPath, 34, 20);
-      backgroundButton.setIcon(preview == null ? null : new ImageIcon(preview));
     } else {
       backgroundButton.setText(name);
       BufferedImage preview = BackgroundPanel.thumbnail(name, 34, 20);
@@ -638,7 +622,6 @@ public class SettingsPanel extends javax.swing.JFrame {
       textSourceRow.setVisible(false);
       backgroundName = Settings.DEFAULT_BACKGROUND;
       backgroundColour = new Color(Settings.DEFAULT_BACKGROUND_COLOUR_RGB);
-      backgroundPath = "";
       paintBackgroundButton();
       sizeSlider.setValue(Settings.DEFAULT_SNIPPET_FONT_SIZE);
 
@@ -675,7 +658,6 @@ public class SettingsPanel extends javax.swing.JFrame {
     settings.setTextSource(getTextSource());
     settings.setBackground(getSelectedBackground());
     settings.setBackgroundColour(getSelectedBackgroundColour().getRGB() & 0xffffff);
-    settings.setOwnBackgroundPath(backgroundPath);
     settings.setCaretColour(caretColour.getRGB() & 0xffffff);
     settings.setCorrectColour(correctColour.getRGB() & 0xffffff);
     settings.setErrorColour(errorColour.getRGB() & 0xffffff);
@@ -703,7 +685,6 @@ public class SettingsPanel extends javax.swing.JFrame {
             || !Objects.equals(settings.getTextSource(), defaults.getTextSource())
             || !Objects.equals(settings.getBackground(), defaults.getBackground())
             || settings.getBackgroundColour() != defaults.getBackgroundColour()
-            || !Objects.equals(settings.getOwnBackgroundPath(), defaults.getOwnBackgroundPath())
             || settings.getCaretColour() != defaults.getCaretColour()
             || settings.getCorrectColour() != defaults.getCorrectColour()
             || settings.getErrorColour() != defaults.getErrorColour()

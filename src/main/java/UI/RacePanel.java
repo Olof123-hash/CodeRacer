@@ -100,6 +100,9 @@ public class RacePanel extends BackgroundPanel {
   // Initialize classes
   private Database db;
   public RaceEngine currentRace;
+  // The Highlighter API hands back an opaque key instead of a typed marker, and it is removed
+  // again on every recolour, so a mistake on a line break does not leave a marker behind
+  private Object lineBreakErrorHighlight;
   // The preferences of the player. They are loaded once here and the same object is handed to the
   // settings window, so there is one place that both screens read and the window writes.
   private final Settings settings;
@@ -122,10 +125,7 @@ public class RacePanel extends BackgroundPanel {
         new Color(settings.getErrorColour()),
         new Color(settings.getTextColour()));
     // The background the player picked last time
-    showBackground(
-        settings.getBackground(),
-        new Color(settings.getBackgroundColour()),
-        settings.getOwnBackgroundPath());
+    showBackground(settings.getBackground(), new Color(settings.getBackgroundColour()));
 
     // Built in java code
     initComponents();
@@ -257,9 +257,12 @@ public class RacePanel extends BackgroundPanel {
     }
     // Creates a RaceEngine object by calling the RaceEngine constructor with the snippet from the
     // previous lines.
-    currentRace = new RaceEngine(snip.getBody());
+    // The engine and the pane get the same normalised text, so a character position means the same
+    // thing in both of them
+    String snippetText = RaceEngine.normaliseLineBreaks(snip.getBody());
+    currentRace = new RaceEngine(snippetText);
     // Sets the text of the snippetPane with that of the current snippet
-    snippetPane.setText(snip.getBody());
+    snippetPane.setText(snippetText);
     // Colours the new snippet before the first keystroke, so the whole text already has the colour
     // of the text that is waiting to be typed
     colorTypingField();
@@ -375,10 +378,7 @@ public class RacePanel extends BackgroundPanel {
     applyTheme();
 
     // The background behind the race screen
-    showBackground(
-        settings.getBackground(),
-        new Color(settings.getBackgroundColour()),
-        settings.getOwnBackgroundPath());
+    showBackground(settings.getBackground(), new Color(settings.getBackgroundColour()));
 
     // The content type. The drop down lists languages or text sources, depending on the switch.
     applyContentMode();
@@ -863,6 +863,10 @@ public class RacePanel extends BackgroundPanel {
   private void colorTypingField() {
     String acceptedText = currentRace.getLastAcceptedText();
     StyledDocument doc = snippetPane.getStyledDocument();
+    if (lineBreakErrorHighlight != null) {
+      snippetPane.getHighlighter().removeHighlight(lineBreakErrorHighlight);
+      lineBreakErrorHighlight = null;
+    }
 
     // The part of the snippet that is not typed yet gets the colour the player picked for the text
     // that is still waiting to be typed
@@ -893,12 +897,56 @@ public class RacePanel extends BackgroundPanel {
         StyleConstants.setForeground(wrongCharacter, Theme.TYPED_ERROR);
       }
       doc.setCharacterAttributes(lastPosition, 1, wrongCharacter, true);
+      if (isLineBreak(lastPosition)) {
+        showLineBreakErrorMarker(lastPosition);
+      }
     }
   }
 
   /**
-   * True when the snippet has a space or a tab at the given position, which is where the player
-   * typed a wrong character instead of the space bar.
+   * Draws a red block at the end of the line where the player typed a wrong character instead of
+   * Enter. A line break has no glyph of its own, so its background attribute is not visible; the
+   * marker is only a visual hint and the typing logic still counts the mistake.
+   */
+  private void showLineBreakErrorMarker(int position) {
+    try {
+      lineBreakErrorHighlight =
+          snippetPane
+              .getHighlighter()
+              .addHighlight(
+                  position,
+                  position + 1,
+                  (graphics, start, end, bounds, component) -> {
+                    try {
+                      Rectangle previousCharacter =
+                          component.modelToView2D(Math.max(0, start - 1)).getBounds();
+                      int markerWidth =
+                          Math.max(2, component.getFontMetrics(component.getFont()).charWidth(' '));
+                      graphics.setColor(Theme.TYPED_ERROR);
+                      graphics.fillRect(
+                          previousCharacter.x + previousCharacter.width + markerWidth,
+                          previousCharacter.y,
+                          markerWidth,
+                          previousCharacter.height);
+                    } catch (BadLocationException exception) {
+                      // The marker is only a visual hint; the typing logic still records the error.
+                    }
+                  });
+    } catch (BadLocationException exception) {
+      lineBreakErrorHighlight = null;
+    }
+  }
+
+  /** True when the snippet breaks to a new line at the given position. */
+  private boolean isLineBreak(int position) {
+    String snippet = snippetPane.getText();
+    return snippet != null && position >= 0 && position < snippet.length()
+        && snippet.charAt(position) == '\n';
+  }
+
+  /**
+   * True when the snippet has an invisible space, tab or line break at the given position, which is
+   * where the player typed a wrong character instead of the space bar or Enter.
    */
   private boolean isBlankSpace(int position) {
     String snippet = snippetPane.getText();
@@ -906,7 +954,7 @@ public class RacePanel extends BackgroundPanel {
       return false;
     }
     char expected = snippet.charAt(position);
-    return expected == ' ' || expected == '\t';
+    return expected == ' ' || expected == '\t' || expected == '\n';
   }
 
   /**

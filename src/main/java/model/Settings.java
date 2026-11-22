@@ -31,12 +31,6 @@ public class Settings {
   /** The plain background colour that is used when the player has not picked one yet. */
   public static final int DEFAULT_BACKGROUND_COLOUR_RGB = 0x0a050f;
 
-  /**
-   * The value of {@link #getBackground()} that means an image file of the player's own, which is
-   * {@link #getOwnBackgroundPath()}.
-   */
-  public static final String BACKGROUND_OWN_IMAGE = "Your own image";
-
   /** The value of {@link #getTextSource()} that means random words. */
   public static final String TEXT_SOURCE_WORDS = "Random words";
 
@@ -76,7 +70,6 @@ public class Settings {
   private String scheme = DEFAULT_SCHEME;
   private String background = DEFAULT_BACKGROUND;
   private int backgroundColour = DEFAULT_BACKGROUND_COLOUR_RGB;
-  private String ownBackgroundPath = "";
   private int customAccent = DEFAULT_CUSTOM_ACCENT_RGB;
   private boolean codeMode = true;
   private String textSource = TEXT_SOURCE_WORDS;
@@ -96,7 +89,6 @@ public class Settings {
     setScheme(scheme);
     setBackground(background);
     setBackgroundColour(backgroundColour);
-    setOwnBackgroundPath(ownBackgroundPath);
     setTextSource(textSource);
     setLanguage(language);
     setCustomAccent(customAccent);
@@ -148,19 +140,6 @@ public class Settings {
 
   public void setBackgroundColour(int backgroundColour) {
     this.backgroundColour = backgroundColour & 0xffffff;
-  }
-
-  /**
-   * The image file that fills the race screen when the background is
-   * {@link #BACKGROUND_OWN_IMAGE}. It is the full path the player picked; an empty string means no
-   * file has been picked yet.
-   */
-  public String getOwnBackgroundPath() {
-    return ownBackgroundPath;
-  }
-
-  public void setOwnBackgroundPath(String ownBackgroundPath) {
-    this.ownBackgroundPath = ownBackgroundPath == null ? "" : ownBackgroundPath;
   }
 
   /** The accent colour of the custom scheme, as the RGB value of a {@link java.awt.Color}. */

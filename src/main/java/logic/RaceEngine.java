@@ -31,7 +31,17 @@ public class RaceEngine {
 
   // this below is the constructor
   public RaceEngine(String snippetText) {
-    this.targetText = snippetText;
+    this.targetText = normaliseLineBreaks(snippetText);
+  }
+
+  /**
+   * Gives a snippet the same line breaks wherever it is used. The colours are applied by character
+   * position in the race window, so the snippet that is shown and the text the engine compares with
+   * have to break their lines the same way; a file that was saved with Windows line endings would
+   * otherwise shift every character by one at each line break, and Enter would never match.
+   */
+  public static String normaliseLineBreaks(String text) {
+    return text.replace("\r\n", "\n").replace('\r', '\n');
   }
 
   /*

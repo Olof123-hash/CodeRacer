@@ -1,15 +1,14 @@
 {
   "scheme": "Ember",
-  "background": "Custom colour",
-  "backgroundColour": 12573694,
-  "ownBackgroundPath": "C:\\Users\\mathi\\OneDrive\\Pictures\\Screenshots\\lol1.png",
+  "background": "Black and grey (default)",
+  "backgroundColour": 656655,
   "customAccent": 16747039,
-  "codeMode": false,
-  "textSource": "Text passage",
-  "language": "Assembly",
+  "codeMode": true,
+  "textSource": "Random words",
+  "language": "Go",
   "caretColour": 16747039,
   "correctColour": 4906624,
   "errorColour": 13710154,
   "textColour": 14210252,
-  "snippetFontSize": 32
+  "snippetFontSize": 38
 }

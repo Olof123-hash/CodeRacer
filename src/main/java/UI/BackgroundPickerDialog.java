@@ -14,20 +14,16 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
-import javax.swing.JFileChooser;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import model.Settings;
 
 /**
@@ -61,20 +57,15 @@ public final class BackgroundPickerDialog extends JDialog {
     /** The colour, which only means something for {@link Settings#BACKGROUND_CUSTOM_COLOUR}. */
     public final Color colour;
 
-    /** The image file, which only means something for {@link Settings#BACKGROUND_OWN_IMAGE}. */
-    public final String path;
-
-    private Choice(String background, Color colour, String path) {
+    private Choice(String background, Color colour) {
       this.background = background;
       this.colour = colour;
-      this.path = path;
     }
   }
 
-  // The background, the colour and the image file that are in use now; the chosen ones keep a ring
+  // The background and the colour that are in use now, drawn with a ring around them
   private final String currentName;
   private final Color currentColour;
-  private final String currentPath;
 
   // The choice of the player, or null while the window is open
   private Choice picked;
@@ -83,24 +74,22 @@ public final class BackgroundPickerDialog extends JDialog {
    * Opens the window and waits until the player picked a background or closed it. Returns the
    * choice, or null when nothing was picked.
    */
-  public static Choice showDialog(
-      Component parent, String background, Color colour, String path) {
+  public static Choice showDialog(Component parent, String background, Color colour) {
     Window owner = null;
     if (parent instanceof Window) {
       owner = (Window) parent;
     } else if (parent != null) {
       owner = SwingUtilities.getWindowAncestor(parent);
     }
-    BackgroundPickerDialog dialog = new BackgroundPickerDialog(owner, background, colour, path);
+    BackgroundPickerDialog dialog = new BackgroundPickerDialog(owner, background, colour);
     dialog.setVisible(true);
     return dialog.picked;
   }
 
-  private BackgroundPickerDialog(Window owner, String background, Color colour, String path) {
+  private BackgroundPickerDialog(Window owner, String background, Color colour) {
     super(owner, Dialog.ModalityType.APPLICATION_MODAL);
     this.currentName = background;
     this.currentColour = colour == null ? Theme.BACKGROUND : colour;
-    this.currentPath = path == null ? "" : path;
     setUndecorated(true);
     WindowStyler.apply(this);
     setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -130,8 +119,6 @@ public final class BackgroundPickerDialog extends JDialog {
 
     content.add(Box.createVerticalStrut(16));
     content.add(buildImageGrid());
-    content.add(Box.createVerticalStrut(10));
-    content.add(buildUploadRow());
 
     content.add(Box.createVerticalStrut(18));
     content.add(sectionCaption("COLOUR"));
@@ -161,53 +148,6 @@ public final class BackgroundPickerDialog extends JDialog {
       grid.add(new ImageTile(name));
     }
     return grid;
-  }
-
-  /** The button that uploads an image from the computer, under the previews. */
-  private JPanel buildUploadRow() {
-    JPanel row = new JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 0, 0));
-    row.setOpaque(false);
-    row.setAlignmentX(LEFT_ALIGNMENT);
-
-    JButton upload =
-        new JButton(
-            Settings.BACKGROUND_OWN_IMAGE.equals(currentName) && !currentPath.isEmpty()
-                ? new File(currentPath).getName()
-                : "Upload your own...");
-    ButtonStyler.applySecondary(upload);
-    upload.setPreferredSize(new Dimension(210, 34));
-    upload.setToolTipText("Use an image file from this computer as the background");
-    upload.addActionListener(event -> uploadOwnImage());
-    row.add(upload);
-    return row;
-  }
-
-  /** Asks for an image file and, when it can be shown, uses it as the background. */
-  private void uploadOwnImage() {
-    JFileChooser chooser = new JFileChooser();
-    chooser.setDialogTitle("Choose a background image");
-    chooser.setFileFilter(
-        new FileNameExtensionFilter(
-            "Images (png, jpg, gif, bmp)", "png", "jpg", "jpeg", "gif", "bmp"));
-    if (chooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) {
-      return;
-    }
-    File file = chooser.getSelectedFile();
-    if (file == null || !file.isFile()) {
-      return;
-    }
-    String path = file.getAbsolutePath();
-    if (BackgroundPanel.thumbnailOfPath(path, 1, 1) == null) {
-      // The file was not an image the game can read, so the window stays open and says so
-      JOptionPane.showMessageDialog(
-          this,
-          "That file is not an image the game can show.",
-          "Background",
-          JOptionPane.WARNING_MESSAGE);
-      return;
-    }
-    picked = new Choice(Settings.BACKGROUND_OWN_IMAGE, null, path);
-    dispose();
   }
 
   /** The grid of ready made colours, the same one the colour window shows. */
@@ -277,7 +217,7 @@ public final class BackgroundPickerDialog extends JDialog {
 
   /** Applies a colour as a plain background and closes the window. */
   private void pickColour(Color colour) {
-    picked = new Choice(Settings.BACKGROUND_CUSTOM_COLOUR, colour, null);
+    picked = new Choice(Settings.BACKGROUND_CUSTOM_COLOUR, colour);
     dispose();
   }
 
@@ -310,7 +250,7 @@ public final class BackgroundPickerDialog extends JDialog {
 
             @Override
             public void mouseClicked(MouseEvent event) {
-              picked = new Choice(name, null, null);
+              picked = new Choice(name, null);
               dispose();
             }
           });
