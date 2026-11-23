@@ -201,7 +201,7 @@ public class SettingsPanel extends javax.swing.JFrame {
 
     // The button is always enabled: pressing it switches the drop down to Custom as well, so the
     // player does not have to choose that entry first.
-    pickColourButton = new JButton("Pick own...");
+    pickColourButton = new JButton("Pick your own");
     pickColourButton.setToolTipText("Pick your own accent colour");
     pickColourButton.addActionListener(event -> pickOwnColour());
 
