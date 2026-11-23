@@ -72,7 +72,7 @@ public class Database {
   
   /** Reads the games that were played and saved to PlayedGames.json. */
   public Database() {
-    File file = new File("PlayedGames.json");
+    File file = AppDataPaths.file("PlayedGames.json").toFile();
     if (!file.exists() || file.length() == 0) {
       return;
     }
@@ -101,7 +101,7 @@ public class Database {
 
   Type listType = new TypeToken<List<Snippet>>() {}.getType();
 
-  public Snippet getRandomSnippet() {
+  public Snippet getSnippet() {
 
     if (this.gsonlist != null && !this.gsonlist.isEmpty()) {
       // The word list holds single words, a race always uses a line of them
@@ -149,7 +149,7 @@ public class Database {
     playedGames.remove(position);
     
     //Saves the updated playedGames and writes it to the json file
-     try (Writer writer = new FileWriter("PlayedGames.json")) {
+     try (Writer writer = new FileWriter(AppDataPaths.file("PlayedGames.json").toFile())) {
     gson.toJson(playedGames, writer);
   } catch (IOException e) {
     e.printStackTrace();

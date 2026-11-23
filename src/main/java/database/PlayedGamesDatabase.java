@@ -23,7 +23,7 @@ import java.util.List;
  * @author mathi
  */
 public class PlayedGamesDatabase extends PlayedGame {
-    private static final File theFile = new File("PlayedGames.json");
+    private static final File theFile = AppDataPaths.file("PlayedGames.json").toFile();
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
     
     

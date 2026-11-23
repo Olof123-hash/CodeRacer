@@ -1,0 +1,66 @@
+name: Windows installer
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    runs-on: windows-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Build application and dependencies
+        run: mvn --batch-mode package
+
+      - name: Create Windows installer
+        shell: pwsh
+        run: |
+          $appVersion = '1.0.0'
+          if ($env:GITHUB_REF -match '^refs/tags/v(.+)$') { $appVersion = $Matches[1] }
+          New-Item -ItemType Directory -Force target/package-input, target/installer | Out-Null
+          $appJar = Get-ChildItem target -Filter '*jar-with-dependencies.jar' | Select-Object -First 1
+          if (-not $appJar) { throw 'Maven did not produce the application JAR.' }
+          Copy-Item $appJar.FullName target/package-input/CodeRacer.jar
+          jpackage `
+            --type exe `
+            --name CodeRacer `
+            --app-version $appVersion `
+            --input target/package-input `
+            --main-jar CodeRacer.jar `
+            --main-class TyperRacerApp `
+            --dest target/installer `
+            --win-shortcut `
+            --win-menu `
+            --win-menu-group CodeRacer `
+            --win-per-user-install
+
+      - name: Upload installer build
+        uses: actions/upload-artifact@v4
+        with:
+          name: CodeRacer-Windows-Installer
+          path: target/installer/*.exe
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Publish GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $installer = Get-ChildItem target/installer -Filter '*.exe' | Select-Object -First 1
+          gh release create $env:GITHUB_REF_NAME $installer.FullName --generate-notes

@@ -25,7 +25,7 @@ public final class SettingsStore {
   /** The file the settings are saved to, in the working directory of the application. */
   public static final String FILE_NAME = "Settings.json";
 
-  private static final Path FILE = Path.of(FILE_NAME);
+  private static final Path FILE = AppDataPaths.file(FILE_NAME);
 
   // Pretty printing keeps the file readable when it is opened by hand
   private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();

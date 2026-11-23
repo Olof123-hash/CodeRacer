@@ -250,7 +250,7 @@ public class RacePanel extends BackgroundPanel {
     language = databaseKeyForCurrentContent();
     db = new Database(language);
     // Calls the Snippet class and initializes it with a random snippet from the Database class.
-    Snippet snip = db.getRandomSnippet();
+    Snippet snip = db.getSnippet();
     if (snip == null) {
       // A missing resource file should never crash the race screen
       return;
