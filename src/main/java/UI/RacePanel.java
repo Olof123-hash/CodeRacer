@@ -8,6 +8,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -260,6 +261,10 @@ public class RacePanel extends BackgroundPanel {
     // The engine and the pane get the same normalised text, so a character position means the same
     // thing in both of them
     String snippetText = RaceEngine.normaliseLineBreaks(snip.getBody());
+    if (!settings.isCodeMode()
+        && Settings.TEXT_SOURCE_PASSAGE.equals(settings.getTextSource())) {
+      snippetText = wrapPassageAtDisplayWidth(snippetText);
+    }
     currentRace = new RaceEngine(snippetText);
     // Sets the text of the snippetPane with that of the current snippet
     snippetPane.setText(snippetText);
@@ -459,6 +464,65 @@ public class RacePanel extends BackgroundPanel {
       return settings.getLanguage();
     }
     return Settings.TEXT_SOURCE_WORDS.equals(settings.getTextSource()) ? "Words" : "Text";
+  }
+
+  /**
+   * Turns visual wraps in a passage into real line breaks, so Enter advances at the displayed line
+   * ends. The race engine can only recognise line ends represented by newline characters.
+   */
+  private String wrapPassageAtDisplayWidth(String passage) {
+    FontMetrics metrics = snippetPane.getFontMetrics(Theme.mono(settings.getSnippetFontSize()));
+    int viewportWidth = snippetPan.getViewport().getExtentSize().width;
+    if (viewportWidth <= 0) {
+      viewportWidth = snippetPan.getWidth();
+    }
+    int lineWidth = viewportWidth - SNIPPET_PADDING;
+    if (lineWidth <= 0) {
+      return passage;
+    }
+
+    StringBuilder wrapped = new StringBuilder(passage.length());
+    StringBuilder currentLine = new StringBuilder();
+    StringBuilder whitespace = new StringBuilder();
+    int position = 0;
+    while (position < passage.length()) {
+      char character = passage.charAt(position);
+      if (character == '\n') {
+        wrapped.append(whitespace).append('\n');
+        currentLine.setLength(0);
+        whitespace.setLength(0);
+        position++;
+        continue;
+      }
+      if (character == ' ' || character == '\t') {
+        whitespace.append(character);
+        position++;
+        continue;
+      }
+
+      int wordStart = position;
+      while (position < passage.length()
+          && passage.charAt(position) != ' '
+          && passage.charAt(position) != '\t'
+          && passage.charAt(position) != '\n') {
+        position++;
+      }
+      String word = passage.substring(wordStart, position);
+      String separator = whitespace.toString();
+      if (currentLine.length() > 0
+          && metrics.stringWidth(currentLine + separator + word) > lineWidth) {
+        // Replace the wrapping space with a newline, matching the line break Swing would display.
+        wrapped.append('\n').append(word);
+        currentLine.setLength(0);
+        currentLine.append(word);
+      } else {
+        wrapped.append(separator).append(word);
+        currentLine.append(separator).append(word);
+      }
+      whitespace.setLength(0);
+    }
+    wrapped.append(whitespace);
+    return wrapped.toString();
   }
 
   /*
