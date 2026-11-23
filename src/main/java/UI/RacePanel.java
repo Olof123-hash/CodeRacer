@@ -118,6 +118,7 @@ public class RacePanel extends BackgroundPanel {
     // The saved preferences are read before any component exists, so the first window already has
     // the colour scheme and the content type that the player chose last time.
     settings = SettingsStore.load();
+    
     Theme.applyScheme(
         ColourScheme.byName(settings.getScheme()), new Color(settings.getCustomAccent()));
     Theme.applyTypingColours(
@@ -145,7 +146,7 @@ public class RacePanel extends BackgroundPanel {
     wpmLabel.setText("WPM 0");
     accuracyLabel.setText("ACCURACY 0%");
     mistakesLabel.setText("MISTAKES 0");
-    jLabel1.setText("TIME 0");
+    jLabel1.setText("TIME 0s");
     // DocumentListener shit !Very important code
 
     typingField.setTransferHandler(null);
@@ -729,10 +730,21 @@ public class RacePanel extends BackgroundPanel {
     }
   }
 
+  /**
+   * Shows the race time as "47s", switching to "1min 12s" once the race passes a minute. The engine
+   * already returns whole seconds, so this only decides how they are written on screen.
+   */
+  private static String formatRaceTime(long seconds) {
+    if (seconds < 60) {
+      return seconds + "s";
+    }
+    return (seconds / 60) + "min " + (seconds % 60) + "s";
+  }
+
   // Same here
   private void updateLabels() {
     if (currentPanel == PanelState.RUNNING) {
-      jLabel1.setText("TIME" + " " + currentRace.getTime());
+      jLabel1.setText("TIME" + " " + formatRaceTime(currentRace.getTime()));
       mistakesLabel.setText("MISTAKES" + " " + currentRace.getMistakes());
       accuracyLabel.setText("ACCURACY" + " " + currentRace.getAccuracy() + "%");
     }
@@ -1054,7 +1066,7 @@ public class RacePanel extends BackgroundPanel {
 
         newRaceButton.setBackground(new java.awt.Color(0, 0, 0));
         newRaceButton.setFont(new java.awt.Font("Mona Sans", 1, 18)); // NOI18N
-        newRaceButton.setText("Start New Race");
+        newRaceButton.setText("Start typing");
         newRaceButton.setAlignmentX(0.5F);
         newRaceButton.addActionListener(this::newRaceButtonActionPerformed);
         add(newRaceButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(518, 300, -1, 51));
@@ -1078,7 +1090,7 @@ public class RacePanel extends BackgroundPanel {
 
         endRaceButton.setBackground(new java.awt.Color(0, 0, 0));
         endRaceButton.setFont(new java.awt.Font("Mona Sans", 1, 18)); // NOI18N
-        endRaceButton.setText("End Race");
+        endRaceButton.setText("Stop");
         endRaceButton.addActionListener(this::endRaceButtonActionPerformed);
         add(endRaceButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(547, 615, 130, 40));
 

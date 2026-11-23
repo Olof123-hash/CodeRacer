@@ -85,7 +85,7 @@ public class HistoryPanel extends javax.swing.JFrame {
     /** Prefixes every game that comes from the database with its number. */
     private String formatGames(JPanel list, Map<Integer, String> games) {
         if (games.isEmpty()) {
-             list.add(new JLabel("No races played yet. Finish a race and the result will appear here."));
+             list.add(new JLabel("Nothing typed yet. Finish a snippet and the result will appear here."));
              
         }
         StringBuilder text = new StringBuilder();
