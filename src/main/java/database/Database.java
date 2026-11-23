@@ -6,6 +6,9 @@
 package database;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import java.io.BufferedReader;
 import java.io.File;
@@ -65,7 +68,15 @@ public class Database {
 
     // An unknown key (for example from an old settings file) falls back to the mixed code list
     String resource = languages.getOrDefault(language, languages.get("Random"));
-    this.gsonlist = gson.fromJson(readFileFromResource(resource), listType);
+    String json = readFileFromResource(resource);
+    if ("Text".equals(language)) {
+      // Text.json wraps its passages in a top-level "posts" object; other snippet files are arrays.
+      JsonObject root = JsonParser.parseString(json).getAsJsonObject();
+      JsonArray posts = root.getAsJsonArray("posts");
+      this.gsonlist = gson.fromJson(posts, listType);
+    } else {
+      this.gsonlist = gson.fromJson(json, listType);
+    }
   }
   
   
