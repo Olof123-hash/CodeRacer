@@ -261,9 +261,8 @@ public class RacePanel extends BackgroundPanel {
     // The engine and the pane get the same normalised text, so a character position means the same
     // thing in both of them
     String snippetText = RaceEngine.normaliseLineBreaks(snip.getBody());
-    if (!settings.isCodeMode()
-        && Settings.TEXT_SOURCE_PASSAGE.equals(settings.getTextSource())) {
-      snippetText = wrapPassageAtDisplayWidth(snippetText);
+    if (!settings.isCodeMode()) {
+      snippetText = wrapPlainTextAtDisplayWidth(snippetText);
     }
     currentRace = new RaceEngine(snippetText);
     // Sets the text of the snippetPane with that of the current snippet
@@ -467,10 +466,10 @@ public class RacePanel extends BackgroundPanel {
   }
 
   /**
-   * Turns visual wraps in a passage into real line breaks, so Enter advances at the displayed line
+   * Turns visual wraps in plain text into real line breaks, so Enter advances at the displayed line
    * ends. The race engine can only recognise line ends represented by newline characters.
    */
-  private String wrapPassageAtDisplayWidth(String passage) {
+  private String wrapPlainTextAtDisplayWidth(String passage) {
     FontMetrics metrics = snippetPane.getFontMetrics(Theme.mono(settings.getSnippetFontSize()));
     int viewportWidth = snippetPan.getViewport().getExtentSize().width;
     if (viewportWidth <= 0) {
