@@ -9,10 +9,27 @@ current state.
 
 ### Windows
 
-Download and run the latest [CodeRacer Windows installer](https://github.com/Olof123-hash/CodeRacer/releases/latest).
-It installs the app with its own Java 21 runtime, so Java and Maven do not need to be installed
-separately. The installer adds a Start Menu entry and a desktop shortcut, and CodeRacer can be
-removed again through Windows Settings → Apps.
+Choose the instructions for the release you downloaded from the [CodeRacer releases page](https://github.com/Olof123-hash/CodeRacer/releases):
+
+#### v1.0.0 (`TypeRacer.zip`)
+
+1. Download `TypeRacer.zip` from the v1.0.0 release assets and extract it to a folder where you
+   want to keep the app.
+2. Open the extracted `TypeRacer` folder and run `TypeRacer.exe`.
+
+The extracted app includes its own Java runtime, so you do not need to install Java or Maven. This
+zip is a portable app folder: it does not run an installer or automatically create a desktop
+shortcut. To make one, right-click `TypeRacer.exe`, choose **Show more options → Send to → Desktop
+(create shortcut)**. Keep the extracted folder in place because the shortcut runs the app from it.
+
+#### v1.0.1 (`CodeRacer-<version>.exe`)
+
+1. Download the `CodeRacer-1.0.1.exe` asset and run it.
+2. Follow the installer prompts.
+
+This per-user installer puts CodeRacer and its Java 21 runtime under your Windows user profile. It
+creates a Start Menu entry and a desktop shortcut. Java and Maven do not need to be installed
+separately. Uninstall it from **Windows Settings → Apps → Installed apps**.
 
 Settings and race history are stored in `%USERPROFILE%\.coderacer`.
 
