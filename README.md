@@ -11,7 +11,7 @@ current state.
 
 Choose the instructions for the release you downloaded from the [CodeRacer releases page](https://github.com/Olof123-hash/CodeRacer/releases):
 
-#### v1.0.1 (`TypeRacer.zip`)
+#### Portable ZIP (v1.0.1)
 
 1. Download `TypeRacer.zip` from the v1.0.1 release assets and extract it to a folder where you
    want to keep the app.
@@ -22,7 +22,7 @@ zip is a portable app folder: it does not run an installer or automatically crea
 shortcut. To make one, right-click `TypeRacer.exe`, choose **Show more options → Send to → Desktop
 (create shortcut)**. Keep the extracted folder in place because the shortcut runs the app from it.
 
-#### v1.0.0 (`CodeRacer-<version>.exe`)
+#### Windows installer (v1.0.0)
 
 1. Download the `CodeRacer-1.0.0.exe` asset and run it.
 2. Follow the installer prompts.
@@ -33,7 +33,20 @@ separately. Uninstall it from **Windows Settings → Apps → Installed apps**.
 
 Settings and race history are stored in `%USERPROFILE%\.coderacer`.
 
-### Build from source
+### Linux
+
+There is currently no Linux installer or Linux-specific release asset. To run CodeRacer on Linux,
+install Java 21 and Maven, clone the repository, then build and launch the app from its root:
+
+```bash
+mvn package
+java -jar target/TyperRacerApp-jar-jar-with-dependencies.jar
+```
+
+The JAR includes the app dependencies but not a Java runtime, so Java 21 must be installed. Settings
+and race history are stored in `~/.coderacer`.
+
+### Build from source (Windows)
 
 Install Java 21 and Maven, then run:
 
