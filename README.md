@@ -13,7 +13,7 @@ Choose the instructions for the release you downloaded from the [CodeRacer relea
 
 #### v1.0.1 (`TypeRacer.zip`)
 
-1. Download `TypeRacer.zip` from the v1.0.0 release assets and extract it to a folder where you
+1. Download `TypeRacer.zip` from the v1.0.1 release assets and extract it to a folder where you
    want to keep the app.
 2. Open the extracted `TypeRacer` folder and run `TypeRacer.exe`.
 
